@@ -10,6 +10,7 @@ import {
   Sparkles as EvaluationIcon,
 } from 'lucide-react';
 import { useTheme } from '../theme/ThemeProvider';
+import CryptoWatchlistPanel from '../components/crypto/CryptoWatchlistPanel';
 
 const tabs = [
   { label: 'Arena', icon: <ArenaIcon size={18} /> },
@@ -102,7 +103,11 @@ export default function CryptoAgentPage() {
 
       {/* Tab Content */}
       <Box sx={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
-        <Placeholder label={tabs[activeTab].label} />
+        {/* Keep watchlist mounted so cached TradingView widgets survive tab switches */}
+        <Box sx={{ position: 'absolute', inset: 0, display: activeTab === 1 ? 'block' : 'none' }}>
+          <CryptoWatchlistPanel />
+        </Box>
+        {activeTab !== 1 && <Placeholder label={tabs[activeTab].label} />}
       </Box>
     </Box>
   );

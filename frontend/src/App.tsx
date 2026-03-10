@@ -9,10 +9,10 @@ import FOMCCalendarPage from './pages/FOMCCalendarPage';
 import SnbTradingPage from './pages/SnbTradingPage';
 import IndexAgentPage from './pages/IndexAgentPage';
 import CompanyAgentPage from './pages/CompanyAgentPage';
-import CryptoAgentPage from './pages/CryptoAgentPage';
+
 import AgentDashboardPage from './pages/AgentDashboardPage';
 import MarketDashboardPage from './pages/MarketDashboardPage';
-import MarketDataPage from './pages/MarketDataPage';
+
 
 function App() {
   return (
@@ -39,8 +39,7 @@ function App() {
         <Route path="agent-dashboard" element={<AgentDashboardPage />} />
         <Route path="index-agent" element={<IndexAgentPage />} />
         <Route path="company-agent" element={<CompanyAgentPage />} />
-        <Route path="crypto-agent" element={<CryptoAgentPage />} />
-        <Route path="market-data" element={<MarketDataPage />} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
