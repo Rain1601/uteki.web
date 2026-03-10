@@ -162,9 +162,11 @@ class IndexScheduler:
             self._last_run = datetime.now(timezone.utc)
 
             data_service = get_data_service()
-            results = await data_service.robust_update_all(
-                validate=True,
-                backfill=True,
+            # Run in thread to prevent synchronous Supabase REST calls
+            # from blocking the main asyncio event loop
+            import asyncio
+            results = await asyncio.to_thread(
+                self._run_update_sync, data_service
             )
 
             has_failures = len(results['failed']) > 0
@@ -199,6 +201,20 @@ class IndexScheduler:
             self._last_result = {'success': False, 'error': str(e)}
             if task:
                 await self._update_run_status(task["id"], "error")
+
+    @staticmethod
+    def _run_update_sync(data_service):
+        """Run robust_update_all in a new event loop (for use with asyncio.to_thread).
+        This allows the synchronous Supabase HTTP calls inside to execute
+        without blocking the main event loop."""
+        import asyncio
+        loop = asyncio.new_event_loop()
+        try:
+            return loop.run_until_complete(
+                data_service.robust_update_all(validate=True, backfill=True)
+            )
+        finally:
+            loop.close()
 
     def get_status(self) -> dict:
         jobs = []

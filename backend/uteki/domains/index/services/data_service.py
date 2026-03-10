@@ -691,8 +691,12 @@ class DataService:
         row = result.data[0] if result.data else new_item
         await _backup_watchlist_rows([row])
 
-        # 后台加载历史数据
-        await self.initial_history_load(symbol.upper())
+        # Load historical data in background thread to avoid blocking event loop
+        import asyncio
+        asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: asyncio.run(self.initial_history_load(symbol.upper()))
+        )
 
         return row
 
