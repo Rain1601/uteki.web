@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
 
-// API Base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8888';
+// API calls use relative paths to go through vite proxy (no CORS issues)
+// Login redirects need absolute URL since the browser navigates directly to the backend
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8888';
 
 // Token storage key
 const TOKEN_KEY = 'auth_token';
@@ -50,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch current user
+  // Fetch current user — relative path goes through vite proxy
   const refreshUser = useCallback(async () => {
     try {
       setLoading(true);
@@ -62,8 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-        credentials: 'include', // Also try cookies
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include',
         headers,
       });
 
@@ -76,7 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setUser(null);
-        // If unauthorized, clear stored token
         if (response.status === 401) {
           removeToken();
         }
@@ -89,15 +89,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Login - redirect to OAuth provider
+  // Login — browser navigates directly to backend (absolute URL)
   const login = useCallback((provider: 'github' | 'google') => {
-    // Use the frontend origin as redirect URL
-    const redirectUrl = window.location.origin;
-    const loginUrl = `${API_BASE_URL}/api/auth/${provider}/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
+    const redirectUrl = `${window.location.origin}/login`;
+    const loginUrl = `${BACKEND_URL}/api/auth/${provider}/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
     window.location.href = loginUrl;
   }, []);
 
-  // Logout
+  // Logout — relative path goes through vite proxy
   const logout = useCallback(async () => {
     try {
       const token = getStoredToken();
@@ -106,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
         headers,

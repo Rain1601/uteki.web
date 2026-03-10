@@ -17,6 +17,8 @@ from uteki.domains.agent.models import ChatConversation, ChatMessage
 from uteki.domains.news.models import NewsArticle
 from uteki.domains.macro.models import EconomicEvent
 from uteki.domains.data.models import Symbol, KlineDaily, DataQualityLog, IngestionRun
+from uteki.domains.user.models import User, UserAuthProvider
+from uteki.domains.auth.models import RefreshToken
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

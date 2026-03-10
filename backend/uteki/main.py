@@ -27,6 +27,14 @@ async def lifespan(app: FastAPI):
     import asyncio
     asyncio.create_task(initialize_databases())
 
+    # Cleanup expired refresh tokens on startup
+    try:
+        from uteki.domains.auth.refresh_service import cleanup_expired_tokens
+        asyncio.create_task(cleanup_expired_tokens())
+        logger.info("Refresh token cleanup scheduled")
+    except Exception as e:
+        logger.warning(f"Refresh token cleanup failed: {e}")
+
     # Start news scheduler if enabled
     if settings.environment != "test":
         try:
@@ -243,6 +251,7 @@ from uteki.domains.macro.marketcap_api import router as marketcap_router
 from uteki.domains.snb.api import router as snb_router
 from uteki.domains.index.api import router as index_router
 from uteki.domains.data.api import router as data_router
+from uteki.domains.company.api import router as company_router
 # from uteki.domains.trading.api import router as trading_router  # 待实现
 # from uteki.domains.evaluation.api import router as evaluation_router  # 待实现
 # from uteki.domains.dashboard.api import router as dashboard_router  # 待实现
@@ -261,6 +270,7 @@ app.include_router(marketcap_router, prefix="/api/macro/marketcap", tags=["marke
 app.include_router(snb_router, prefix="/api/snb", tags=["snb"])
 app.include_router(index_router, prefix="/api/index", tags=["index"])
 app.include_router(data_router, prefix="/api/data", tags=["market-data"])
+app.include_router(company_router, prefix="/api/company", tags=["company"])
 # app.include_router(trading_router, prefix="/api/trading", tags=["trading"])  # 待实现
 # app.include_router(evaluation_router, prefix="/api/evaluation", tags=["evaluation"])  # 待实现
 # app.include_router(dashboard_router, prefix="/api/dashboard", tags=["dashboard"])  # 待实现
