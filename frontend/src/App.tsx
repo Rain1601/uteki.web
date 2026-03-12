@@ -9,6 +9,7 @@ import FOMCCalendarPage from './pages/FOMCCalendarPage';
 import SnbTradingPage from './pages/SnbTradingPage';
 import IndexAgentPage from './pages/IndexAgentPage';
 import CompanyAgentPage from './pages/CompanyAgentPage';
+import ApiTestPage from './pages/ApiTestPage';
 
 import AgentDashboardPage from './pages/AgentDashboardPage';
 import MarketDashboardPage from './pages/MarketDashboardPage';
@@ -17,8 +18,9 @@ import MarketDashboardPage from './pages/MarketDashboardPage';
 function App() {
   return (
     <Routes>
-      {/* 登录页面 - 不受保护 */}
+      {/* 不受保护的页面 */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/test-llm" element={<ApiTestPage />} />
 
       {/* 受保护的路由 */}
       <Route
