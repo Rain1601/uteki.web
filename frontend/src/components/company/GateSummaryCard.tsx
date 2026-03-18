@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Box, Typography, Collapse } from '@mui/material';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { StatusBadge } from './ui';
 import FormattedText from './FormattedText';
 import type { GateResult } from '../../api/company';
 
@@ -10,58 +11,12 @@ interface Props {
   theme: any;
 }
 
-// ── Badge color helper ──
-const getBadgeStyle = (
-  type: 'quality' | 'score' | 'width' | 'resilience' | 'assessment' | 'action',
-  value: string,
-  theme: any,
-) => {
-  const base = {
-    px: 1,
-    py: 0.25,
-    borderRadius: 1,
-    fontSize: 11,
-    fontWeight: 700,
-    lineHeight: 1,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase' as const,
-    whiteSpace: 'nowrap' as const,
-  };
-
-  const v = (value || '').toLowerCase();
-
-  if (type === 'action') {
-    if (v === 'buy') return { ...base, bgcolor: '#22c55e20', color: '#22c55e', border: '1px solid #22c55e40' };
-    if (v === 'avoid') return { ...base, bgcolor: '#ef444420', color: '#ef4444', border: '1px solid #ef444440' };
-    return { ...base, bgcolor: '#f59e0b20', color: '#f59e0b', border: '1px solid #f59e0b40' };
-  }
-  if (type === 'quality') {
-    if (v === 'excellent') return { ...base, bgcolor: '#22c55e20', color: '#22c55e' };
-    if (v === 'good') return { ...base, bgcolor: '#3b82f620', color: '#3b82f6' };
-    if (v === 'mediocre') return { ...base, bgcolor: '#f59e0b20', color: '#f59e0b' };
-    return { ...base, bgcolor: '#ef444420', color: '#ef4444' };
-  }
-  if (type === 'width') {
-    if (v === 'wide') return { ...base, bgcolor: '#22c55e20', color: '#22c55e' };
-    if (v === 'narrow') return { ...base, bgcolor: '#f59e0b20', color: '#f59e0b' };
-    return { ...base, bgcolor: '#ef444420', color: '#ef4444' };
-  }
-  if (type === 'assessment') {
-    if (v === 'cheap') return { ...base, bgcolor: '#22c55e20', color: '#22c55e' };
-    if (v === 'fair') return { ...base, bgcolor: '#3b82f620', color: '#3b82f6' };
-    if (v === 'expensive') return { ...base, bgcolor: '#f59e0b20', color: '#f59e0b' };
-    return { ...base, bgcolor: '#ef444420', color: '#ef4444' };
-  }
-  // score / resilience — use primary
-  return { ...base, bgcolor: `${theme.brand.primary}15`, color: theme.brand.primary };
-};
-
 // ── Metric chip ──
 function MetricChip({ label, value, theme }: { label: string; value: string | number; theme: any }) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
       <Typography sx={{ fontSize: 11, color: theme.text.muted, whiteSpace: 'nowrap' }}>{label}</Typography>
-      <Typography sx={{ fontSize: 12, fontWeight: 600, color: theme.text.primary, whiteSpace: 'nowrap' }}>
+      <Typography sx={{ fontSize: 13, fontWeight: 600, color: theme.text.primary, whiteSpace: 'nowrap' }}>
         {value}
       </Typography>
     </Box>
@@ -72,6 +27,18 @@ function MetricChip({ label, value, theme }: { label: string; value: string | nu
 function VDivider({ theme }: { theme: any }) {
   return <Box sx={{ width: 1, height: 16, bgcolor: theme.border.subtle, mx: 0.5 }} />;
 }
+
+// ── Badge variant mapping ──
+type BadgeVariant = 'quality' | 'action' | 'width' | 'assessment' | 'risk' | 'score';
+
+const GATE_BADGE_VARIANT: Record<string, BadgeVariant> = {
+  quality: 'quality',
+  score: 'score',
+  width: 'width',
+  resilience: 'score',
+  assessment: 'assessment',
+  action: 'action',
+};
 
 // ── Extract summary + metrics per gate type ──
 function extractGateInfo(gateNum: number, result: GateResult) {
@@ -193,7 +160,7 @@ export default function GateSummaryCard({ gateNum, result, theme }: Props) {
       <Box
         onClick={hasRawText ? () => setExpanded(!expanded) : undefined}
         sx={{
-          p: 1.5,
+          p: 2,
           bgcolor: theme.background.secondary,
           borderRadius: 2,
           border: `1px solid ${theme.border.subtle}`,
@@ -205,9 +172,10 @@ export default function GateSummaryCard({ gateNum, result, theme }: Props) {
         {/* Top row: badge + metrics */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
           {info.badge && info.badge.value && (
-            <Box component="span" sx={getBadgeStyle(info.badge.type, String(info.badge.value), theme)}>
-              {String(info.badge.value)}
-            </Box>
+            <StatusBadge
+              variant={GATE_BADGE_VARIANT[info.badge.type] || 'score'}
+              value={String(info.badge.value)}
+            />
           )}
           {info.metrics.map((m: any, i: number) => (
             <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
@@ -219,10 +187,10 @@ export default function GateSummaryCard({ gateNum, result, theme }: Props) {
 
         {/* Summary line */}
         {info.summary && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.75 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
             <Typography
               sx={{
-                fontSize: 12,
+                fontSize: 13,
                 color: theme.text.secondary,
                 lineHeight: 1.5,
                 overflow: 'hidden',
@@ -248,7 +216,7 @@ export default function GateSummaryCard({ gateNum, result, theme }: Props) {
       <Collapse in={expanded}>
         <Box
           sx={{
-            p: 2,
+            p: 2.5,
             mt: 0.5,
             bgcolor: theme.background.secondary,
             borderRadius: 1.5,

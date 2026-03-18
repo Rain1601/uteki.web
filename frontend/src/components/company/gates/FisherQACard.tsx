@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Box, Typography, Collapse, LinearProgress, Chip } from '@mui/material';
+import { Box, Typography, Collapse, LinearProgress } from '@mui/material';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useTheme } from '../../../theme/ThemeProvider';
+import { SectionHeader, StatGrid, BulletList } from '../ui';
 import FisherRadarChart from '../charts/FisherRadarChart';
 
 interface Props {
@@ -33,25 +34,17 @@ export default function FisherQACard({ data }: Props) {
   const verdictColor = VERDICT_COLORS[data.growth_verdict] || theme.text.muted;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {/* Top stats row */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: 10, color: theme.text.muted }}>TOTAL SCORE</Typography>
-          <Typography sx={{ fontSize: 20, fontWeight: 800, color: theme.text.primary }}>
-            {data.total_score || 0}
-            <Typography component="span" sx={{ fontSize: 12, color: theme.text.muted }}>/150</Typography>
-          </Typography>
-        </Box>
-        <Chip
-          label={data.growth_verdict?.toUpperCase()}
-          size="small"
-          sx={{ bgcolor: `${verdictColor}20`, color: verdictColor, fontWeight: 700, fontSize: 12 }}
-        />
-      </Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+      {/* Top stats */}
+      <StatGrid
+        items={[
+          { label: 'Total Score', value: `${data.total_score || 0}/150` },
+          { label: 'Growth Verdict', value: data.growth_verdict?.toUpperCase() || '—', color: verdictColor },
+        ]}
+      />
 
-      {/* Radar chart + QA split */}
-      <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', md: 'row' } }}>
+      {/* Radar chart + Flags split */}
+      <Box sx={{ display: 'flex', gap: 2.5, flexDirection: { xs: 'column', md: 'row' } }}>
         {/* Radar chart */}
         {data.radar_data && (
           <Box sx={{ width: { xs: '100%', md: 280 }, flexShrink: 0 }}>
@@ -60,29 +53,17 @@ export default function FisherQACard({ data }: Props) {
         )}
 
         {/* Flags */}
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {data.green_flags?.length > 0 && (
             <Box>
-              <Typography sx={{ fontSize: 11, fontWeight: 600, color: '#4caf50', mb: 0.5 }}>
-                Green Flags
-              </Typography>
-              {data.green_flags.map((f: string, i: number) => (
-                <Typography key={i} sx={{ fontSize: 12, color: theme.text.secondary, pl: 1.5, position: 'relative', '&::before': { content: '"+"', position: 'absolute', left: 0, color: '#4caf50', fontWeight: 700 } }}>
-                  {f}
-                </Typography>
-              ))}
+              <SectionHeader>Green Flags</SectionHeader>
+              <BulletList items={data.green_flags} variant="positive" />
             </Box>
           )}
           {data.red_flags?.length > 0 && (
             <Box>
-              <Typography sx={{ fontSize: 11, fontWeight: 600, color: '#f44336', mb: 0.5 }}>
-                Red Flags
-              </Typography>
-              {data.red_flags.map((f: string, i: number) => (
-                <Typography key={i} sx={{ fontSize: 12, color: theme.text.secondary, pl: 1.5, position: 'relative', '&::before': { content: '"-"', position: 'absolute', left: 0, color: '#f44336', fontWeight: 700 } }}>
-                  {f}
-                </Typography>
-              ))}
+              <SectionHeader>Red Flags</SectionHeader>
+              <BulletList items={data.red_flags} variant="negative" />
             </Box>
           )}
         </Box>
@@ -90,9 +71,7 @@ export default function FisherQACard({ data }: Props) {
 
       {/* 15 Questions Accordion */}
       <Box>
-        <Typography sx={{ fontSize: 12, fontWeight: 600, color: theme.text.muted, mb: 1 }}>
-          Fisher 15 Questions
-        </Typography>
+        <SectionHeader>Fisher 15 Questions</SectionHeader>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           {questions.map((q: any) => {
             const isOpen = expandedQ[q.id] ?? false;
@@ -103,7 +82,7 @@ export default function FisherQACard({ data }: Props) {
               <Box
                 key={q.id}
                 sx={{
-                  bgcolor: theme.background.secondary,
+                  bgcolor: theme.background.hover,
                   borderRadius: 1,
                   overflow: 'hidden',
                 }}
@@ -117,14 +96,14 @@ export default function FisherQACard({ data }: Props) {
                     px: 1.5,
                     py: 1,
                     cursor: 'pointer',
-                    '&:hover': { bgcolor: theme.background.hover },
+                    '&:hover': { bgcolor: theme.background.active || theme.background.hover },
                   }}
                 >
                   {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                  <Typography sx={{ fontSize: 11, fontWeight: 700, color: theme.brand.primary, minWidth: 28 }}>
+                  <Typography sx={{ fontSize: 12, fontWeight: 700, color: theme.brand.primary, minWidth: 28 }}>
                     {q.id}
                   </Typography>
-                  <Typography sx={{ fontSize: 12, flex: 1, color: theme.text.primary, lineHeight: 1.4 }}>
+                  <Typography sx={{ fontSize: 13, flex: 1, color: theme.text.primary, lineHeight: 1.4 }}>
                     {q.question}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
@@ -135,14 +114,14 @@ export default function FisherQACard({ data }: Props) {
                       }}
                       title={`Data confidence: ${q.data_confidence}`}
                     />
-                    <Typography sx={{ fontSize: 12, fontWeight: 700, color: scoreColor, minWidth: 20, textAlign: 'right' }}>
+                    <Typography sx={{ fontSize: 13, fontWeight: 700, color: scoreColor, minWidth: 20, textAlign: 'right' }}>
                       {q.score}
                     </Typography>
                   </Box>
                 </Box>
                 <Collapse in={isOpen}>
                   <Box sx={{ px: 1.5, pb: 1.5, pt: 0.5 }}>
-                    <Typography sx={{ fontSize: 12, color: theme.text.secondary, lineHeight: 1.6 }}>
+                    <Typography sx={{ fontSize: 13, color: theme.text.secondary, lineHeight: 1.6 }}>
                       {q.answer}
                     </Typography>
                     <LinearProgress
@@ -152,7 +131,7 @@ export default function FisherQACard({ data }: Props) {
                         mt: 1,
                         height: 4,
                         borderRadius: 2,
-                        bgcolor: theme.background.hover,
+                        bgcolor: theme.background.secondary,
                         '& .MuiLinearProgress-bar': { bgcolor: scoreColor, borderRadius: 2 },
                       }}
                     />

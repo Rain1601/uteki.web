@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { X, FileText } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeProvider';
 import { GATE_NAMES, type GateResult, type PositionHoldingOutput } from '../../api/company';
+import { DataTable } from './ui';
 import VerdictBanner from './VerdictBanner';
 import FormattedText from './FormattedText';
 import BusinessAnalysisCard from './gates/BusinessAnalysisCard';
@@ -33,6 +34,16 @@ const GATE_ORDER = [
   'valuation',
   'final_verdict',
 ] as const;
+
+const GATE_EN_NAMES: Record<string, string> = {
+  business_analysis: 'Business Analysis',
+  fisher_qa: 'Fisher 15 Questions',
+  moat_assessment: 'Moat Assessment',
+  management_assessment: 'Management Assessment',
+  reverse_test: 'Reverse Test',
+  valuation: 'Valuation & Timing',
+  final_verdict: 'Final Verdict',
+};
 
 const GATE_COMPONENTS: Record<string, React.FC<{ data: Record<string, any> }>> = {
   business_analysis: BusinessAnalysisCard,
@@ -127,7 +138,7 @@ export default function ReportPanel({
         </Box>
 
         {/* Body */}
-        <Box sx={{ px: 3, py: 2.5, display: 'flex', flexDirection: 'column', gap: 3, minWidth: 460 }}>
+        <Box sx={{ px: 3, py: 3, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 460 }}>
           {/* Verdict Banner */}
           {hasVerdict && (
             <VerdictBanner verdict={verdict!} companyName={companyName} />
@@ -147,87 +158,73 @@ export default function ReportPanel({
 
             return (
               <Box key={skillName}>
-                {/* Section divider */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                  <Box
-                    sx={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: '50%',
-                      bgcolor: theme.brand.primary + '15',
-                      color: theme.brand.primary,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {gateNum}
+                {/* Section divider — thick top rule */}
+                <Box sx={{ borderTop: `2px solid ${theme.border.default}`, pt: 2, mb: 2.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        bgcolor: theme.brand.primary + '15',
+                        color: theme.brand.primary,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 13,
+                        fontWeight: 700,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {gateNum}
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+                        <Typography sx={{ fontSize: 15, fontWeight: 700, color: theme.text.primary }}>
+                          {GATE_NAMES[gateNum] || skillName}
+                        </Typography>
+                        <Typography sx={{ fontSize: 12, color: theme.text.muted }}>
+                          {GATE_EN_NAMES[skillName] || ''}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    {result.latency_ms != null && (
+                      <Typography sx={{ fontSize: 12, color: theme.text.disabled, flexShrink: 0 }}>
+                        {(result.latency_ms / 1000).toFixed(1)}s
+                      </Typography>
+                    )}
                   </Box>
-                  <Typography sx={{ fontSize: 15, fontWeight: 700, color: theme.text.primary }}>
-                    {GATE_NAMES[gateNum] || skillName}
-                  </Typography>
-                  {result.latency_ms != null && (
-                    <Typography sx={{ fontSize: 11, color: theme.text.disabled }}>
-                      {(result.latency_ms / 1000).toFixed(1)}s
-                    </Typography>
-                  )}
-                  <Box sx={{ flex: 1, height: 1, bgcolor: theme.border.subtle }} />
                 </Box>
 
                 {/* Content: structured card or raw text */}
-                {hasParsed && Component ? (
-                  <Component data={parsedData} />
-                ) : result.raw ? (
-                  <Box sx={{ p: 2, bgcolor: theme.background.secondary, borderRadius: 1.5 }}>
+                <Box sx={{ bgcolor: theme.background.secondary, borderRadius: 2, p: 3 }}>
+                  {hasParsed && Component ? (
+                    <Component data={parsedData} />
+                  ) : result.raw ? (
                     <FormattedText text={result.raw} theme={theme} />
-                  </Box>
-                ) : (
-                  <Typography sx={{ fontSize: 12, color: theme.text.muted, fontStyle: 'italic' }}>
-                    无输出数据
-                  </Typography>
-                )}
+                  ) : (
+                    <Typography sx={{ fontSize: 13, color: theme.text.muted, fontStyle: 'italic' }}>
+                      无输出数据
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             );
           })}
 
           {/* Metadata footer */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              py: 1.5,
-              px: 2,
-              bgcolor: theme.background.tertiary,
-              borderRadius: 1.5,
-              flexWrap: 'wrap',
-              mt: 1,
-            }}
-          >
-            {modelUsed && (
-              <Typography sx={{ fontSize: 11, color: theme.text.muted }}>
-                Model: {modelUsed}
-              </Typography>
-            )}
-            {totalLatencyMs != null && (
-              <Typography sx={{ fontSize: 11, color: theme.text.muted }}>
-                Total: {(totalLatencyMs / 1000).toFixed(1)}s
-              </Typography>
-            )}
-            {dataFreshness && (
-              <Typography sx={{ fontSize: 11, color: theme.text.muted }}>
-                Data: {dataFreshness.cached ? 'cached' : 'fresh'}
-                {dataFreshness.fetched_at && ` (${new Date(dataFreshness.fetched_at).toLocaleDateString()})`}
-              </Typography>
-            )}
-            {toolCallsCount != null && toolCallsCount > 0 && (
-              <Typography sx={{ fontSize: 11, color: theme.text.muted }}>
-                Web searches: {toolCallsCount}
-              </Typography>
-            )}
+          <Box sx={{ mt: 1 }}>
+            <DataTable
+              rows={[
+                ...(modelUsed ? [{ label: 'Model', value: modelUsed }] : []),
+                ...(totalLatencyMs != null ? [{ label: 'Total Time', value: `${(totalLatencyMs / 1000).toFixed(1)}s` }] : []),
+                ...(dataFreshness ? [{
+                  label: 'Data',
+                  value: `${dataFreshness.cached ? 'Cached' : 'Fresh'}${dataFreshness.fetched_at ? ` (${new Date(dataFreshness.fetched_at).toLocaleDateString()})` : ''}`,
+                }] : []),
+                ...(toolCallsCount != null && toolCallsCount > 0 ? [{ label: 'Web Searches', value: String(toolCallsCount) }] : []),
+              ]}
+            />
           </Box>
         </Box>
       </Box>
