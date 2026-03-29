@@ -26,6 +26,7 @@ interface Props {
   toolCallsCount?: number;
   scrollToGate?: number | null;
   onScrollToGateConsumed?: () => void;
+  embedded?: boolean;  // when true, renders without header/border/width constraints (inline mode)
 }
 
 const GATE_ORDER = [
@@ -70,6 +71,7 @@ export default function ReportPanel({
   toolCallsCount,
   scrollToGate,
   onScrollToGateConsumed,
+  embedded = false,
 }: Props) {
   const { theme } = useTheme();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -168,16 +170,13 @@ export default function ReportPanel({
   return (
     <Box
       sx={{
-        // Fullscreen: fixed overlay covering entire viewport
-        ...(fullscreen ? {
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+        ...(embedded ? {
           width: '100%',
-          minWidth: 0,
-          maxWidth: 'none',
+          position: 'relative',
+        } : fullscreen ? {
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100%', minWidth: 0, maxWidth: 'none',
           zIndex: 1300,
         } : {
           width: open ? '55%' : 0,
@@ -185,10 +184,10 @@ export default function ReportPanel({
           maxWidth: open ? 800 : 0,
           position: 'relative',
         }),
-        height: '100%',
-        overflow: 'hidden',
-        transition: fullscreen ? 'none' : 'width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease',
-        borderLeft: open && !fullscreen ? `1px solid ${theme.border.subtle}` : 'none',
+        height: embedded ? 'auto' : '100%',
+        overflow: embedded ? 'visible' : 'hidden',
+        transition: embedded || fullscreen ? 'none' : 'width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease',
+        borderLeft: !embedded && open && !fullscreen ? `1px solid ${theme.border.subtle}` : 'none',
         flexShrink: 0,
       }}
     >
@@ -207,8 +206,8 @@ export default function ReportPanel({
           },
         }}
       >
-        {/* Header */}
-        <Box
+        {/* Header — hidden in embedded mode */}
+        {!embedded && <Box
           sx={{
             position: 'sticky',
             top: 0,
@@ -285,7 +284,7 @@ export default function ReportPanel({
               <X size={16} />
             </Box>
           </Box>
-        </Box>
+        </Box>}
 
         {/* Body — compact spacing, centered in fullscreen */}
         <Box sx={{

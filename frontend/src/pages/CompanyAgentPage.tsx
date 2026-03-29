@@ -76,6 +76,7 @@ export default function CompanyAgentPage() {
   runningRef.current = runningAnalyses;
 
   const hasSelection = !!viewingRunId || !!selectedId;
+  const [activeGate, setActiveGate] = useState<number | null>(null);
 
   // ── Data loading ──
   useEffect(() => {
@@ -318,7 +319,7 @@ export default function CompanyAgentPage() {
           display: 'grid',
           gridTemplateColumns: compact
             ? '48px 1fr 44px 36px'
-            : '60px 180px 56px 100px 72px 64px 52px 48px 28px',
+            : '48px 1fr 48px 44px 56px 48px 40px',
           alignItems: 'center',
           px: compact ? 1 : 1.5,
           minHeight: compact ? 34 : 38,
@@ -359,39 +360,19 @@ export default function CompanyAgentPage() {
           )}
         </Box>
 
-        {/* Conviction — visual bar + number */}
-        {!compact ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, pr: 0.5 }}>
-            <Box sx={{ flex: 1, height: 4, borderRadius: 2, bgcolor: `${actionColor}12`, overflow: 'hidden' }}>
-              <Box sx={{
-                height: '100%', width: `${convPct}%`, borderRadius: 2,
-                bgcolor: actionColor, transition: 'width 0.3s',
-                boxShadow: conviction > 0.7 ? `0 0 6px ${actionColor}40` : 'none',
-              }} />
-            </Box>
-            <Typography sx={{ fontSize: 10, fontWeight: 600, color: theme.text.secondary, fontFeatureSettings: '"tnum"', minWidth: 28, textAlign: 'right' }}>
-              {isRunningRecord ? '—' : `${convPct}%`}
-            </Typography>
-          </Box>
-        ) : (
-          <Typography sx={{ fontSize: 10, color: theme.text.muted, textAlign: 'right', fontFeatureSettings: '"tnum"' }}>
-            {isRunningRecord ? '' : `${convPct}%`}
-          </Typography>
-        )}
+        {/* Conviction */}
+        <Typography sx={{ fontSize: 10, color: theme.text.muted, textAlign: 'right', fontFeatureSettings: '"tnum"' }}>
+          {isRunningRecord ? '' : `${convPct}%`}
+        </Typography>
 
         {/* Quality */}
         {!compact && (
           <Typography sx={{
-            fontSize: 10, fontWeight: 600, textAlign: 'center',
+            fontSize: 9.5, fontWeight: 600, textAlign: 'center',
             color: a.verdict_quality === 'EXCELLENT' ? '#4caf50' : a.verdict_quality === 'GOOD' ? '#f59e0b' : theme.text.disabled,
           }}>
             {isRunningRecord ? '—' : (a.verdict_quality || '')}
           </Typography>
-        )}
-
-        {/* Model */}
-        {!compact && (
-          <Typography sx={{ fontSize: 10, color: theme.text.disabled }}>{a.provider}</Typography>
         )}
 
         {/* Time */}
@@ -405,20 +386,6 @@ export default function CompanyAgentPage() {
         <Typography sx={{ fontSize: 10, color: theme.text.disabled, textAlign: 'right' }}>
           {formatDate(a.created_at)}
         </Typography>
-
-        {/* Delete */}
-        {!compact ? (
-          <Box sx={{ textAlign: 'center' }}>
-            <IconButton
-              className="row-delete"
-              size="small"
-              onClick={(e) => { e.stopPropagation(); handleDeleteAnalysis(a.id); }}
-              sx={{ opacity: 0, color: theme.text.disabled, p: 0.25, '&:hover': { color: '#ef4444', opacity: '1 !important' } }}
-            >
-              <Trash2 size={11} />
-            </IconButton>
-          </Box>
-        ) : null}
       </Box>
     );
   };
@@ -457,110 +424,233 @@ export default function CompanyAgentPage() {
             </Box>
           </>
         )}
+        {hasSelection && (
+          <>
+            <Box sx={{ flex: 1 }} />
+            <Box
+              onClick={() => { setSelectedId(null); setSelectedDetail(null); setViewingRunId(null); setReportOpen(false); }}
+              sx={{
+                display: 'flex', alignItems: 'center', gap: 0.5,
+                px: 1, py: 0.3, borderRadius: '6px', cursor: 'pointer',
+                color: theme.text.muted, fontSize: 12,
+                '&:hover': { color: theme.text.primary, bgcolor: `${theme.text.primary}08` },
+              }}
+            >
+              ← 返回列表
+            </Box>
+          </>
+        )}
       </PageHeader>
 
-      {/* ── Floating search bar — bottom center ── */}
+      {/* ── Floating search bar ── */}
       <Box sx={{
         position: 'absolute',
-        bottom: 20,
+        bottom: 64,
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 100,
-        width: 420,
-        filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.3))',
+        width: 380,
+        opacity: 0.65,
+        transition: 'opacity 0.2s ease, transform 0.2s ease',
+        filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.15))',
+        '&:hover': { opacity: 0.85 },
+        '&:focus-within': { opacity: 1, filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.3))' },
       }}>
         <CompanyAnalysisForm onAnalyze={handleAnalyze} isRunning={false} runningCount={runningCount} elapsedMs={0} />
       </Box>
 
-      {/* ── Main: Left Chart + Right Screener/Detail ── */}
+      {/* ══════════════════════════════════════════════════════
+          LAYOUT A: 列表状态 — 左20% Watchlist | 中40% K线 | 右40% 分析列表
+          LAYOUT B: 详情状态 — 左30% 分析列表 | 中+右70% 分析报告
+          ══════════════════════════════════════════════════════ */}
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
-        {/* ════ LEFT: TradingView Chart ════ */}
-        <Box sx={{
-          width: '50%',
-          flexShrink: 0,
-          borderRight: `1px solid ${theme.border.subtle}`,
-          position: 'relative',
-        }}>
-          {chartSymbol ? (
-            <TradingViewChart symbol={chartSymbol} />
-          ) : (
-            <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Typography sx={{ fontSize: 13, color: theme.text.disabled }}>
-                输入股票代码查看K线
-              </Typography>
-            </Box>
-          )}
-        </Box>
-
-        {/* ════ RIGHT: Detail OR Screener (not both) ════ */}
-        <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-
-          {/* ── Detail view (when selected) ── */}
-          {hasSelection && hasTimeline ? (
-            <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-              {/* Timeline */}
-              <Box sx={{
-                flex: reportOpen ? '0 0 50%' : '1 1 auto',
-                overflow: 'auto', transition: 'flex 0.3s ease',
-                '&::-webkit-scrollbar': { width: 4 },
-                '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
-                '&::-webkit-scrollbar-thumb': { bgcolor: `${theme.text.muted}18`, borderRadius: 4, '&:hover': { bgcolor: `${theme.text.muted}30` } },
-              }}>
-                <Box sx={{ px: 2, py: 1.5 }}>
-                  {loadingDetail && (
-                    <Typography sx={{ fontSize: 12, color: theme.text.muted, textAlign: 'center', py: 3 }}>Loading...</Typography>
-                  )}
-                  <ThinkingTimeline
-                    gateStatuses={displayGateStatuses}
-                    gateResults={displayGateResults}
-                    streamingTexts={displayStreamingTexts}
-                    currentGate={displayCurrentGate}
-                    companyInfo={displayCompanyInfo}
-                    error={displayError}
-                    isComplete={isComplete}
-                    isDbRunning={isDbRunning}
-                    elapsedMs={isViewingRunning ? viewingRun!.elapsedMs : (displayResult?.total_latency_ms || 0)}
-                    onOpenReport={() => setReportOpen(true)}
-                    onGateClick={(gateNum) => { setReportOpen(true); setScrollToGate(gateNum); }}
-                  />
+        {hasSelection && hasTimeline ? (
+          /* ═══ LAYOUT B: Detail mode — Left K-line | Right (progress + report) ═══ */
+          <>
+            {/* Left 35%: K-line Chart */}
+            <Box sx={{
+              width: '35%', flexShrink: 0,
+              borderRight: `1px solid ${theme.border.subtle}`,
+              position: 'relative',
+            }}>
+              {chartSymbol ? (
+                <TradingViewChart symbol={chartSymbol} />
+              ) : (
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography sx={{ fontSize: 13, color: theme.text.disabled }}>Select a symbol</Typography>
                 </Box>
+              )}
+            </Box>
+
+            {/* Right 65%: Top progress + Report below */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              {/* Top: compact gate progress bar */}
+              <Box sx={{
+                flexShrink: 0,
+                borderBottom: `1px solid ${theme.border.subtle}`,
+                px: 2, py: 0.75,
+                display: 'flex', alignItems: 'center', gap: 1,
+              }}>
+                {/* Gate step indicators */}
+                {['业务解析', 'Fisher', '护城河', '管理层', '逆向检验', '估值', '裁决'].map((label, i) => {
+                  const gateNum = i + 1;
+                  const status = displayGateStatuses[gateNum];
+                  return (
+                    <Box key={gateNum} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {i > 0 && <Box sx={{ width: 12, height: 1, bgcolor: status === 'complete' ? '#4caf50' : theme.border.subtle }} />}
+                      <Box
+                        onClick={() => { setActiveGate(gateNum); setScrollToGate(gateNum); }}
+                        sx={{
+                          display: 'flex', alignItems: 'center', gap: 0.3,
+                          cursor: 'pointer', px: 0.75, py: 0.3, borderRadius: '6px',
+                          bgcolor: activeGate === gateNum ? `${theme.brand.primary}15` : 'transparent',
+                          border: activeGate === gateNum ? `1px solid ${theme.brand.primary}30` : '1px solid transparent',
+                          '&:hover': { bgcolor: activeGate === gateNum ? `${theme.brand.primary}15` : `${theme.text.primary}06` },
+                        }}
+                      >
+                        <Box sx={{
+                          width: 6, height: 6, borderRadius: '50%',
+                          bgcolor: status === 'complete' ? '#4caf50' : status === 'running' ? theme.brand.primary : status === 'error' ? '#f44336' : theme.border.default,
+                          animation: status === 'running' ? 'analyzing-pulse 1.5s ease-in-out infinite' : 'none',
+                        }} />
+                        <Typography sx={{ fontSize: 9.5, color: status === 'complete' ? theme.text.secondary : theme.text.disabled }}>
+                          {label}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  );
+                })}
+                <Box sx={{ flex: 1 }} />
+                {/* Elapsed time */}
+                <Typography sx={{ fontSize: 10, color: theme.text.muted, fontFeatureSettings: '"tnum"' }}>
+                  {formatTime(isViewingRunning ? viewingRun!.elapsedMs : (displayResult?.total_latency_ms || 0))}
+                </Typography>
               </Box>
 
-              {/* Report panel */}
-              <ReportPanel
-                open={reportOpen}
-                onClose={() => setReportOpen(false)}
-                skills={displaySkills}
-                verdict={displayVerdict}
-                companyInfo={displayCompanyInfo}
-                totalLatencyMs={displayResult?.total_latency_ms}
-                modelUsed={displayResult?.model_used}
-                dataFreshness={displayResult?.data_freshness}
-                toolCallsCount={displayResult?.tool_calls?.length}
-                scrollToGate={scrollToGate}
-                onScrollToGateConsumed={() => setScrollToGate(null)}
-              />
+              {/* Report content — fills remaining space */}
+              <Box sx={{
+                flex: 1, overflow: 'auto',
+                '&::-webkit-scrollbar': { width: 4 },
+                '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+                '&::-webkit-scrollbar-thumb': { bgcolor: `${theme.text.muted}18`, borderRadius: 4 },
+              }}>
+                {loadingDetail && (
+                  <Typography sx={{ fontSize: 12, color: theme.text.muted, textAlign: 'center', py: 3 }}>Loading...</Typography>
+                )}
+                <ReportPanel
+                  open={true}
+                  onClose={() => {}}
+                  embedded
+                  skills={displaySkills}
+                  verdict={displayVerdict}
+                  companyInfo={displayCompanyInfo}
+                  totalLatencyMs={displayResult?.total_latency_ms}
+                  modelUsed={displayResult?.model_used}
+                  dataFreshness={displayResult?.data_freshness}
+                  toolCallsCount={displayResult?.tool_calls?.length}
+                  scrollToGate={scrollToGate}
+                  onScrollToGateConsumed={() => setScrollToGate(null)}
+                />
+              </Box>
             </Box>
-          ) : (
-            /* ── Screener table (when nothing selected) ── */
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          </>
+        ) : (
+          /* ═══ LAYOUT A: List mode — Watchlist | Chart | Screener ═══ */
+          <>
+            {/* Left 20%: Watchlist (unique symbols) */}
+            <Box sx={{
+              width: '20%', flexShrink: 0,
+              borderRight: `1px solid ${theme.border.subtle}`,
+              display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            }}>
+              <Box sx={{
+                px: 1.5, py: 0.75, flexShrink: 0,
+                borderBottom: `1px solid ${theme.border.subtle}`,
+              }}>
+                <Typography sx={{ fontSize: 10, fontWeight: 600, color: theme.text.disabled, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  Watchlist
+                </Typography>
+              </Box>
+              <Box sx={{
+                flex: 1, overflow: 'auto',
+                '&::-webkit-scrollbar': { width: 3 },
+                '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+                '&::-webkit-scrollbar-thumb': { bgcolor: `${theme.text.muted}18`, borderRadius: 4 },
+              }}>
+                {/* Deduplicated symbols */}
+                {(() => {
+                  const seen = new Set<string>();
+                  return filteredAnalyses.filter((a) => {
+                    if (seen.has(a.symbol)) return false;
+                    seen.add(a.symbol);
+                    return true;
+                  }).map((a) => {
+                    const actionColor = ACTION_COLORS[a.verdict_action] || theme.text.muted;
+                    const isActive = chartSymbol === a.symbol;
+                    return (
+                      <Box
+                        key={a.symbol}
+                        onClick={() => { setViewingRunId(null); setSelectedId(a.id); }}
+                        sx={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          px: 1.5, py: 0.75,
+                          cursor: 'pointer',
+                          bgcolor: isActive ? `${theme.brand.primary}08` : 'transparent',
+                          borderLeft: isActive ? `2px solid ${theme.brand.primary}` : '2px solid transparent',
+                          '&:hover': { bgcolor: `${theme.text.primary}05` },
+                        }}
+                      >
+                        <Box>
+                          <Typography sx={{ fontSize: 12, fontWeight: 700, color: theme.text.primary }}>
+                            {a.symbol}
+                          </Typography>
+                          <Typography sx={{ fontSize: 9.5, color: theme.text.disabled, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>
+                            {a.company_name || ''}
+                          </Typography>
+                        </Box>
+                        <Typography sx={{ fontSize: 10, fontWeight: 700, color: actionColor }}>
+                          {a.verdict_action}
+                        </Typography>
+                      </Box>
+                    );
+                  });
+                })()}
+              </Box>
+            </Box>
+
+            {/* Center 40%: K-line Chart */}
+            <Box sx={{
+              width: '40%', flexShrink: 0,
+              borderRight: `1px solid ${theme.border.subtle}`,
+              position: 'relative',
+            }}>
+              {chartSymbol ? (
+                <TradingViewChart symbol={chartSymbol} />
+              ) : (
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography sx={{ fontSize: 13, color: theme.text.disabled }}>输入股票代码查看K线</Typography>
+                </Box>
+              )}
+            </Box>
+
+            {/* Right 40%: Analysis records */}
+            <Box sx={{ width: '40%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               {/* Column headers */}
               {filteredAnalyses.length > 0 && (
                 <Box sx={{
                   display: 'grid',
-                  gridTemplateColumns: '60px 180px 56px 100px 72px 64px 52px 48px 28px',
+                  gridTemplateColumns: '48px 1fr 48px 44px 56px 48px 40px',
                   alignItems: 'center',
-                  py: 0.5, px: 1.5,
+                  py: 0.5, px: 1,
                   borderBottom: `1px solid ${theme.border.subtle}`,
-                  bgcolor: theme.background.primary,
                   flexShrink: 0,
                 }}>
-                  {['Symbol', 'Company', 'Action', 'Conviction', 'Quality', 'Model', 'Time', 'Date', ''].map((label, i) => (
-                    <Typography key={label || 'x'} sx={{
-                      fontSize: 9, fontWeight: 600, color: theme.text.disabled,
-                      textTransform: 'uppercase', letterSpacing: '0.06em',
-                      textAlign: [2, 4].includes(i) ? 'center' : [3, 6, 7].includes(i) ? 'right' : 'left',
+                  {['Sym', 'Company', 'Act', 'Conv', 'Quality', 'Time', 'Date'].map((label, i) => (
+                    <Typography key={label} sx={{
+                      fontSize: 8.5, fontWeight: 600, color: theme.text.disabled,
+                      textTransform: 'uppercase', letterSpacing: '0.05em',
+                      textAlign: [2, 4].includes(i) ? 'center' : [3, 5, 6].includes(i) ? 'right' : 'left',
                     }}>
                       {label}
                     </Typography>
@@ -568,7 +658,6 @@ export default function CompanyAgentPage() {
                 </Box>
               )}
 
-              {/* Rows */}
               <Box sx={{
                 flex: 1, overflow: 'auto',
                 '&::-webkit-scrollbar': { width: 3 },
@@ -586,8 +675,8 @@ export default function CompanyAgentPage() {
                 )}
               </Box>
             </Box>
-          )}
-        </Box>
+          </>
+        )}
       </Box>
     </Box>
   );
