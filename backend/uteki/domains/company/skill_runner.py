@@ -35,9 +35,37 @@ from .skills import (
     COMPANY_SKILL_PIPELINE, CompanySkill,
     REFLECTION_CHECKPOINTS, GATE_TOOLS,
 )
-from .schemas import CompanyFullReport, PositionHoldingOutput
+from .schemas import (
+    CompanyFullReport, PositionHoldingOutput,
+    BusinessAnalysisOutput, FisherQAOutput, MoatAssessmentOutput,
+    ManagementAssessmentOutput, ReverseTestOutput, ValuationOutput,
+)
 from .output_parser import parse_skill_output
 from .financials import format_company_data_for_prompt
+
+# Per-gate schema mapping for instant structuring
+_GATE_SCHEMAS: dict[str, type] = {
+    "business_analysis": BusinessAnalysisOutput,
+    "fisher_qa": FisherQAOutput,
+    "moat_assessment": MoatAssessmentOutput,
+    "management_assessment": ManagementAssessmentOutput,
+    "reverse_test": ReverseTestOutput,
+    "valuation": ValuationOutput,
+}
+
+_STRUCTURIZE_PROMPT = """你是一个数据结构化专家。从以下分析文本中提取关键信息，输出一个 JSON 对象。
+
+分析文本：
+{raw_text}
+
+要求输出的 JSON schema（所有字段都需要填写，缺失数据用默认值）：
+{schema_hint}
+
+规则：
+1. 直接输出 JSON，不要加任何解释
+2. 所有字符串值使用中文
+3. 从原文中提取数据，不要编造
+4. 以 {{ 开始，以 }} 结束"""
 
 logger = logging.getLogger(__name__)
 
@@ -700,11 +728,18 @@ class PipelineOrchestrator:
             # Add to context
             self.context.add_gate_result(gate_result)
 
-            # Convert to legacy result format
+            # ── Per-gate instant structuring (gates 1-6) ──
             parsed = None
             parse_status = gate_result.parse_status
             if skill.gate_number == 7 and gate_result.raw:
                 parsed, parse_status = parse_skill_output(gate_result.raw, CompanyFullReport)
+            elif skill.skill_name in _GATE_SCHEMAS and gate_result.raw and not gate_result.error:
+                try:
+                    parsed, parse_status = await self._structurize_gate(
+                        skill.skill_name, gate_result.raw
+                    )
+                except Exception as e:
+                    logger.warning(f"[orchestrator] structurize {skill.skill_name} failed: {e}")
 
             parsed_dict = parsed.model_dump() if parsed else {}
             skill_result: dict[str, Any] = {
@@ -771,6 +806,54 @@ class PipelineOrchestrator:
 
         # ── Post-pipeline: populate gate results from Gate 7 ──────────────
         return self._build_output(results, all_tool_calls, total_latency_ms)
+
+    async def _structurize_gate(self, skill_name: str, raw_text: str):
+        """Use a fast/cheap model to extract structured JSON from a gate's raw text."""
+        schema_class = _GATE_SCHEMAS.get(skill_name)
+        if not schema_class:
+            return None, "text"
+
+        # Build schema hint from Pydantic model fields
+        schema_fields = {}
+        for name, field_info in schema_class.model_fields.items():
+            schema_fields[name] = str(field_info.annotation).replace("typing.", "")
+        schema_hint = json.dumps(schema_fields, indent=2, ensure_ascii=False)
+
+        prompt = _STRUCTURIZE_PROMPT.format(
+            raw_text=raw_text[:3000],  # truncate to save tokens
+            schema_hint=schema_hint,
+        )
+
+        try:
+            from openai import AsyncOpenAI
+            aihub_key = getattr(settings, "aihubmix_api_key", None)
+            aihub_url = getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
+
+            if not aihub_key:
+                return None, "text"
+
+            client = AsyncOpenAI(api_key=aihub_key, base_url=aihub_url)
+            resp = await asyncio.wait_for(
+                client.chat.completions.create(
+                    model="gpt-4.1-nano",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=2000,
+                    temperature=0,
+                ),
+                timeout=30,
+            )
+
+            result_text = resp.choices[0].message.content or ""
+            parsed, status = parse_skill_output(result_text, schema_class)
+            if parsed:
+                logger.info(f"[orchestrator] structurize {skill_name}: {status}")
+                return parsed, status
+        except asyncio.TimeoutError:
+            logger.warning(f"[orchestrator] structurize {skill_name} timeout")
+        except Exception as e:
+            logger.warning(f"[orchestrator] structurize {skill_name} error: {e}")
+
+        return None, "text"
 
     async def _run_reflection(self, after_gate: int):
         """Run a reflection checkpoint."""
