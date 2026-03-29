@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { Loader2, Trash2 } from 'lucide-react';
 import TradingViewChart from '../components/index/TradingViewChart';
+import { ModelLogo } from '../components/index/ModelLogos';
 import PageHeader from '../components/PageHeader';
 import { useTheme } from '../theme/ThemeProvider';
 import CompanyAnalysisForm from '../components/company/CompanyAnalysisForm';
@@ -77,6 +78,7 @@ export default function CompanyAgentPage() {
 
   const hasSelection = !!viewingRunId || !!selectedId;
   const [activeGate, setActiveGate] = useState<number | null>(null);
+  const [watchlistSymbol, setWatchlistSymbol] = useState<string | null>(null);
 
   // ── Data loading ──
   useEffect(() => {
@@ -319,7 +321,7 @@ export default function CompanyAgentPage() {
           display: 'grid',
           gridTemplateColumns: compact
             ? '48px 1fr 44px 36px'
-            : '48px 1fr 48px 44px 56px 48px 40px',
+            : '48px 1fr 20px 48px 44px 56px 48px 40px',
           alignItems: 'center',
           px: compact ? 1 : 1.5,
           minHeight: compact ? 34 : 38,
@@ -344,55 +346,88 @@ export default function CompanyAgentPage() {
           </Typography>
         ) : <Box />}
 
-        {/* Action */}
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          {isRunningRecord ? (
-            <Loader2 size={12} color={theme.brand.primary} style={{ animation: 'spin 1.5s linear infinite' }} />
-          ) : (
-            <Box sx={{
-              px: 0.75, py: 0.15, borderRadius: '4px',
-              bgcolor: `${actionColor}12`,
-            }}>
-              <Typography sx={{ fontSize: 10, fontWeight: 800, color: actionColor, lineHeight: 1.4 }}>
-                {a.verdict_action}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-
-        {/* Conviction */}
-        <Typography sx={{ fontSize: 10, color: theme.text.muted, textAlign: 'right', fontFeatureSettings: '"tnum"' }}>
-          {isRunningRecord ? '' : `${convPct}%`}
-        </Typography>
-
-        {/* Quality */}
+        {/* Model logo */}
         {!compact && (
-          <Typography sx={{
-            fontSize: 9.5, fontWeight: 600, textAlign: 'center',
-            color: a.verdict_quality === 'EXCELLENT' ? '#4caf50' : a.verdict_quality === 'GOOD' ? '#f59e0b' : theme.text.disabled,
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ModelLogo provider={a.provider} size={14} />
+          </Box>
+        )}
+
+        {isRunningRecord ? (
+          /* ── Running state: animated bar spanning remaining columns ── */
+          <Box sx={{
+            gridColumn: compact ? '3 / -1' : '4 / -1',
+            display: 'flex', alignItems: 'center', gap: 1,
           }}>
-            {isRunningRecord ? '—' : (a.verdict_quality || '')}
-          </Typography>
-        )}
+            <Box sx={{
+              flex: 1, height: 3, borderRadius: 2, overflow: 'hidden',
+              bgcolor: `${theme.brand.primary}10`,
+            }}>
+              <Box sx={{
+                height: '100%', width: '40%', borderRadius: 2,
+                bgcolor: theme.brand.primary,
+                animation: 'analyzing-slide 2s ease-in-out infinite',
+                '@keyframes analyzing-slide': {
+                  '0%': { transform: 'translateX(-100%)' },
+                  '50%': { transform: 'translateX(200%)' },
+                  '100%': { transform: 'translateX(-100%)' },
+                },
+              }} />
+            </Box>
+            <Typography sx={{ fontSize: 9, color: theme.brand.primary, fontWeight: 500, flexShrink: 0, opacity: 0.8 }}>
+              分析中
+            </Typography>
+            <Typography sx={{ fontSize: 9, color: theme.text.disabled, flexShrink: 0 }}>
+              {formatDate(a.created_at)}
+            </Typography>
+          </Box>
+        ) : (
+          /* ── Completed state ── */
+          <>
+            {/* Action */}
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ px: 0.75, py: 0.15, borderRadius: '4px', bgcolor: `${actionColor}12` }}>
+                <Typography sx={{ fontSize: 10, fontWeight: 800, color: actionColor, lineHeight: 1.4 }}>
+                  {a.verdict_action}
+                </Typography>
+              </Box>
+            </Box>
 
-        {/* Time */}
-        {!compact && (
-          <Typography sx={{ fontSize: 10, color: theme.text.muted, textAlign: 'right', fontFeatureSettings: '"tnum"' }}>
-            {isRunningRecord ? '' : formatTime(a.total_latency_ms)}
-          </Typography>
-        )}
+            {/* Conviction */}
+            <Typography sx={{ fontSize: 10, color: theme.text.muted, textAlign: 'right', fontFeatureSettings: '"tnum"' }}>
+              {`${convPct}%`}
+            </Typography>
 
-        {/* Date */}
-        <Typography sx={{ fontSize: 10, color: theme.text.disabled, textAlign: 'right' }}>
-          {formatDate(a.created_at)}
-        </Typography>
+            {/* Quality */}
+            {!compact && (
+              <Typography sx={{
+                fontSize: 9.5, fontWeight: 600, textAlign: 'center',
+                color: a.verdict_quality === 'EXCELLENT' ? '#4caf50' : a.verdict_quality === 'GOOD' ? '#f59e0b' : theme.text.disabled,
+              }}>
+                {a.verdict_quality || ''}
+              </Typography>
+            )}
+
+            {/* Time */}
+            {!compact && (
+              <Typography sx={{ fontSize: 10, color: theme.text.muted, textAlign: 'right', fontFeatureSettings: '"tnum"' }}>
+                {formatTime(a.total_latency_ms)}
+              </Typography>
+            )}
+
+            {/* Date */}
+            <Typography sx={{ fontSize: 10, color: theme.text.disabled, textAlign: 'right' }}>
+              {formatDate(a.created_at)}
+            </Typography>
+          </>
+        )}
       </Box>
     );
   };
 
-  // ── Chart symbol ──
+  // ── Chart symbol — watchlist click overrides, detail selection overrides that ──
   const chartSymbol = displayCompanyInfo?.symbol
-    || (selectedId && analyses.find((a) => a.id === selectedId)?.symbol)
+    || watchlistSymbol
     || (filteredAnalyses.length > 0 ? filteredAnalyses[0].symbol : null);
 
   // ── Render ──
@@ -592,7 +627,7 @@ export default function CompanyAgentPage() {
                     return (
                       <Box
                         key={a.symbol}
-                        onClick={() => { setViewingRunId(null); setSelectedId(a.id); }}
+                        onClick={() => setWatchlistSymbol(a.symbol)}
                         sx={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           px: 1.5, py: 0.75,
@@ -641,17 +676,17 @@ export default function CompanyAgentPage() {
               {filteredAnalyses.length > 0 && (
                 <Box sx={{
                   display: 'grid',
-                  gridTemplateColumns: '48px 1fr 48px 44px 56px 48px 40px',
+                  gridTemplateColumns: '48px 1fr 20px 48px 44px 56px 48px 40px',
                   alignItems: 'center',
                   py: 0.5, px: 1,
                   borderBottom: `1px solid ${theme.border.subtle}`,
                   flexShrink: 0,
                 }}>
-                  {['Sym', 'Company', 'Act', 'Conv', 'Quality', 'Time', 'Date'].map((label, i) => (
-                    <Typography key={label} sx={{
+                  {['Sym', 'Company', '', 'Act', 'Conv', 'Quality', 'Time', 'Date'].map((label, i) => (
+                    <Typography key={`${label}-${i}`} sx={{
                       fontSize: 8.5, fontWeight: 600, color: theme.text.disabled,
                       textTransform: 'uppercase', letterSpacing: '0.05em',
-                      textAlign: [2, 4].includes(i) ? 'center' : [3, 5, 6].includes(i) ? 'right' : 'left',
+                      textAlign: [3, 5].includes(i) ? 'center' : [4, 6, 7].includes(i) ? 'right' : 'left',
                     }}>
                       {label}
                     </Typography>
