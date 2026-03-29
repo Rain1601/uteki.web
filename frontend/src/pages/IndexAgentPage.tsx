@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Box, Typography, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab } from '@mui/material';
 import { Dices as ArenaIcon, LineChart as WatchlistIcon, GitBranch as TimelineIcon, Trophy as LeaderboardIcon, Settings as SettingsIcon, BarChart3 as BacktestIcon, Sparkles as EvaluationIcon, Brain as LLMBacktestIcon } from 'lucide-react';
 import { useTheme } from '../theme/ThemeProvider';
+import PageHeader from '../components/PageHeader';
 import ArenaView from '../components/index/ArenaView';
 import WatchlistPanel from '../components/index/WatchlistPanel';
 import DecisionTimeline from '../components/index/DecisionTimeline';
@@ -39,13 +40,10 @@ export default function IndexAgentPage() {
         overflow: 'hidden',
       }}
     >
-      {/* Tabs — integrated into the top, no separate header */}
-      <Box sx={{
-        px: 2,
-        borderBottom: `1px solid ${theme.border.subtle}`,
-        display: 'flex',
-        alignItems: 'flex-end',
-      }}>
+      <PageHeader title="Index Agent" />
+
+      {/* Tabs */}
+      <Box sx={{ px: 2, borderBottom: `1px solid ${theme.border.subtle}` }}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => setActiveTab(v)}

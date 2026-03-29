@@ -198,8 +198,13 @@ export default function ReportPanel({
           height: '100%',
           overflowY: 'auto',
           bgcolor: theme.background.primary,
-          '&::-webkit-scrollbar': { width: 5 },
-          '&::-webkit-scrollbar-thumb': { bgcolor: theme.border.default, borderRadius: 3 },
+          '&::-webkit-scrollbar': { width: 4 },
+          '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: `${theme.text.muted}20`,
+            borderRadius: 4,
+            '&:hover': { bgcolor: `${theme.text.muted}40` },
+          },
         }}
       >
         {/* Header */}

@@ -497,6 +497,8 @@ class LLMAdapterFactory:
         "gpt-4-turbo": "gpt-4.1",
         # Qwen: upgrade to latest
         "qwen-plus": "qwen3.5-plus",
+        # MiniMax: upgrade to latest
+        "MiniMax-Text-01": "MiniMax-M2.7",
     }
 
     @staticmethod
