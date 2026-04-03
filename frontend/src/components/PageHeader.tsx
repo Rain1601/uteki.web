@@ -3,7 +3,7 @@ import { useTheme } from '../theme/ThemeProvider';
 
 interface PageHeaderProps {
   title: string;
-  children?: React.ReactNode;  // right side content (company info, controls, etc.)
+  children?: React.ReactNode;
 }
 
 export default function PageHeader({ title, children }: PageHeaderProps) {
@@ -21,10 +21,13 @@ export default function PageHeader({ title, children }: PageHeaderProps) {
       minHeight: 40,
     }}>
       <Typography sx={{
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 600,
         color: theme.text.primary,
+        letterSpacing: '-0.01em',
         flexShrink: 0,
+        fontFamily: "var(--font-ui)",
+        textTransform: 'none',
       }}>
         {title}
       </Typography>

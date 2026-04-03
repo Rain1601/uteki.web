@@ -689,12 +689,13 @@ export default function AgentChatPage() {
           {/* Welcome */}
           <Typography
             sx={{
-              fontSize: compact ? '1.6rem' : '2rem',
-              fontWeight: 300,
+              fontSize: compact ? '1.5rem' : '1.75rem',
+              fontWeight: 400,
               textAlign: 'center',
               color: theme.text.secondary,
               mb: 5,
-              letterSpacing: '-0.01em',
+              letterSpacing: '-0.03em',
+              fontFamily: "'Times New Roman', Georgia, serif",
             }}
           >
             What can I help with?

@@ -18,7 +18,7 @@ export default function BusinessAnalysisCard({ data }: Props) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography sx={{ fontSize: 12.5, color: theme.text.secondary, lineHeight: 1.65 }}>
+      <Typography sx={{ fontSize: '0.95rem', color: theme.text.secondary, lineHeight: 1.8 }}>
         {data.business_description}
       </Typography>
 

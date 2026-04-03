@@ -29,11 +29,12 @@ export function SectionHeader({ children, right }: SectionHeaderProps) {
     >
       <Typography
         sx={{
-          fontSize: 11.5,
+          fontSize: 10.5,
           fontWeight: 600,
           color: theme.text.muted,
-          letterSpacing: 0.6,
+          letterSpacing: '0.05em',
           textTransform: 'uppercase',
+          fontFamily: 'var(--font-ui)',
         }}
       >
         {children}
@@ -132,12 +133,13 @@ export function StatGrid({ items }: StatGridProps) {
         >
           <Typography
             sx={{
-              fontSize: 10,
+              fontSize: 9.5,
               fontWeight: 600,
               color: theme.text.disabled,
               textTransform: 'uppercase',
-              letterSpacing: 0.8,
+              letterSpacing: '0.05em',
               mb: 0.25,
+              fontFamily: 'var(--font-ui)',
             }}
           >
             {item.label}
@@ -148,6 +150,8 @@ export function StatGrid({ items }: StatGridProps) {
               fontWeight: 700,
               color: item.color ? `${item.color}cc` : theme.text.primary,
               lineHeight: 1.3,
+              fontFamily: 'var(--font-mono)',
+              fontFeatureSettings: '"tnum"',
             }}
           >
             {item.value}
@@ -203,7 +207,7 @@ export function BulletList({ items, variant = 'neutral' }: BulletListProps) {
               mt: '7px',
             }}
           />
-          <Typography sx={{ fontSize: 12.5, color: theme.text.secondary, lineHeight: 1.65 }}>
+          <Typography sx={{ fontSize: '0.9rem', color: theme.text.secondary, lineHeight: 1.75 }}>
             {item}
           </Typography>
         </Box>
@@ -239,8 +243,8 @@ export function ScoreBar({ label, score, max = 10, color }: ScoreBarProps) {
   return (
     <Box sx={{ mb: 1 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-        <Typography sx={{ fontSize: 12, color: theme.text.muted }}>{label}</Typography>
-        <Typography sx={{ fontSize: 12, fontWeight: 700, color: `${barColor}cc` }}>
+        <Typography sx={{ fontSize: 12, color: theme.text.muted, fontFamily: 'var(--font-ui)' }}>{label}</Typography>
+        <Typography sx={{ fontSize: 12, fontWeight: 700, color: `${barColor}cc`, fontFamily: 'var(--font-mono)', fontFeatureSettings: '"tnum"' }}>
           {score}/{max}
         </Typography>
       </Box>
@@ -318,11 +322,12 @@ export function StatusBadge({ variant, value }: StatusBadgeProps) {
         display: 'inline-flex',
         px: 1.25,
         py: 0.375,
-        borderRadius: 0.75,
-        fontSize: 11,
+        borderRadius: '4px',
+        fontSize: 10.5,
         fontWeight: 700,
         lineHeight: 1,
-        letterSpacing: 0.8,
+        letterSpacing: '0.04em',
+        fontFamily: 'var(--font-ui)',
         textTransform: 'uppercase',
         whiteSpace: 'nowrap',
         bgcolor: colors.bg,
@@ -351,8 +356,8 @@ export function AccentCard({ color, children, sx }: AccentCardProps) {
         px: 1.5,
         py: 1,
         bgcolor: `${color}08`,
-        borderRadius: 1.5,
-        borderLeft: `2px solid ${color}40`,
+        borderRadius: 1,
+        borderLeft: `3px solid ${color}30`,
         ...sx,
       }}
     >
