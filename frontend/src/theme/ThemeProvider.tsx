@@ -58,6 +58,20 @@ export function ThemeProvider({ children, defaultTheme = 'dark' }: ThemeProvider
     <ThemeContext.Provider value={{ theme, isDark, toggleTheme, setTheme }}>
       <MuiThemeProvider theme={muiTheme}>
         <CssBaseline />
+        {/* Global CSS custom properties for font stacks + transitions */}
+        <style>{`
+          :root {
+            --font-reading: 'Times New Roman', 'SimSun', '宋体', Georgia, serif;
+            --font-ui: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.25s ease;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-pill: 20px;
+          }
+        `}</style>
         {children}
       </MuiThemeProvider>
     </ThemeContext.Provider>

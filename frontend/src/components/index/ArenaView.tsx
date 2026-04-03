@@ -457,7 +457,7 @@ export default function ArenaView() {
                   mb: 1.5,
                   px: 1.5,
                   py: 1,
-                  borderRadius: '12px',
+                  borderRadius: '8px',
                   bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
                   border: `1px solid ${theme.border.subtle}`,
                 }}>
@@ -529,7 +529,7 @@ export default function ArenaView() {
               height: '100%', gap: 2, px: 3,
             }}>
               <Box sx={{
-                width: 48, height: 48, borderRadius: '14px',
+                width: 48, height: 48, borderRadius: '8px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 bgcolor: `${theme.brand.primary}12`,
                 border: `1px solid ${theme.brand.primary}20`,

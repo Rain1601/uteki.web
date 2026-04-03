@@ -47,12 +47,12 @@ export default function CompanyAnalysisForm({ onAnalyze, runningCount = 0 }: Pro
         position: 'relative',
         bgcolor: theme.background.secondary,
         border: `1px solid ${theme.border.default}`,
-        borderRadius: '16px',
+        borderRadius: '10px',
         overflow: 'hidden',
-        transition: 'border-color 0.2s, box-shadow 0.2s',
+        transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         '&:focus-within': {
           borderColor: theme.border.active,
-          boxShadow: `0 0 0 1px ${theme.border.active}`,
+          boxShadow: `0 0 0 3px ${theme.brand.primary}10`,
         },
       }}
     >

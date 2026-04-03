@@ -413,7 +413,7 @@ export default function AgentChatPage() {
           position: 'relative',
           bgcolor: theme.background.secondary,
           border: `1px solid ${theme.border.default}`,
-          borderRadius: '20px',
+          borderRadius: '12px',
           overflow: 'hidden',
           transition: 'border-color 0.2s, box-shadow 0.2s',
           '&:focus-within': {

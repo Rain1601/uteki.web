@@ -427,7 +427,7 @@ export default function ReportPanel({
                 </Box>
 
                 {/* Content */}
-                <Box sx={{ bgcolor: theme.background.secondary, borderRadius: 1.5, p: 2 }}>
+                <Box sx={{ bgcolor: theme.background.secondary, borderRadius: 1, p: 2, border: `1px solid ${theme.border.subtle}` }}>
                   {hasParsed && Component ? (
                     <Component data={parsedData} />
                   ) : result.raw ? (

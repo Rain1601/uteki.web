@@ -222,7 +222,7 @@ const darkThemeOptions: ThemeOptions = {
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: '16px',
+          borderRadius: '20px',  // pills stay rounded
           fontWeight: 500,
         },
         filled: {
