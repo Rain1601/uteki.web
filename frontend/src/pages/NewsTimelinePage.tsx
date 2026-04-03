@@ -826,18 +826,17 @@ export default function NewsTimelinePage() {
           sx={{
             flex: 1,
             overflowY: 'auto',
-            bgcolor: isDark ? 'rgba(30,30,30,0.6)' : 'rgba(0,0,0,0.02)',
-            borderTop: `2px solid ${theme.brand.primary}30`,
-            '&::-webkit-scrollbar': { width: 6 },
+            borderTop: `1px solid ${theme.border.subtle}`,
+            '&::-webkit-scrollbar': { width: 4 },
             '&::-webkit-scrollbar-track': { background: 'transparent' },
-            '&::-webkit-scrollbar-thumb': { background: `${theme.brand.primary}50`, borderRadius: 3 },
+            '&::-webkit-scrollbar-thumb': { background: `${theme.text.muted}20`, borderRadius: 4 },
           }}
         >
           <Box
             sx={{
-              p: '16px 20px',
-              bgcolor: isDark ? 'rgba(40,40,40,0.8)' : 'rgba(0,0,0,0.04)',
-              borderBottom: `1px solid ${theme.border.default}`,
+              px: 1.5,
+              py: 1,
+              borderBottom: `1px solid ${theme.border.subtle}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -846,18 +845,19 @@ export default function NewsTimelinePage() {
               zIndex: 10,
             }}
           >
-            <Typography sx={{ fontSize: 12, textTransform: 'uppercase', color: theme.text.muted, fontWeight: 600, letterSpacing: 0.5 }}>
+            <Typography sx={{ fontSize: 10, textTransform: 'uppercase', color: theme.text.disabled, fontWeight: 600, letterSpacing: '0.05em', fontFamily: 'var(--font-ui)' }}>
               Headlines
             </Typography>
             <Typography
               sx={{
-                fontSize: 11,
-                color: theme.brand.primary,
-                bgcolor: `${theme.brand.primary}20`,
-                px: 1.25,
-                py: 0.375,
-                borderRadius: 1.5,
+                fontSize: 10,
+                color: theme.text.muted,
+                bgcolor: theme.background.tertiary,
+                px: 1,
+                py: 0.25,
+                borderRadius: '4px',
                 fontWeight: 500,
+                fontFamily: 'var(--font-ui)',
               }}
             >
               {isLoading ? <LoadingDots text="" fontSize={11} /> : `${titlesList.length} articles`}
@@ -955,17 +955,17 @@ export default function NewsTimelinePage() {
         {/* News Header */}
         <Box
           sx={{
-            p: '20px 24px',
-            bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-            borderBottom: `1px solid ${theme.border.default}`,
+            px: 2.5,
+            py: 1.5,
+            borderBottom: `1px solid ${theme.border.subtle}`,
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Box>
-              <Typography sx={{ fontSize: 24, fontWeight: 700, color: theme.text.primary, fontFamily: 'Times New Roman, serif' }}>
+              <Typography sx={{ fontSize: 20, fontWeight: 700, color: theme.text.primary, fontFamily: 'var(--font-reading)', letterSpacing: '-0.02em' }}>
                 Market News
               </Typography>
-              <Typography sx={{ fontSize: 14, color: theme.text.muted, mt: 0.5 }}>
+              <Typography sx={{ fontSize: 12, color: theme.text.muted, mt: 0.25, fontFamily: 'var(--font-ui)' }}>
                 {currentYear}/{currentMonth + 1}
               </Typography>
             </Box>
@@ -975,8 +975,8 @@ export default function NewsTimelinePage() {
                 display: 'flex',
                 bgcolor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
                 border: `1px solid ${theme.border.subtle}`,
-                borderRadius: 2,
-                p: 0.5,
+                borderRadius: 1,
+                p: 0.25,
               }}
             >
               {([
@@ -987,10 +987,11 @@ export default function NewsTimelinePage() {
                   key={src.value}
                   onClick={() => setNewsSource(src.value)}
                   sx={{
-                    px: 2,
-                    py: 0.75,
-                    borderRadius: 1.5,
-                    fontSize: 13,
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 0.75,
+                    fontSize: 12,
+                    fontFamily: 'var(--font-ui)',
                     fontWeight: newsSource === src.value ? 600 : 400,
                     color: newsSource === src.value ? theme.brand.primary : theme.text.muted,
                     bgcolor: newsSource === src.value
@@ -1116,15 +1117,17 @@ export default function NewsTimelinePage() {
                   >
                     <Typography
                       sx={{
-                        fontSize: 14,
+                        fontSize: 12,
                         color: theme.text.muted,
-                        fontWeight: 700,
+                        fontWeight: 600,
                         whiteSpace: 'nowrap',
+                        fontFamily: 'var(--font-ui)',
+                        letterSpacing: '0.02em',
                       }}
                     >
                       {formatDateLabel(dateGroup.date)}
                     </Typography>
-                    <Box sx={{ flex: 1, height: 1, bgcolor: theme.border.divider, ml: 2 }} />
+                    <Box sx={{ flex: 1, height: '0.5px', bgcolor: theme.border.subtle, ml: 1.5 }} />
                   </Box>
 
                   {dateGroup.news.map((newsItem) => (
@@ -1161,25 +1164,28 @@ export default function NewsTimelinePage() {
                         </Typography>
                       </Box>
 
-                      {/* Title - Larger and bolder */}
+                      {/* Title */}
                       <Typography
                         sx={{
-                          fontSize: 20,
-                          fontWeight: 600,
+                          fontSize: '1.15rem',
+                          fontWeight: 700,
                           color: theme.text.primary,
-                          mb: 1,
-                          lineHeight: 1.4,
+                          mb: 0.75,
+                          lineHeight: 1.45,
+                          fontFamily: 'var(--font-reading)',
+                          letterSpacing: '-0.01em',
                         }}
                       >
                         {newsItem.title_zh || newsItem.headline}
                       </Typography>
 
-                      {/* Summary - Limited to 3 lines */}
+                      {/* Summary */}
                       <Typography
                         sx={{
-                          fontSize: 14,
+                          fontSize: '0.9rem',
                           color: theme.text.secondary,
-                          lineHeight: 1.7,
+                          lineHeight: 1.75,
+                          fontFamily: 'var(--font-reading)',
                           mb: 1.5,
                           display: '-webkit-box',
                           WebkitLineClamp: 3,
