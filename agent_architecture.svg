@@ -1,0 +1,844 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_图层_1" data-name="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 1100 920">
+  <!-- Generator: Adobe Illustrator 30.0.0, SVG Export Plug-In . SVG Version: 2.1.1 Build 123)  -->
+  <defs>
+    <style>
+      .st0, .st1, .st2, .st3, .st4, .st5, .st6, .st7 {
+        fill: none;
+      }
+
+      .st8, .st9, .st10, .st11, .st12, .st13, .st14, .st15, .st16, .st17, .st18, .st19, .st20, .st21, .st22, .st23, .st24, .st25, .st26, .st27, .st28, .st29, .st30, .st31, .st32, .st33, .st34, .st35, .st36, .st37, .st38, .st39, .st40, .st41, .st42, .st43, .st44, .st45, .st46, .st47, .st48, .st49, .st50, .st51, .st52, .st53, .st54, .st55, .st56, .st57, .st58, .st59, .st60, .st61, .st62, .st63, .st64, .st65, .st66, .st67, .st68, .st69, .st70, .st71, .st72, .st73, .st74, .st75, .st76, .st77, .st78, .st79, .st80 {
+        isolation: isolate;
+      }
+
+      .st8, .st10, .st12, .st20, .st24, .st41, .st46, .st71, .st76 {
+        font-size: 7.5px;
+      }
+
+      .st8, .st12, .st21, .st81, .st40, .st75, .st80 {
+        fill: #a78bfa;
+      }
+
+      .st82 {
+        fill: url(#_未命名的渐变_2);
+      }
+
+      .st83 {
+        fill: url(#_未命名的渐变_3);
+      }
+
+      .st84, .st85, .st15, .st86, .st20, .st36, .st54, .st57, .st73, .st78 {
+        font-family: AdobeSongStd-Light-GBpc-EUC-H, 'Adobe Song Std';
+        font-weight: 300;
+      }
+
+      .st84, .st15, .st42, .st44 {
+        font-size: 12px;
+      }
+
+      .st87, .st88, .st89, .st90, .st2, .st91, .st92, .st93, .st94, .st95, .st96, .st97, .st98, .st99, .st100, .st101, .st102, .st103, .st104 {
+        stroke-width: .8px;
+      }
+
+      .st87, .st1 {
+        stroke: #1d4ed8;
+      }
+
+      .st87, .st100 {
+        fill: #0a1f36;
+      }
+
+      .st85 {
+        letter-spacing: .03em;
+      }
+
+      .st105 {
+        fill: #166534;
+      }
+
+      .st9, .st12, .st13, .st106, .st21, .st25, .st27, .st29, .st34, .st107, .st37, .st38, .st43, .st45, .st53, .st55, .st58, .st60, .st66, .st108, .st76 {
+        font-family: Helvetica, Helvetica;
+      }
+
+      .st9, .st13, .st19, .st21, .st26, .st27, .st29, .st35, .st39, .st43, .st48, .st53, .st56, .st57, .st60, .st62, .st65, .st68, .st75, .st79 {
+        font-size: 8px;
+      }
+
+      .st9, .st78 {
+        fill: #4ade80;
+      }
+
+      .st10, .st15, .st39 {
+        fill: #9ca3af;
+      }
+
+      .st11 {
+        opacity: .6;
+      }
+
+      .st13 {
+        fill: #d946ef;
+      }
+
+      .st106 {
+        letter-spacing: 0em;
+      }
+
+      .st14, .st16, .st17, .st109, .st18, .st23, .st26, .st28, .st32, .st33, .st110, .st42, .st44, .st51, .st52, .st63, .st111, .st72, .st74 {
+        font-family: Helvetica-Bold, Helvetica;
+        font-weight: 700;
+      }
+
+      .st14, .st18, .st29, .st34, .st38, .st42, .st51, .st59, .st68 {
+        fill: #93c5fd;
+      }
+
+      .st14, .st22, .st25, .st28, .st33, .st38, .st45, .st55, .st63, .st64, .st66, .st74, .st80 {
+        font-size: 8.5px;
+      }
+
+      .st15, .st42, .st44 {
+        letter-spacing: .04em;
+      }
+
+      .st112 {
+        fill: #0c2a4a;
+        stroke: #2563eb;
+      }
+
+      .st16 {
+        fill: #c084fc;
+      }
+
+      .st16, .st23, .st36, .st47, .st50 {
+        font-size: 10.5px;
+      }
+
+      .st17, .st26, .st54 {
+        fill: #f0abfc;
+      }
+
+      .st17, .st34, .st52, .st54, .st58, .st67, .st73, .st77, .st78 {
+        font-size: 9px;
+      }
+
+      .st109 {
+        letter-spacing: 0em;
+      }
+
+      .st18 {
+        font-size: 11px;
+        letter-spacing: .03em;
+      }
+
+      .st19 {
+        fill: #bbf7d0;
+      }
+
+      .st88 {
+        stroke: #1e3a8a;
+      }
+
+      .st88, .st103 {
+        fill: #071b30;
+      }
+
+      .st20, .st113, .st31, .st41, .st57, .st60, .st79 {
+        fill: #6b7280;
+      }
+
+      .st89 {
+        fill: #120820;
+      }
+
+      .st89, .st6, .st114 {
+        stroke: #7c3aed;
+      }
+
+      .st115, .st90, .st3 {
+        stroke: #3b82f6;
+      }
+
+      .st115, .st90, .st116 {
+        fill: #1e3a5f;
+      }
+
+      .st115, .st117 {
+        stroke-width: .7px;
+      }
+
+      .st118 {
+        fill: #dfe9ef;
+      }
+
+      .st1, .st5, .st6 {
+        stroke-width: 1.5px;
+      }
+
+      .st119 {
+        fill: #575b5e;
+      }
+
+      .st120 {
+        fill: url(#_未命名的渐变);
+      }
+
+      .st22, .st23, .st37, .st49, .st55 {
+        fill: #60a5fa;
+      }
+
+      .st24 {
+        fill: #a21caf;
+      }
+
+      .st25, .st33 {
+        fill: #ddd6fe;
+      }
+
+      .st2 {
+        stroke-dasharray: 3 2;
+      }
+
+      .st2, .st121 {
+        stroke: #c026d3;
+      }
+
+      .st27, .st48 {
+        fill: #8b5cf6;
+      }
+
+      .st28 {
+        fill: #e5e7eb;
+      }
+
+      .st122 {
+        fill: #3b82f6;
+      }
+
+      .st123 {
+        fill: #b0bdc6;
+      }
+
+      .st31, .st40, .st70 {
+        opacity: .8;
+      }
+
+      .st32 {
+        fill: #67e8f9;
+      }
+
+      .st32, .st37, .st51, .st59 {
+        font-size: 10px;
+      }
+
+      .st35, .st43, .st47, .st74 {
+        fill: #86efac;
+      }
+
+      .st3, .st121 {
+        stroke-width: 1.2px;
+      }
+
+      .st117, .st91, .st92, .st93, .st94, .st95, .st96, .st97 {
+        stroke: #8b5cf6;
+      }
+
+      .st117, .st91, .st114 {
+        fill: #1e0a36;
+      }
+
+      .st124, .st62, .st70 {
+        fill: #4a9eff;
+      }
+
+      .st36, .st50 {
+        fill: #d1d5db;
+      }
+
+      .st92 {
+        fill: url(#_未命名的渐变_8);
+      }
+
+      .st93 {
+        fill: url(#_未命名的渐变_7);
+      }
+
+      .st94 {
+        fill: url(#_未命名的渐变_6);
+      }
+
+      .st95 {
+        fill: url(#_未命名的渐变_9);
+      }
+
+      .st96 {
+        fill: url(#_未命名的渐变_5);
+      }
+
+      .st97 {
+        fill: url(#_未命名的渐变_4);
+      }
+
+      .st110 {
+        letter-spacing: .03em;
+      }
+
+      .st44, .st58, .st69, .st72 {
+        fill: #c4b5fd;
+      }
+
+      .st4 {
+        stroke: #2d3748;
+      }
+
+      .st98 {
+        fill: #1a0d2e;
+      }
+
+      .st98, .st99 {
+        stroke: #6d28d9;
+      }
+
+      .st45, .st64 {
+        fill: #bfdbfe;
+      }
+
+      .st46, .st56, .st76 {
+        fill: #6d28d9;
+      }
+
+      .st125 {
+        fill: url(#_未命名的渐变_11);
+        stroke: #166534;
+      }
+
+      .st49, .st69, .st72 {
+        font-size: 9.5px;
+      }
+
+      .st5, .st126 {
+        stroke: #374151;
+      }
+
+      .st99 {
+        fill: #0f0520;
+      }
+
+      .st100, .st103 {
+        stroke: #1e40af;
+      }
+
+      .st52 {
+        fill: #fbbf24;
+      }
+
+      .st101 {
+        fill: #1f1035;
+        stroke: #f59e0b;
+        stroke-dasharray: 4 2;
+      }
+
+      .st53 {
+        fill: #374151;
+      }
+
+      .st102 {
+        fill: #14532d;
+        stroke: #16a34a;
+      }
+
+      .st127 {
+        filter: url(#softShadow);
+      }
+
+      .st126 {
+        fill: #1e2535;
+      }
+
+      .st121 {
+        fill: #2d0a4e;
+      }
+
+      .st103 {
+        stroke-dasharray: 5 3;
+      }
+
+      .st128 {
+        fill: #a6aeb0;
+      }
+
+      .st129 {
+        fill: url(#_未命名的渐变_10);
+      }
+
+      .st61 {
+        fill: #e2e8f0;
+        font-size: 17px;
+      }
+
+      .st63 {
+        fill: #fca5a5;
+      }
+
+      .st65, .st66 {
+        fill: #7dd3fc;
+      }
+
+      .st130, .st71 {
+        fill: #f59e0b;
+      }
+
+      .st67 {
+        fill: #a5f3fc;
+      }
+
+      .st131 {
+        fill: #fcd34d;
+      }
+
+      .st104 {
+        fill: #111827;
+        stroke: #4b5563;
+      }
+
+      .st132 {
+        filter: url(#softShadow2);
+      }
+
+      .st133 {
+        filter: url(#softShadow3);
+      }
+
+      .st134 {
+        filter: url(#softShadow4);
+      }
+
+      .st135 {
+        filter: url(#softShadow1);
+      }
+
+      .st108 {
+        letter-spacing: 0em;
+      }
+
+      .st136 {
+        fill: #333;
+      }
+
+      .st137 {
+        fill: #1a3a1a;
+        stroke: #15803d;
+        stroke-width: .6px;
+      }
+
+      .st138 {
+        fill: #164e63;
+      }
+
+      .st73, .st77 {
+        fill: #e9d5ff;
+      }
+
+      .st7 {
+        stroke: #06b6d4;
+      }
+
+      .st139 {
+        fill: #7c3aed;
+      }
+    </style>
+    <linearGradient id="_未命名的渐变" data-name="未命名的渐变" x1="244.28" y1="856.07" x2="244.28" y2="855.07" gradientTransform="translate(-268156 787584) scale(1100 -920)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f1117"/>
+      <stop offset="1" stop-color="#161b27"/>
+    </linearGradient>
+    <filter id="softShadow">
+      <feDropShadow dx="0" dy="2" flood-color="#000" flood-opacity="0.4" stdDeviation="4"/>
+    </filter>
+    <filter id="softShadow1" data-name="softShadow">
+      <feDropShadow dx="0" dy="2" flood-color="#000" flood-opacity="0.4" stdDeviation="4"/>
+    </filter>
+    <filter id="softShadow2" data-name="softShadow">
+      <feDropShadow dx="0" dy="2" flood-color="#000" flood-opacity="0.4" stdDeviation="4"/>
+    </filter>
+    <linearGradient id="_未命名的渐变_2" data-name="未命名的渐变 2" x1="243.98" y1="856.13" x2="243.98" y2="855.13" gradientTransform="translate(-114376 428264) scale(470 -500)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0d2137"/>
+      <stop offset="1" stop-color="#0a1c30"/>
+    </linearGradient>
+    <filter id="softShadow3" data-name="softShadow">
+      <feDropShadow dx="0" dy="2" flood-color="#000" flood-opacity="0.4" stdDeviation="4"/>
+    </filter>
+    <linearGradient id="_未命名的渐变_3" data-name="未命名的渐变 3" x1="243.98" y1="856.13" x2="243.98" y2="855.13" gradientTransform="translate(-112646 428264) scale(465 -500)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a0d2e"/>
+      <stop offset="1" stop-color="#160a28"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_4" data-name="未命名的渐变 4" x1="242.75" y1="857.63" x2="243.75" y2="857.63" gradientTransform="translate(-46748 26100) scale(195 -30)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d1b4e"/>
+      <stop offset="1" stop-color="#3a2060"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_5" data-name="未命名的渐变 5" x1="242.75" y1="857.63" x2="243.75" y2="857.63" gradientTransform="translate(-46748 26136) scale(195 -30)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d1b4e"/>
+      <stop offset="1" stop-color="#3a2060"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_6" data-name="未命名的渐变 6" x1="242.75" y1="857.63" x2="243.75" y2="857.63" gradientTransform="translate(-46748 26172) scale(195 -30)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d1b4e"/>
+      <stop offset="1" stop-color="#3a2060"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_7" data-name="未命名的渐变 7" x1="242.75" y1="857.63" x2="243.75" y2="857.63" gradientTransform="translate(-46748 26228) scale(195 -30)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d1b4e"/>
+      <stop offset="1" stop-color="#3a2060"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_8" data-name="未命名的渐变 8" x1="242.75" y1="857.63" x2="243.75" y2="857.63" gradientTransform="translate(-46748 26264) scale(195 -30)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d1b4e"/>
+      <stop offset="1" stop-color="#3a2060"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_9" data-name="未命名的渐变 9" x1="242.75" y1="857.63" x2="243.75" y2="857.63" gradientTransform="translate(-46748 26320) scale(195 -30)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d1b4e"/>
+      <stop offset="1" stop-color="#3a2060"/>
+    </linearGradient>
+    <filter id="softShadow4" data-name="softShadow">
+      <feDropShadow dx="0" dy="2" flood-color="#000" flood-opacity="0.4" stdDeviation="4"/>
+    </filter>
+    <linearGradient id="_未命名的渐变_10" data-name="未命名的渐变 10" x1="244.25" y1="856.38" x2="244.25" y2="855.38" gradientTransform="translate(-237596 146302) scale(975 -170)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1e2535"/>
+      <stop offset="1" stop-color="#1a2030"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_11" data-name="未命名的渐变 11" x1="243.34" y1="856.03" x2="244.34" y2="856.03" gradientTransform="translate(-89956 103536) scale(370 -120)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a2d1a"/>
+      <stop offset="1" stop-color="#1e3520"/>
+    </linearGradient>
+  </defs>
+  <rect class="st120" width="1100" height="920" rx="12" ry="12"/>
+  <text class="st61" transform="translate(444.23 38)"><tspan class="st110" x="0" y="0">uteki.open — Agent </tspan><tspan class="st85" x="173.71" y="0">架构图</tspan></text>
+  <line class="st4" x1="200" y1="50" x2="900" y2="50"/>
+  <g class="st127">
+    <rect class="st116" x="400" y="64" width="300" height="44" rx="8" ry="8"/>
+    <rect class="st3" x="400" y="64" width="300" height="44" rx="8" ry="8"/>
+  </g>
+  <text class="st18" transform="translate(524.97 82)"><tspan x="0" y="0">Frontend</tspan></text>
+  <text class="st37" transform="translate(462.71 98)"><tspan x="0" y="0">IndexAgentPage / CompanyAgentPage</tspan></text>
+  <path class="st0" d=""/>
+  <path class="st70" d="M552.7,119.9l-2.7,8.1-2.7-8.1h5.4Z"/>
+  <path class="st124" d="M550,128" marker-end="url(#arrow)"/>
+  <g class="st135">
+    <rect class="st138" x="420" y="130" width="260" height="36" rx="7" ry="7"/>
+    <rect class="st7" x="420" y="130" width="260" height="36" rx="7" ry="7"/>
+  </g>
+  <text class="st32" transform="translate(518.89 144)"><tspan x="0" y="0">Intent Router</tspan></text>
+  <text class="st67" transform="translate(470.27 158)"><tspan class="st107" x="0" y="0">POST /api/agent/route </tspan><tspan class="st86" x="92.05" y="0">→</tspan><tspan class="st107" x="101.05" y="0" xml:space="preserve"> research | chat</tspan></text>
+  <path class="st0" d=""/>
+  <path class="st70" d="M302.7,193.9l-2.7,8.1-2.7-8.1h5.4Z"/>
+  <path class="st124" d="M300,202" marker-end="url(#arrow)"/>
+  <text class="st34" transform="translate(352.49 182)"><tspan x="0" y="0">research</tspan></text>
+  <path class="st0" d=""/>
+  <path class="st40" d="M802.7,193.9l-2.7,8.1-2.7-8.1h5.4Z"/>
+  <path class="st81" d="M800,202" marker-end="url(#arrowPurple)"/>
+  <text class="st58" transform="translate(694.23 182)"><tspan x="0" y="0">company analysis</tspan></text>
+  <g class="st132">
+    <rect class="st82" x="60" y="200" width="470" height="500" rx="10" ry="10"/>
+    <rect class="st1" x="60" y="200" width="470" height="500" rx="10" ry="10"/>
+  </g>
+  <text class="st42" transform="translate(201.44 222)"><tspan x="0" y="0">Index Agent — Deep Research</tspan></text>
+  <rect class="st112" x="80" y="234" width="430" height="68" rx="8" ry="8"/>
+  <text class="st23" transform="translate(226.72 252)"><tspan x="0" y="0">DeepResearchOrchestrator</tspan></text>
+  <rect class="st90" x="92" y="260" width="88" height="32" rx="5" ry="5"/>
+  <text class="st64" transform="translate(118.99 273)"><tspan class="st86" x="0" y="0">①</tspan><tspan class="st111" x="8.5" y="0" xml:space="preserve"> Check</tspan></text>
+  <text class="st29" transform="translate(108.65 284)"><tspan x="0" y="0">needs_search?</tspan></text>
+  <rect class="st90" x="190" y="260" width="88" height="32" rx="5" ry="5"/>
+  <text class="st64" transform="translate(205.66 273)"><tspan class="st86" x="0" y="0">②</tspan><tspan class="st111" x="8.5" y="0" xml:space="preserve"> Decompose</tspan></text>
+  <text class="st68" transform="translate(214.97 284)"><tspan class="st107" x="0" y="0">LLM </tspan><tspan class="st86" x="17.79" y="0">拆子问题</tspan></text>
+  <rect class="st90" x="288" y="260" width="88" height="32" rx="5" ry="5"/>
+  <text class="st64" transform="translate(313.57 273)"><tspan class="st86" x="0" y="0">③</tspan><tspan class="st111" x="8.5" y="0" xml:space="preserve"> Search</tspan></text>
+  <text class="st29" transform="translate(306.88 284)"><tspan x="0" y="0">Google / DDG</tspan></text>
+  <text class="st84" transform="translate(386.37 270.56)"><tspan x="0" y="0">是非成败转头空，青</tspan><tspan x="-.37" y="14.4">山依旧在，惯看秋月</tspan></text>
+  <text class="st64" transform="translate(397.53 273)"><tspan class="st86" x="0" y="0">④</tspan><tspan class="st111" x="8.5" y="0" xml:space="preserve"> Scrape + Synthesize</tspan></text>
+  <text class="st29" transform="translate(403.09 284)"><tspan x="0" y="0">trafilatura / BS4 + LLM</tspan></text>
+  <rect class="st103" x="80" y="316" width="430" height="58" rx="8" ry="8"/>
+  <text class="st49" transform="translate(258.31 332)"><tspan class="st111" x="0" y="0">SSE </tspan><tspan class="st86" x="21.65" y="0">事件流（</tspan><tspan class="st109" x="59.65" y="0">10</tspan><tspan class="st86" x="70.22" y="0">种）</tspan></text>
+  <text class="st66" transform="translate(102.84 348)"><tspan x="0" y="0">research_start</tspan></text>
+  <text class="st66" transform="translate(195.82 348)"><tspan x="0" y="0">thought</tspan></text>
+  <text class="st66" transform="translate(255.43 348)"><tspan x="0" y="0">plan_created</tspan></text>
+  <text class="st66" transform="translate(339.76 348)"><tspan x="0" y="0">sources_update</tspan></text>
+  <text class="st66" transform="translate(436.37 348)"><tspan x="0" y="0">source_read</tspan></text>
+  <text class="st38" transform="translate(125.51 362)"><tspan x="0" y="0">sources_complete</tspan></text>
+  <text class="st38" transform="translate(252.35 362)"><tspan x="0" y="0">content_chunk</tspan></text>
+  <text class="st38" transform="translate(351.34 362)"><tspan x="0" y="0">research_complete / error</tspan></text>
+  <rect class="st87" x="80" y="390" width="200" height="84" rx="7" ry="7"/>
+  <text class="st59" transform="translate(143.7 408)"><tspan class="st111" x="0" y="0">UI </tspan><tspan class="st86" x="12.78" y="0">模块（</tspan><tspan class="st111" x="42.78" y="0">8 Tabs</tspan><tspan class="st86" x="74.46" y="0">）</tspan></text>
+  <text class="st66" transform="translate(100 424)"><tspan x="0" y="0">Arena</tspan></text>
+  <text class="st66" transform="translate(100 438)"><tspan x="0" y="0">Watchlist + KlineChart</tspan></text>
+  <text class="st66" transform="translate(100 452)"><tspan x="0" y="0">LLM Backtest / DCA Backtest</tspan></text>
+  <text class="st66" transform="translate(100 466)"><tspan x="0" y="0">Leaderboard / Evaluation</tspan></text>
+  <rect class="st87" x="294" y="390" width="200" height="84" rx="7" ry="7"/>
+  <text class="st51" transform="translate(360.66 408)"><tspan x="0" y="0">SearchEngine</tspan></text>
+  <rect class="st115" x="306" y="416" width="86" height="22" rx="4" ry="4"/>
+  <text class="st45" transform="translate(325.38 431)"><tspan x="0" y="0">Google CSE</tspan></text>
+  <rect class="st115" x="400" y="416" width="86" height="22" rx="4" ry="4"/>
+  <text class="st45" transform="translate(417.96 431)"><tspan x="0" y="0">DuckDuckGo</tspan></text>
+  <text class="st65" transform="translate(356.62 452)"><tspan class="st86" x="0" y="0">自动</tspan><tspan class="st107" x="16" y="0" xml:space="preserve"> fallback + URL</tspan><tspan class="st86" x="70.47" y="0">去重</tspan></text>
+  <rect class="st88" x="80" y="486" width="414" height="56" rx="7" ry="7"/>
+  <text class="st51" transform="translate(234.77 503)"><tspan x="0" y="0">Data Domain /api/data</tspan></text>
+  <text class="st55" transform="translate(129.17 520)"><tspan x="0" y="0">yfinance</tspan></text>
+  <text class="st55" transform="translate(214.88 520)"><tspan x="0" y="0">akshare</tspan></text>
+  <text class="st22" transform="translate(293.85 520)"><tspan class="st107" x="0" y="0">K</tspan><tspan class="st86" x="5.67" y="0">线</tspan><tspan class="st107" x="14.17" y="0" xml:space="preserve"> + </tspan><tspan class="st86" x="23.86" y="0">质量检查</tspan></text>
+  <text class="st55" transform="translate(375.82 520)"><tspan x="0" y="0">S&amp;P500 / NASDAQ100</tspan></text>
+  <text class="st62" transform="translate(199.58 533)"><tspan class="st107" x="0" y="0">ClickHouse</tspan><tspan class="st86" x="40.46" y="0">（时序）</tspan><tspan class="st107" x="72.46" y="0" xml:space="preserve"> PostgreSQL</tspan><tspan class="st86" x="118.26" y="0">（元数据）</tspan><tspan class="st107" x="158.26" y="0" xml:space="preserve"> Redis</tspan><tspan class="st86" x="180.93" y="0">（缓存）</tspan></text>
+  <rect class="st100" x="80" y="554" width="414" height="36" rx="7" ry="7"/>
+  <text class="st59" transform="translate(229.21 568)"><tspan class="st111" x="0" y="0">ChatService</tspan><tspan class="st86" x="57.81" y="0">（普通对话兜底）</tspan></text>
+  <text class="st22" transform="translate(190.85 582)"><tspan class="st86" x="0" y="0">对话历史</tspan><tspan class="st107" x="34" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="41.08" y="0">消息存储</tspan><tspan class="st107" x="75.08" y="0" xml:space="preserve"> · research_data JSONB · Alembic </tspan><tspan class="st86" x="206.89" y="0">迁移</tspan></text>
+  <g class="st133">
+    <rect class="st83" x="570" y="200" width="465" height="500" rx="10" ry="10"/>
+    <rect class="st6" x="570" y="200" width="465" height="500" rx="10" ry="10"/>
+  </g>
+  <text class="st44" transform="translate(695.79 222)"><tspan x="0" y="0">Company Agent — 7-Gate Pipeline</tspan></text>
+  <rect class="st114" x="588" y="234" width="428" height="42" rx="7" ry="7"/>
+  <text class="st16" transform="translate(748.91 252)"><tspan x="0" y="0">CompanySkillRunner</tspan></text>
+  <text class="st80" transform="translate(677.5 268)"><tspan class="st107" x="0" y="0">fetch_company_data(yfinance) </tspan><tspan class="st86" x="118.6" y="0">→</tspan><tspan class="st107" x="127.1" y="0" xml:space="preserve"> Redis</tspan><tspan class="st86" x="151.19" y="0">缓存</tspan><tspan class="st107" x="168.19" y="0">7</tspan><tspan class="st86" x="172.92" y="0">天</tspan><tspan class="st107" x="181.42" y="0"> </tspan><tspan class="st86" x="183.78" y="0">→</tspan><tspan class="st107" x="192.28" y="0" xml:space="preserve"> format_for_prompt</tspan></text>
+  <rect class="st98" x="588" y="286" width="210" height="56" rx="7" ry="7"/>
+  <text class="st72" transform="translate(657.11 302)"><tspan x="0" y="0">PipelineContext</tspan></text>
+  <text class="st80" transform="translate(638 316)"><tspan class="st107" x="0" y="0">Gate 2-6: core_conclusion</tspan><tspan class="st86" x="99.22" y="0">摘要</tspan></text>
+  <text class="st80" transform="translate(661.72 330)"><tspan class="st107" x="0" y="0">Gate 7: </tspan><tspan class="st86" x="30.24" y="0">全部原始文本</tspan></text>
+  <text class="st48" transform="translate(643.15 342)"><tspan class="st107" x="0" y="0">downstream_hints </tspan><tspan class="st86" x="67.14" y="0">跨</tspan><tspan class="st107" x="75.14" y="0">Gate</tspan><tspan class="st86" x="92.49" y="0">注入</tspan></text>
+  <rect class="st98" x="808" y="286" width="208" height="56" rx="7" ry="7"/>
+  <text class="st72" transform="translate(881.11 302)"><tspan x="0" y="0">GateExecutor</tspan></text>
+  <text class="st80" transform="translate(867.87 316)"><tspan class="st107" x="0" y="0">ReAct Loop</tspan><tspan class="st86" x="44.42" y="0">（</tspan><tspan class="st107" x="52.92" y="0">Gate 1-6</tspan><tspan class="st86" x="85.99" y="0">）</tspan></text>
+  <text class="st80" transform="translate(873.59 330)"><tspan class="st107" x="0" y="0">Gate 7 </tspan><tspan class="st86" x="27.88" y="0">直接</tspan><tspan class="st108" x="44.88" y="0" xml:space="preserve"> JSON </tspan><tspan class="st86" x="72.27" y="0">输出</tspan></text>
+  <text class="st27" transform="translate(861.49 342)"><tspan x="0" y="0">ToolBudget + ToolCallParser</tspan></text>
+  <rect class="st97" x="588" y="356" width="195" height="30" rx="6" ry="6"/>
+  <text class="st52" transform="translate(620 368)"><tspan x="0" y="0">G1</tspan></text>
+  <text class="st73" transform="translate(638 368)"><tspan x="0" y="0">业务解析</tspan></text>
+  <text class="st75" transform="translate(638 380)"><tspan class="st86" x="0" y="0">商业模式</tspan><tspan class="st107" x="32" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="38.67" y="0">盈利逻辑</tspan><tspan class="st107" x="70.67" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="77.34" y="0">生意质量</tspan></text>
+  <rect class="st96" x="588" y="392" width="195" height="30" rx="6" ry="6"/>
+  <text class="st52" transform="translate(620 404)"><tspan x="0" y="0">G2</tspan></text>
+  <text class="st73" transform="translate(638 404)"><tspan x="0" y="0">成长质量</tspan></text>
+  <text class="st75" transform="translate(638 416)"><tspan class="st107" x="0" y="0">Fisher 15</tspan><tspan class="st86" x="33.35" y="0">问</tspan><tspan class="st107" x="41.35" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="48.02" y="0">打分</tspan><tspan class="st107" x="64.02" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="70.68" y="0">成长类型</tspan></text>
+  <rect class="st94" x="588" y="428" width="195" height="30" rx="6" ry="6"/>
+  <text class="st52" transform="translate(620 440)"><tspan x="0" y="0">G3</tspan></text>
+  <text class="st77" transform="translate(638 440)"><tspan class="st86" x="0" y="0">护城河评估</tspan><tspan class="st111" x="45" y="0" xml:space="preserve"> (Buffett)</tspan></text>
+  <text class="st21" transform="translate(638 452)"><tspan x="0" y="0">BRAND/NETWORK/SWITCH/COST/IP</tspan></text>
+  <rect class="st101" x="588" y="462" width="195" height="18" rx="4" ry="4"/>
+  <g class="st30">
+    <g>
+      <rect class="st123" x="600.05" y="472.35" width=".63" height=".48" transform="translate(-158.34 562.84) rotate(-44.99)"/>
+      <rect class="st118" x="600.2" y="472.35" width=".33" height=".48" transform="translate(-158.3 563.14) rotate(-45.02)"/>
+      <rect class="st123" x="599.95" y="472.39" width=".63" height=".2" transform="translate(-158.27 562.95) rotate(-45.01)"/>
+      <path class="st118" d="M600.02,472.24c-.92.92-2.41.92-3.33,0-.92-.92-.92-2.41,0-3.33.92-.92,2.41-.92,3.33,0,.92.92.92,2.41,0,3.33ZM600.27,468.65c-1.06-1.06-2.78-1.06-3.84,0-1.06,1.06-1.06,2.78,0,3.84,1.06,1.06,2.78,1.06,3.84,0,1.06-1.06,1.06-2.78,0-3.84Z"/>
+      <path class="st123" d="M599.95,472.17c-.88.88-2.32.88-3.2,0s-.88-2.32,0-3.2c.88-.88,2.32-.88,3.2,0,.88.88.88,2.32,0,3.2ZM600.08,468.85c-.95-.95-2.5-.95-3.45,0-.95.95-.95,2.5,0,3.45.95.95,2.5.95,3.45,0,.95-.95.95-2.5,0-3.45Z"/>
+      <g class="st11">
+        <path class="st128" d="M599.63,471.11c-.76.76-2,.76-2.77,0-.2-.2-.35-.44-.44-.69-.05.56.14,1.14.56,1.56.76.76,2,.76,2.76,0,.56-.56.71-1.38.44-2.08-.04.44-.23.87-.56,1.2Z"/>
+      </g>
+      <rect class="st136" x="600.71" y="472.37" width="1.15" height="2.28" transform="translate(-158.71 563.87) rotate(-45)"/>
+      <rect class="st119" x="600.97" y="472.37" width=".63" height="2.28" transform="translate(-158.69 563.96) rotate(-45.01)"/>
+      <path class="st123" d="M602.66,473.83c.13.13-.92,1.18-1.05,1.05l-.08-.08c-.13-.13.92-1.18,1.05-1.05l.08.08Z"/>
+      <path class="st118" d="M602.48,474c.13.13-.57.83-.7.7l-.08-.08c-.13-.13.57-.83.7-.7l.08.08Z"/>
+    </g>
+    <path class="st131" d="M607.85,471.88h-1.17v2.12h-1.1v-5.4h2.65c.38,0,.67.05.87.14.2.09.38.21.52.38.12.14.21.29.28.45s.1.36.1.57c0,.26-.07.51-.19.76-.13.25-.34.42-.64.53.25.1.42.24.53.43.1.18.16.47.16.84v.36c0,.25,0,.41.03.5.03.14.1.24.21.31v.14h-1.24c-.03-.12-.06-.22-.07-.29-.03-.15-.05-.31-.05-.46v-.5c-.01-.34-.08-.57-.2-.69-.12-.12-.35-.17-.68-.17ZM608.54,470.9c.22-.1.34-.31.34-.61,0-.33-.11-.55-.33-.66-.12-.06-.3-.1-.55-.1h-1.31v1.45h1.28c.25,0,.44-.03.57-.09Z"/>
+    <path class="st131" d="M614.31,472.83c-.03.24-.15.48-.37.72-.34.39-.82.58-1.44.58-.51,0-.96-.16-1.34-.49-.39-.33-.58-.86-.58-1.6,0-.69.18-1.22.53-1.59.35-.37.8-.55,1.36-.55.33,0,.63.06.9.19.27.12.49.32.66.59.16.24.26.51.3.82.03.18.04.45.03.79h-2.73c.01.4.14.68.38.84.14.1.32.15.52.15.21,0,.39-.06.52-.18.07-.07.14-.16.19-.27h1.07ZM613.28,471.61c-.02-.28-.1-.49-.25-.63-.15-.14-.34-.21-.56-.21-.24,0-.43.08-.56.23s-.22.36-.25.62h1.62Z"/>
+    <path class="st131" d="M616.93,468.57v.85c-.06,0-.16-.01-.29-.02-.14,0-.23.03-.29.09-.05.06-.08.14-.08.21v.34h.68v.74h-.68v3.22h-1.04v-3.22h-.58v-.74h.57v-.26c0-.43.07-.72.22-.88.15-.24.52-.36,1.09-.36.07,0,.13,0,.18,0s.13,0,.22.02Z"/>
+    <path class="st131" d="M617.58,468.6h1.04v5.4h-1.04v-5.4Z"/>
+    <path class="st131" d="M623.06,472.83c-.03.24-.15.48-.37.72-.34.39-.82.58-1.44.58-.51,0-.96-.16-1.34-.49-.39-.33-.58-.86-.58-1.6,0-.69.17-1.22.53-1.59.35-.37.8-.55,1.36-.55.33,0,.63.06.9.19.27.12.49.32.66.59.16.24.26.51.3.82.03.18.04.45.03.79h-2.73c.01.4.14.68.38.84.14.1.32.15.52.15.21,0,.39-.06.52-.18.07-.07.14-.16.19-.27h1.07ZM622.03,471.61c-.02-.28-.1-.49-.25-.63-.15-.14-.34-.21-.56-.21-.24,0-.43.08-.56.23-.13.15-.22.36-.25.62h1.62Z"/>
+    <path class="st131" d="M627.27,471.44h-1.07c-.02-.15-.07-.28-.15-.4-.12-.16-.3-.24-.54-.24-.35,0-.59.17-.72.52-.07.19-.1.43-.1.74s.03.53.1.71c.12.33.36.5.7.5.24,0,.42-.07.52-.2s.17-.3.19-.51h1.07c-.02.32-.14.62-.34.9-.33.46-.81.68-1.45.68s-1.12-.19-1.42-.57-.45-.88-.45-1.48c0-.69.17-1.22.5-1.6.33-.38.8-.57,1.38-.57.5,0,.91.11,1.23.34s.51.62.57,1.19Z"/>
+    <path class="st131" d="M629.81,473.26v.78l-.49.02c-.49.02-.83-.07-1.01-.26-.12-.12-.18-.3-.18-.55v-2.46h-.56v-.74h.56v-1.11h1.03v1.11h.65v.74h-.65v2.11c0,.16.02.27.06.31.04.04.17.06.38.06.03,0,.07,0,.1,0,.04,0,.07,0,.1,0Z"/>
+    <path class="st131" d="M631.56,468.57v.96h-1.06v-.96h1.06ZM631.56,470.01v3.99h-1.06v-3.99h1.06Z"/>
+    <path class="st131" d="M635.9,470.51c.34.42.5.92.5,1.5s-.17,1.09-.5,1.5-.85.62-1.54.62-1.2-.21-1.53-.62-.5-.92-.5-1.5.17-1.08.5-1.5c.34-.42.85-.63,1.53-.63s1.2.21,1.54.63ZM634.36,470.76c-.31,0-.54.11-.71.32s-.25.52-.25.92.08.71.25.93c.17.22.4.33.71.33s.54-.11.7-.33c.16-.22.25-.53.25-.93s-.08-.71-.25-.92c-.16-.22-.4-.32-.7-.32Z"/>
+    <path class="st131" d="M639.03,470.78c-.35,0-.6.15-.73.45-.07.16-.1.36-.1.61v2.16h-1.04v-3.98h1.01v.58c.13-.21.26-.35.38-.44.21-.16.49-.24.82-.24.41,0,.75.11,1.01.32.26.22.39.57.39,1.08v2.69h-1.07v-2.43c0-.21-.03-.37-.08-.48-.1-.21-.3-.31-.59-.31Z"/>
+    <path class="st131" d="M647.09,474.63c-1.9,0-3.49-1.38-3.49-3.47s1.58-3.48,3.49-3.48c1.71,0,3.49,1.36,3.49,3.48s-1.58,3.47-3.49,3.47ZM647.09,467.87c-1.81,0-3.27,1.29-3.27,3.28s1.45,3.29,3.27,3.29,3.27-1.27,3.27-3.28-1.64-3.29-3.27-3.29ZM648.46,473.4h-2.73v-.24h.68c.31,0,.38-.07.38-.29v-3.5h-.92v-.23c.93,0,1.19-.15,1.32-.65h.14v4.38c0,.23.11.29.39.29h.72v.24Z"/>
+    <path class="st131" d="M653.79,471.5h5.73v.8h-5.73v-.8Z"/>
+    <path class="st131" d="M666.38,473.87c-.3.18-.66.27-1.1.27-.71,0-1.3-.25-1.76-.74-.48-.5-.71-1.18-.71-2.04s.24-1.57.72-2.1c.48-.53,1.12-.79,1.91-.79.69,0,1.24.17,1.65.52.42.35.65.78.72,1.3h-1.11c-.08-.37-.29-.63-.63-.77-.19-.08-.39-.12-.62-.12-.43,0-.79.17-1.07.49-.28.33-.42.82-.42,1.48s.15,1.13.45,1.41c.3.28.65.41,1.03.41s.69-.11.93-.33c.24-.22.39-.5.45-.86h-1.25v-.9h2.25v2.9h-.75l-.11-.67c-.22.26-.41.44-.59.54Z"/>
+    <path class="st131" d="M671.17,474h-1.07v-3.66h-1.25v-.71c.33-.01.56-.04.69-.07.21-.05.38-.14.51-.28.09-.1.16-.22.21-.38.03-.1.04-.17.04-.21h.87v5.31Z"/>
+    <path class="st131" d="M672.67,471.41h2.1v.99h-2.1v-.99Z"/>
+    <path class="st131" d="M676.43,469.75c-.12.16-.17.37-.17.63h-.97c0-.26.05-.51.14-.75.08-.21.22-.4.4-.58.14-.12.3-.22.49-.29.19-.07.42-.1.69-.1.51,0,.92.13,1.23.39.31.26.47.62.47,1.06,0,.31-.09.58-.28.79-.12.13-.24.23-.37.27.09,0,.23.08.41.25.27.25.4.58.4,1.01,0,.45-.16.84-.47,1.18-.31.34-.77.51-1.38.51-.75,0-1.27-.25-1.57-.74-.15-.26-.24-.6-.26-1.03h1.03c0,.21.03.39.1.53.13.26.36.38.69.38.21,0,.38-.07.54-.21.15-.14.23-.34.23-.61,0-.35-.14-.58-.42-.7-.16-.07-.42-.1-.76-.1v-.75c.34,0,.58-.04.71-.1.23-.1.35-.31.35-.62,0-.2-.06-.37-.18-.5-.12-.13-.29-.19-.5-.19-.25,0-.43.08-.54.23Z"/>
+    <path class="st131" d="M688.34,470.4s.06.06.06.08-.03.02-.08.03c-.3.03-.62.2-1.48.98l-.08-.07.78-1h-1.97v3.27c0,.46-.06.56-.51.78-.01,0-.02.02-.04.02-.02,0-.05-.02-.05-.06-.06-.29-.22-.42-1.01-.64l.02-.1c.46.09.75.13.94.13.27,0,.3-.08.3-.23v-3.18h-.08c-.71,1.18-2.03,2.7-3.54,3.51l-.06-.1c1.45-.95,2.43-2.15,3.16-3.42h-2.3c-.16,0-.38.03-.5.08l-.21-.28c.19.02.38.03.55.03h5.26l.29-.31.53.45ZM687.51,468.26s.05.06.05.08c0,.03-.03.04-.09.04-.37.03-.58.17-1.93,1.33.07.09.1.18.1.27,0,.13-.08.25-.2.25-.06,0-.13-.04-.19-.13-.26-.42-.61-.74-1.35-1.15l.05-.08c.91.35,1.31.56,1.53.77l1.28-1.37h-3.47c-.16,0-.38.03-.5.08l-.21-.28c.19.02.38.03.55.03h3.63l.3-.31.46.47Z"/>
+    <path class="st131" d="M695.94,469.44s.06.07.06.09-.03.03-.09.03h-2.67l-.11.95h1.42l.2-.27.51.37s.04.04.04.06c0,.02-.01.04-.04.05l-.23.11v2.21c0,.65,0,.93.04,1.18,0,.02,0,.04,0,.06,0,.1-.04.13-.2.2-.08.03-.12.04-.15.04-.04,0-.05-.04-.05-.1v-.54h-2.98v.4c0,.16-.25.23-.31.23-.05,0-.07-.04-.07-.17v-.08c.02-.44.02-.74.02-1.17v-2.16c0-.18,0-.54-.02-.77l.43.34h1.06l.11-.95h-2.38v1.39c0,1.66-.5,2.6-1.44,3.48l-.08-.08c.85-1.09,1.17-1.86,1.17-3.39v-1.94c0-.38,0-.71-.02-.99l.5.42c1.33-.13,3.29-.48,4.22-.78l.38.42s.04.04.04.06c0,.02-.02.03-.05.03-.04,0-.29-.02-.34-.02-.19,0-.42.02-.72.06-2.04.27-2.96.35-3.66.36v.83h2.39c.04-.36.07-.75.08-1.02l.49.28s.06.04.06.06c0,.02-.01.04-.05.06l-.18.11-.06.52h1.9l.3-.46.49.5ZM694.67,471.54v-.86h-2.98v.86h2.98ZM694.67,472.63v-.93h-2.98v.93h2.98ZM694.67,473.74v-.95h-2.98v.95h2.98Z"/>
+    <path class="st131" d="M703.25,468.74c.05.05.08.08.08.1,0,.02-.03.02-.09.03-.24.01-.5.17-.92.76l-.1-.05.39-.77h-4.96c-.05.56-.27.92-.62.92-.2,0-.23-.11-.23-.17,0-.08.06-.17.18-.24.25-.14.47-.43.56-.97h.11c0,.11,0,.2,0,.29h4.9l.25-.32.43.41ZM702.47,470.14s.05.04.05.06c0,.02-.02.03-.04.05l-.22.15v1.81c0,.1.04.56.04.6,0,.1-.33.28-.36.28-.02,0-.03-.02-.03-.08v-.32h-1.6v.71c0,.46,0,.68.03.92v.03c0,.15-.37.31-.38.31-.03,0-.04-.02-.04-.07v-.04c.02-.29.03-.58.03-1.17v-.7h-1.7v.41c0,.06-.02.08-.23.19-.07.04-.11.05-.14.05-.02,0-.03-.01-.03-.04v-.02c.04-.32.05-.64.05-1.04v-1.64c0-.27,0-.65-.02-.86l.43.38h1.64v-.43c0-.47,0-.62-.02-.87l.56.3s.04.02.04.04-.14.1-.23.14v.82h1.43l.2-.35.53.36ZM699.95,471.29v-.99h-1.7v.99h1.7ZM699.95,472.53v-1.07h-1.7v1.07h1.7ZM699.45,467.63c.97.15,1.04.47,1.04.59,0,.15-.13.41-.25.41-.07,0-.12-.04-.17-.2-.09-.26-.29-.5-.66-.74l.04-.06ZM701.9,471.29v-.99h-1.6v.99h1.6ZM701.9,472.53v-1.07h-1.6v1.07h1.6Z"/>
+    <path class="st131" d="M707.02,472.35c-1.28,1.21-1.41,1.4-1.53,1.71-.02.04-.03.06-.05.06-.02,0-.03-.01-.05-.03l-.43-.39c.3-.22.33-.29.33-.68v-2.73l-.58.02c-.21,0-.35.02-.48.07l-.21-.23c.08,0,.16,0,.25,0s.22,0,.39,0l.62-.02.26-.34.47.38c.05.04.08.07.08.08,0,.02-.02.04-.08.06l-.36.18v2.75l1.28-.99.1.09ZM704.98,467.92c.8.4,1.09.66,1.09,1,0,.24-.14.4-.25.4-.09,0-.12-.03-.2-.31-.1-.35-.25-.59-.69-1.01l.06-.08ZM710.93,470.22s.06.08.06.09c0,.02-.03.02-.07.02h-2.14v2.72c0,.57,0,.96.02,1.28v.04c0,.1-.03.14-.2.21-.08.04-.13.05-.17.05-.05,0-.07-.04-.07-.15v-.1c.02-.44.03-.69.03-1.35v-2.7h-1.31c-.31,0-.41.02-.52.06l-.25-.25c.19.02.38.02.6.02h1.47v-1.43c0-.59,0-.82-.01-1.13l.62.32s.08.04.08.06c0,.02-.02.04-.06.07l-.24.16v1.97h1.37l.32-.46.47.51Z"/>
+    <path class="st131" d="M720.49,471.18l-2.21,1.49-.13-.18,1.49-1.2h-5.92v-.19h5.92l-1.49-1.18.13-.18,2.21,1.44Z"/>
+    <path class="st131" d="M727.04,468.61v5.39h-1.01v-.55c-.15.24-.32.41-.51.52-.19.11-.43.16-.71.16-.47,0-.86-.19-1.18-.57s-.48-.86-.48-1.45c0-.68.16-1.22.47-1.61.31-.39.73-.59,1.26-.59.24,0,.46.05.64.16.19.11.34.25.46.44v-1.9h1.06ZM724.23,472.03c0,.37.07.66.22.88.14.22.36.33.66.33s.52-.11.67-.33c.15-.22.23-.5.23-.85,0-.49-.12-.84-.37-1.05-.15-.13-.33-.19-.53-.19-.3,0-.53.12-.67.35-.14.23-.21.52-.21.86Z"/>
+    <path class="st131" d="M731.32,470.51c.34.42.5.92.5,1.5s-.17,1.09-.5,1.5-.85.62-1.54.62-1.2-.21-1.53-.62-.5-.92-.5-1.5.17-1.08.5-1.5c.34-.42.85-.63,1.53-.63s1.2.21,1.54.63ZM729.78,470.76c-.31,0-.54.11-.71.32s-.25.52-.25.92.08.71.25.93c.17.22.4.33.71.33s.54-.11.7-.33c.16-.22.25-.53.25-.93s-.08-.71-.25-.92c-.16-.22-.4-.32-.7-.32Z"/>
+    <path class="st131" d="M735.6,474l-.63-2.91-.63,2.91h-1.08l-1.12-3.99h1.12l.62,2.86.58-2.86h1.06l.61,2.88.62-2.88h1.09l-1.16,3.99h-1.07Z"/>
+    <path class="st131" d="M740.28,470.78c-.35,0-.6.15-.73.45-.07.16-.1.36-.1.61v2.16h-1.04v-3.98h1.01v.58c.13-.21.26-.35.38-.44.21-.16.49-.24.82-.24.41,0,.75.11,1.01.32s.39.57.39,1.08v2.69h-1.07v-2.43c0-.21-.03-.37-.08-.48-.1-.21-.3-.31-.59-.31Z"/>
+    <path class="st131" d="M745.73,470.19c.31.2.49.54.54,1.03h-1.04c-.01-.13-.05-.24-.11-.32-.12-.14-.31-.21-.59-.21-.23,0-.39.04-.49.11-.1.07-.14.15-.14.25,0,.12.05.21.15.26.1.06.46.15,1.09.29.42.1.73.25.93.44.21.2.31.45.31.75,0,.4-.15.72-.44.97-.29.25-.75.38-1.36.38s-1.09-.13-1.39-.4c-.3-.26-.45-.6-.45-1.01h1.06c.02.19.07.32.14.4.13.14.37.21.72.21.21,0,.37-.03.49-.09.12-.06.18-.15.18-.27s-.05-.21-.15-.27c-.1-.06-.46-.17-1.09-.32-.45-.11-.77-.25-.96-.42-.19-.17-.28-.41-.28-.72,0-.37.14-.69.43-.95.29-.26.7-.4,1.22-.4.5,0,.9.1,1.22.3Z"/>
+    <path class="st131" d="M748.98,473.26v.78l-.49.02c-.49.02-.83-.07-1.01-.26-.12-.12-.18-.3-.18-.55v-2.46h-.56v-.74h.56v-1.11h1.03v1.11h.65v.74h-.65v2.11c0,.16.02.27.06.31.04.04.17.06.38.06.03,0,.07,0,.1,0,.04,0,.07,0,.1,0Z"/>
+    <path class="st131" d="M751.66,470.97c-.42,0-.7.14-.85.41-.08.15-.12.39-.12.71v1.91h-1.05v-3.99h1v.7c.16-.27.3-.45.42-.55.2-.16.45-.25.76-.25.02,0,.04,0,.05,0,.01,0,.04,0,.09,0v1.07c-.07,0-.12-.01-.18-.02-.05,0-.09,0-.12,0Z"/>
+    <path class="st131" d="M755.99,472.83c-.03.24-.15.48-.37.72-.34.39-.82.58-1.44.58-.51,0-.96-.16-1.34-.49-.39-.33-.58-.86-.58-1.6,0-.69.18-1.22.53-1.59.35-.37.8-.55,1.36-.55.33,0,.63.06.9.19.27.12.49.32.66.59.16.24.26.51.3.82.03.18.04.45.03.79h-2.73c.01.4.14.68.38.84.14.1.32.15.52.15.21,0,.39-.06.52-.18.07-.07.14-.16.19-.27h1.07ZM754.96,471.61c-.02-.28-.1-.49-.25-.63-.15-.14-.34-.21-.56-.21-.24,0-.43.08-.56.23s-.22.36-.25.62h1.62Z"/>
+    <path class="st131" d="M756.89,470.44c.28-.35.75-.53,1.42-.53.44,0,.83.09,1.16.26.34.17.51.5.51.98v1.83c0,.13,0,.28,0,.46,0,.14.03.23.06.28s.08.09.15.12v.15h-1.13c-.03-.08-.05-.16-.07-.23-.01-.07-.02-.15-.03-.24-.14.16-.31.29-.5.4-.22.13-.48.19-.76.19-.36,0-.66-.1-.9-.31-.24-.21-.35-.5-.35-.88,0-.49.19-.85.57-1.07.21-.12.51-.21.92-.26l.36-.04c.19-.02.33-.05.41-.09.15-.06.22-.16.22-.3,0-.16-.06-.28-.17-.34-.11-.06-.28-.09-.5-.09-.25,0-.42.06-.52.18-.07.09-.12.21-.15.37h-1.01c.02-.35.12-.64.29-.86ZM757.67,473.25c.1.08.22.12.36.12.22,0,.43-.07.62-.2s.29-.37.29-.72v-.39c-.07.04-.13.08-.2.1-.07.03-.16.05-.28.07l-.23.04c-.22.04-.38.09-.47.14-.16.1-.24.24-.24.44,0,.18.05.31.15.38Z"/>
+    <path class="st131" d="M763.16,471.11c-.09-.19-.26-.29-.52-.29-.3,0-.5.1-.6.29-.06.11-.08.27-.08.49v2.4h-1.06v-3.98h1.01v.58c.13-.21.25-.36.37-.44.2-.16.46-.23.79-.23.3,0,.55.07.74.2.15.12.27.28.34.48.14-.23.31-.41.51-.52.21-.11.45-.17.72-.17.18,0,.35.04.52.1.17.07.33.19.46.36.11.14.19.31.23.51.02.13.04.33.04.59v2.52h-1.08v-2.54c0-.15-.02-.28-.07-.37-.09-.19-.26-.28-.51-.28-.29,0-.49.12-.6.36-.06.13-.08.28-.08.46v2.38h-1.05v-2.38c0-.24-.03-.41-.07-.52Z"/>
+    <path class="st131" d="M771.27,474.57v.37h-4.17v-.37h4.17Z"/>
+    <path class="st131" d="M775.36,471.66v2.34h-1.07v-2.43c0-.21-.04-.39-.11-.52-.1-.19-.28-.28-.54-.28s-.49.09-.63.28c-.14.18-.21.45-.21.79v2.16h-1.04v-5.38h1.04v1.91c.15-.23.33-.39.53-.49s.41-.14.63-.14c.25,0,.47.04.67.13.2.08.37.22.5.39.11.15.18.3.2.46.02.16.04.41.04.77Z"/>
+    <path class="st131" d="M777.41,468.57v.96h-1.06v-.96h1.06ZM777.41,470.01v3.99h-1.06v-3.99h1.06Z"/>
+    <path class="st131" d="M780.3,470.78c-.35,0-.6.15-.73.45-.07.16-.1.36-.1.61v2.16h-1.04v-3.98h1.01v.58c.13-.21.26-.35.38-.44.21-.16.49-.24.82-.24.41,0,.75.11,1.01.32.26.22.39.57.39,1.08v2.69h-1.07v-2.43c0-.21-.03-.37-.08-.48-.1-.21-.3-.31-.59-.31Z"/>
+    <path class="st131" d="M784.83,473.26v.78l-.49.02c-.49.02-.83-.07-1.01-.26-.12-.12-.18-.3-.18-.55v-2.46h-.56v-.74h.56v-1.11h1.03v1.11h.65v.74h-.65v2.11c0,.16.02.27.06.31.04.04.17.06.38.06.03,0,.07,0,.1,0,.04,0,.07,0,.1,0Z"/>
+  </g>
+  <rect class="st93" x="588" y="484" width="195" height="30" rx="6" ry="6"/>
+  <text class="st52" transform="translate(620 496)"><tspan x="0" y="0">G4</tspan></text>
+  <text class="st73" transform="translate(638 496)"><tspan x="0" y="0">管理层评估</tspan></text>
+  <text class="st75" transform="translate(638 508)"><tspan class="st86" x="0" y="0">诚信</tspan><tspan class="st107" x="16" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="22.67" y="0">资本配置</tspan><tspan class="st107" x="54.67" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="61.34" y="0">薪酬</tspan><tspan class="st107" x="77.34" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="84" y="0">接班</tspan></text>
+  <rect class="st92" x="588" y="520" width="195" height="30" rx="6" ry="6"/>
+  <text class="st52" transform="translate(620 532)"><tspan x="0" y="0">G5</tspan></text>
+  <text class="st77" transform="translate(638 532)"><tspan class="st86" x="0" y="0">逆向检验</tspan><tspan class="st111" x="36" y="0" xml:space="preserve"> (Munger)</tspan></text>
+  <text class="st75" transform="translate(638 544)"><tspan class="st86" x="0" y="0">毁灭场景</tspan><tspan class="st107" x="32" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="38.67" y="0">红旗</tspan><tspan class="st107" x="54.67" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="61.34" y="0">韧性评分</tspan></text>
+  <rect class="st101" x="588" y="554" width="195" height="18" rx="4" ry="4"/>
+  <g class="st30">
+    <g>
+      <rect class="st123" x="626.72" y="564.35" width=".63" height=".48" transform="translate(-215.58 608.63) rotate(-44.99)"/>
+      <rect class="st118" x="626.87" y="564.35" width=".33" height=".48" transform="translate(-215.56 608.97) rotate(-45.02)"/>
+      <rect class="st123" x="626.62" y="564.39" width=".63" height=".2" transform="translate(-215.52 608.76) rotate(-45.01)"/>
+      <path class="st118" d="M626.68,564.24c-.92.92-2.41.92-3.33,0-.92-.92-.92-2.41,0-3.33.92-.92,2.41-.92,3.33,0,.92.92.92,2.41,0,3.33ZM626.94,560.65c-1.06-1.06-2.78-1.06-3.84,0-1.06,1.06-1.06,2.78,0,3.84,1.06,1.06,2.78,1.06,3.84,0,1.06-1.06,1.06-2.78,0-3.84Z"/>
+      <path class="st123" d="M626.62,564.17c-.88.88-2.32.88-3.2,0s-.88-2.32,0-3.2c.88-.88,2.32-.88,3.2,0,.88.88.88,2.32,0,3.2ZM626.75,560.85c-.95-.95-2.5-.95-3.45,0-.95.95-.95,2.5,0,3.45.95.95,2.5.95,3.45,0,.95-.95.95-2.5,0-3.45Z"/>
+      <g class="st11">
+        <path class="st128" d="M626.3,563.11c-.76.76-2,.76-2.77,0-.2-.2-.35-.44-.44-.69-.05.56.14,1.14.56,1.56.76.76,2,.76,2.76,0,.56-.56.71-1.38.44-2.08-.04.44-.23.87-.56,1.2Z"/>
+      </g>
+      <rect class="st136" x="627.38" y="564.37" width="1.15" height="2.28" transform="translate(-215.95 609.68) rotate(-45)"/>
+      <rect class="st119" x="627.64" y="564.37" width=".63" height="2.28" transform="translate(-215.94 609.78) rotate(-45.01)"/>
+      <path class="st123" d="M629.32,565.83c.13.13-.92,1.18-1.05,1.05l-.08-.08c-.13-.13.92-1.18,1.05-1.05l.08.08Z"/>
+      <path class="st118" d="M629.15,566c.13.13-.57.83-.7.7l-.08-.08c-.13-.13.57-.83.7-.7l.08.08Z"/>
+    </g>
+    <path class="st131" d="M634.52,563.88h-1.16v2.12h-1.1v-5.4h2.65c.38,0,.67.05.87.14.2.09.38.21.52.38.12.14.21.29.28.45s.1.36.1.57c0,.26-.07.51-.19.76-.13.25-.34.42-.64.53.25.1.43.24.53.43s.16.47.16.84v.36c0,.25,0,.41.03.5.03.14.1.24.21.31v.14h-1.24c-.03-.12-.06-.22-.07-.29-.03-.15-.05-.31-.05-.46v-.5c-.01-.34-.08-.57-.2-.69-.12-.12-.35-.17-.68-.17ZM635.2,562.9c.22-.1.34-.31.34-.61,0-.33-.11-.55-.33-.66-.12-.06-.31-.1-.55-.1h-1.31v1.45h1.28c.25,0,.44-.03.57-.09Z"/>
+    <path class="st131" d="M640.97,564.83c-.03.24-.15.48-.37.72-.34.39-.82.58-1.44.58-.51,0-.96-.16-1.34-.49-.39-.33-.58-.86-.58-1.6,0-.69.18-1.22.53-1.59.35-.37.8-.55,1.36-.55.33,0,.63.06.9.19s.49.32.66.59c.16.24.26.51.3.82.03.18.04.45.03.79h-2.73c.02.4.14.68.38.84.14.1.32.15.52.15.21,0,.39-.06.52-.18.07-.07.14-.16.19-.27h1.07ZM639.94,563.61c-.02-.28-.1-.49-.25-.63-.15-.14-.34-.21-.56-.21-.24,0-.43.08-.56.23s-.22.36-.25.62h1.62Z"/>
+    <path class="st131" d="M643.6,560.57v.85c-.06,0-.16-.01-.29-.02-.14,0-.23.03-.29.09-.05.06-.08.14-.08.21v.34h.68v.74h-.68v3.22h-1.04v-3.22h-.58v-.74h.57v-.26c0-.43.07-.72.22-.88.15-.24.52-.36,1.09-.36.07,0,.13,0,.18,0s.13,0,.22.02Z"/>
+    <path class="st131" d="M644.25,560.6h1.04v5.4h-1.04v-5.4Z"/>
+    <path class="st131" d="M649.73,564.83c-.03.24-.15.48-.37.72-.34.39-.82.58-1.44.58-.51,0-.96-.16-1.34-.49-.39-.33-.58-.86-.58-1.6,0-.69.18-1.22.53-1.59.35-.37.8-.55,1.36-.55.33,0,.63.06.9.19.27.12.49.32.66.59.16.24.26.51.3.82.03.18.04.45.03.79h-2.73c.01.4.14.68.38.84.14.1.32.15.52.15.21,0,.39-.06.52-.18.07-.07.14-.16.19-.27h1.07ZM648.69,563.61c-.02-.28-.1-.49-.25-.63-.15-.14-.34-.21-.56-.21-.24,0-.43.08-.56.23s-.22.36-.25.62h1.62Z"/>
+    <path class="st131" d="M653.93,563.44h-1.07c-.02-.15-.07-.28-.15-.4-.12-.16-.3-.24-.54-.24-.35,0-.59.17-.72.52-.07.19-.1.43-.1.74s.03.53.1.71c.12.33.36.5.7.5.24,0,.42-.07.52-.2s.17-.3.19-.51h1.07c-.03.32-.14.62-.34.9-.33.46-.81.68-1.45.68s-1.11-.19-1.42-.57-.45-.88-.45-1.48c0-.69.17-1.22.5-1.6s.8-.57,1.38-.57c.5,0,.91.11,1.23.34s.51.62.57,1.19Z"/>
+    <path class="st131" d="M656.48,565.26v.78l-.49.02c-.49.02-.83-.07-1.01-.26-.12-.12-.18-.3-.18-.55v-2.46h-.56v-.74h.56v-1.11h1.03v1.11h.65v.74h-.65v2.11c0,.16.02.27.06.31.04.04.17.06.38.06.03,0,.07,0,.1,0,.04,0,.07,0,.1,0Z"/>
+    <path class="st131" d="M658.22,560.57v.96h-1.06v-.96h1.06ZM658.22,562.01v3.99h-1.06v-3.99h1.06Z"/>
+    <path class="st131" d="M662.56,562.51c.34.42.5.92.5,1.5s-.17,1.09-.5,1.5c-.34.42-.85.62-1.54.62s-1.2-.21-1.53-.62-.5-.92-.5-1.5.17-1.08.5-1.5c.34-.42.85-.63,1.53-.63s1.2.21,1.54.63ZM661.02,562.76c-.3,0-.54.11-.71.32-.16.22-.25.52-.25.92s.08.71.25.93c.17.22.4.33.71.33s.54-.11.7-.33c.16-.22.25-.53.25-.93s-.08-.71-.25-.92c-.16-.22-.4-.32-.7-.32Z"/>
+    <path class="st131" d="M665.69,562.78c-.35,0-.6.15-.73.45-.07.16-.1.36-.1.61v2.16h-1.04v-3.98h1.01v.58c.13-.21.26-.35.38-.44.21-.16.49-.24.82-.24.41,0,.75.11,1.01.32.26.22.39.57.39,1.08v2.69h-1.07v-2.43c0-.21-.03-.37-.08-.48-.1-.21-.3-.31-.59-.31Z"/>
+    <path class="st131" d="M673.75,566.63c-1.9,0-3.49-1.38-3.49-3.47s1.58-3.48,3.49-3.48c1.71,0,3.49,1.36,3.49,3.48s-1.58,3.47-3.49,3.47ZM673.75,559.87c-1.81,0-3.27,1.29-3.27,3.28s1.45,3.29,3.27,3.29,3.27-1.27,3.27-3.28-1.64-3.29-3.27-3.29ZM674.98,565.4h-2.75c.13-.67.62-1.39,1.18-1.93.75-.72,1-1.22,1-1.7,0-.78-.46-.98-.81-.98-.5,0-.81.37-.81.5,0,.06.05.11.15.11.18.01.29.18.29.34,0,.2-.17.41-.39.41-.14,0-.45-.13-.45-.51,0-.42.35-1.04,1.21-1.04,1.05,0,1.4.73,1.4,1.17s-.27.98-.78,1.37c-.81.62-1.52,1.39-1.63,1.8h1.9c.19,0,.29-.06.29-.9h.2v1.35Z"/>
+    <path class="st131" d="M680.46,563.5h5.73v.8h-5.73v-.8Z"/>
+    <path class="st131" d="M693.04,565.87c-.3.18-.66.27-1.1.27-.71,0-1.3-.25-1.76-.74-.48-.5-.71-1.18-.71-2.04s.24-1.57.72-2.1c.48-.53,1.12-.79,1.91-.79.69,0,1.24.17,1.65.52.42.35.66.78.72,1.3h-1.11c-.08-.37-.29-.63-.63-.77-.19-.08-.39-.12-.62-.12-.43,0-.79.17-1.07.49-.28.33-.42.82-.42,1.48s.15,1.13.45,1.41c.3.28.65.41,1.03.41s.69-.11.93-.33c.24-.22.39-.5.45-.86h-1.25v-.9h2.25v2.9h-.75l-.11-.67c-.22.26-.41.44-.59.54Z"/>
+    <path class="st131" d="M696.99,563.36c-.13,0-.24.02-.33.05-.16.06-.29.17-.37.33l-.94-.04.37-2.93h2.93v.89h-2.17l-.19,1.16c.16-.1.29-.17.38-.21.15-.06.33-.08.55-.08.44,0,.82.15,1.15.44.33.29.49.72.49,1.29,0,.49-.16.93-.47,1.31s-.79.58-1.41.58c-.5,0-.92-.13-1.24-.41-.33-.27-.51-.66-.54-1.15h1.04c.04.23.12.4.24.53s.29.18.51.18c.26,0,.46-.09.59-.27.13-.18.2-.41.2-.69s-.06-.5-.19-.69-.33-.28-.59-.28Z"/>
+    <path class="st131" d="M706.23,564.33c-.02.29-.03.56-.03.79,0,.52.04.86.1.97.07.13.11.22.11.28,0,.04-.02.05-.05.05-.09,0-.29-.1-.62-.3-.9-.54-1.16-1.63-1.16-4.43,0-.43,0-.9.02-1.42h-3.68c0,3.87-.05,5.31-1.36,6.31l-.06-.08c.85-.99,1.05-1.78,1.05-4.29,0-.68-.02-1.47-.04-2.43l.5.33h3.45l.28-.4.46.35s.07.06.07.08c0,.02-.02.04-.06.07l-.24.14c-.01.53-.03,1.02-.03,1.48,0,2.12.22,3.48.94,3.91l.28-1.41h.1ZM704.04,561.35c.05.03.08.05.08.08s-.03.04-.1.05c-.12.03-.2.08-.23.16-.19.37-.56,1.01-.79,1.38.46.57.82,1.08,1.02,1.45.09.16.12.29.12.41,0,.23-.13.35-.19.35-.11,0-.15-.05-.36-.62-.08-.2-.36-.7-.77-1.3-.47.72-1.15,1.57-1.88,2.22l-.06-.07c.72-.8,1.32-1.66,1.76-2.41-.43-.61-.68-.95-1.24-1.61l.08-.08c.49.47.94.95,1.32,1.41.29-.5.46-.92.76-1.73l.49.31Z"/>
+    <path class="st131" d="M709.41,560.3s.04.05.04.07c0,.02-.02.03-.06.04-.18.06-.35.27-.52.59l-.56,1.1c.74.88.91,1.25.91,1.67,0,.36-.12.64-.69.96-.02,0-.03.02-.04.02-.02,0-.05-.02-.06-.08-.06-.2-.21-.33-.66-.44v-.11c.21.04.37.05.5.05.47,0,.58-.2.58-.52,0-.41-.16-.8-.7-1.52l.65-1.79h-1.15v4.56c0,.57,0,1.07.03,1.4v.05c0,.11-.03.13-.18.2-.07.03-.11.04-.14.04-.05,0-.07-.04-.07-.17v-.08c.01-.44.02-1.05.02-1.48v-3.96c0-.31-.01-.82-.03-1.1l.45.34h1l.25-.31.44.4ZM713.36,565.96c.05.06.08.1.08.13s-.04.04-.11.04h-4.02c-.14,0-.34.03-.46.08l-.19-.27c.16.01.34.03.5.03h2.51c.29-.9.61-2.23.73-2.87l.5.26c.05.03.08.05.08.08s-.04.04-.1.08c-.13.08-.2.13-.3.43-.29.8-.34.92-.76,2.03h.84l.32-.41.37.41ZM711.46,559.83c.05.02.07.04.07.06,0,.04-.1.05-.11.05.46,1.18,1.4,2,2.49,2.28v.09c-.41-.02-.56.04-.71.2-.01.01-.03.02-.05.02-.02,0-.03,0-.05-.02-.94-.71-1.45-1.43-1.8-2.48-.74,1.14-1.5,2.07-2.23,2.6l-.08-.1c.93-.88,1.64-1.92,1.95-2.9l.53.2ZM709.59,563.27c.54.68.71,1.35.71,1.57s-.14.42-.38.42c-.07,0-.1-.05-.1-.21,0-.07.04-.38.04-.45,0-.33-.13-.83-.36-1.28l.09-.05ZM712.38,562.46c.05.06.08.11.08.13,0,.03-.04.04-.11.04h-2.1c-.14,0-.35.03-.46.08l-.19-.27c.17.02.34.03.5.03h1.71l.27-.34.3.34ZM710.76,563.06c.57.71.74,1.35.74,1.58s-.14.44-.38.44c-.08,0-.12-.05-.12-.25,0-.05.02-.32.02-.38,0-.34-.11-.83-.36-1.33l.09-.07Z"/>
+    <path class="st131" d="M716.34,562.01h1.17l.83,2.95.85-2.95h1.12l-1.44,3.99h-1.1l-1.43-3.99Z"/>
+    <path class="st131" d="M723.66,562.19c.31.2.49.54.54,1.03h-1.04c-.02-.13-.05-.24-.11-.32-.11-.14-.31-.21-.59-.21-.23,0-.39.04-.49.11-.1.07-.14.15-.14.25,0,.12.05.21.15.26.1.06.46.15,1.09.29.41.1.73.25.93.44.21.2.31.45.31.75,0,.4-.15.72-.44.97-.29.25-.75.38-1.36.38s-1.09-.13-1.39-.4c-.3-.26-.45-.6-.45-1.01h1.06c.02.19.07.32.14.4.13.14.37.21.72.21.21,0,.37-.03.49-.09.12-.06.18-.15.18-.27s-.05-.21-.15-.27c-.1-.06-.46-.17-1.09-.32-.45-.11-.77-.25-.96-.42-.19-.17-.28-.41-.28-.72,0-.37.15-.69.43-.95s.7-.4,1.22-.4c.5,0,.9.1,1.22.3Z"/>
+    <path class="st131" d="M730.56,565.87c-.3.18-.66.27-1.1.27-.72,0-1.3-.25-1.76-.74-.48-.5-.71-1.18-.71-2.04s.24-1.57.72-2.1c.48-.53,1.12-.79,1.91-.79.69,0,1.24.17,1.65.52.42.35.65.78.71,1.3h-1.11c-.09-.37-.29-.63-.63-.77-.19-.08-.39-.12-.62-.12-.43,0-.79.17-1.07.49s-.42.82-.42,1.48.15,1.13.45,1.41c.3.28.65.41,1.03.41s.69-.11.93-.33c.24-.22.39-.5.45-.86h-1.25v-.9h2.25v2.9h-.75l-.11-.67c-.22.26-.41.44-.59.54Z"/>
+    <path class="st131" d="M735.35,566h-1.07v-3.66h-1.25v-.71c.33-.01.56-.04.69-.07.21-.05.38-.14.51-.28.09-.1.16-.22.21-.38.03-.1.04-.17.04-.21h.87v5.31Z"/>
+    <path class="st131" d="M736.85,563.41h2.1v.99h-2.1v-.99Z"/>
+    <path class="st131" d="M743.1,564.04v.82h-.6v1.14h-1.02v-1.14h-2.1v-.91l1.95-3.22h1.17v3.32h.6ZM740.15,564.04h1.33v-2.29l-1.33,2.29Z"/>
+    <path class="st131" d="M752.52,562.4s.06.06.06.08-.03.02-.08.03c-.3.03-.62.2-1.48.98l-.08-.07.78-1h-1.97v3.27c0,.46-.06.56-.51.78-.02,0-.02.02-.04.02-.02,0-.05-.02-.05-.06-.06-.29-.22-.42-1.01-.64l.02-.1c.47.09.75.13.94.13.27,0,.3-.08.3-.23v-3.18h-.08c-.71,1.18-2.03,2.7-3.54,3.51l-.06-.1c1.45-.95,2.43-2.15,3.16-3.42h-2.3c-.16,0-.38.03-.5.08l-.21-.28c.19.02.38.03.55.03h5.26l.29-.31.53.45ZM751.69,560.26s.05.06.05.08c0,.03-.03.04-.09.04-.37.03-.58.17-1.93,1.33.07.09.1.18.1.27,0,.13-.08.25-.2.25-.06,0-.13-.04-.19-.13-.26-.42-.61-.74-1.35-1.15l.04-.08c.91.35,1.31.56,1.53.77l1.28-1.37h-3.47c-.16,0-.38.03-.5.08l-.21-.28c.19.02.38.03.55.03h3.63l.3-.31.46.47Z"/>
+  </g>
+  <rect class="st95" x="588" y="576" width="195" height="30" rx="6" ry="6"/>
+  <text class="st52" transform="translate(620 588)"><tspan x="0" y="0">G6</tspan></text>
+  <text class="st77" transform="translate(638 588)"><tspan class="st86" x="0" y="0">估值与时机</tspan><tspan class="st111" x="45" y="0" xml:space="preserve"> (Buffett)</tspan></text>
+  <text class="st75" transform="translate(638 600)"><tspan class="st107" x="0" y="0">PE/FCF · </tspan><tspan class="st86" x="35.11" y="0">同行对比</tspan><tspan class="st107" x="67.11" y="0" xml:space="preserve"> · </tspan><tspan class="st86" x="73.78" y="0">安全边际</tspan></text>
+  <rect class="st121" x="588" y="614" width="195" height="36" rx="6" ry="6"/>
+  <text class="st17" transform="translate(620 628)"><tspan x="0" y="0">G7</tspan></text>
+  <text class="st54" transform="translate(638 628)"><tspan x="0" y="0">综合裁决</tspan></text>
+  <text class="st13" transform="translate(638 641)"><tspan x="0" y="0">BUY / WATCH / AVOID</tspan></text>
+  <text class="st24" transform="translate(638 651)"><tspan class="st107" x="0" y="0">JSON</tspan><tspan class="st86" x="20" y="0">兜底</tspan><tspan class="st107" x="35" y="0">: _structurize_prompt</tspan></text>
+  <rect class="st89" x="795" y="356" width="220" height="100" rx="7" ry="7"/>
+  <text class="st72" transform="translate(875 373)"><tspan x="0" y="0">ToolExecutor</tspan></text>
+  <rect class="st117" x="808" y="382" width="95" height="28" rx="5" ry="5"/>
+  <text class="st33" transform="translate(830.67 394)"><tspan x="0" y="0">web_search</tspan></text>
+  <text class="st12" transform="translate(831.45 405)"><tspan x="0" y="0">DDG / Google</tspan></text>
+  <rect class="st117" x="912" y="382" width="95" height="28" rx="5" ry="5"/>
+  <text class="st33" transform="translate(927.58 394)"><tspan x="0" y="0">compare_peers</tspan></text>
+  <text class="st8" transform="translate(932.88 405)"><tspan class="st107" x="0" y="0">yfinance 10+</tspan><tspan class="st86" x="42.74" y="0">指标</tspan></text>
+  <text class="st48" transform="translate(862 430)"><tspan class="st107" x="0" y="0">Gates 1-6 </tspan><tspan class="st86" x="37.35" y="0">均可调用</tspan><tspan class="st107" x="69.35" y="0" xml:space="preserve"> (G7</tspan><tspan class="st86" x="84.91" y="0">除外</tspan><tspan class="st107" x="100.91" y="0">)</tspan></text>
+  <text class="st56" transform="translate(852.83 443)"><tspan class="st107" x="0" y="0">ToolBudget: 6</tspan><tspan class="st86" x="49.81" y="0">次搜索</tspan><tspan class="st107" x="73.81" y="0" xml:space="preserve"> / 5</tspan><tspan class="st86" x="84.93" y="0">轮</tspan><tspan class="st107" x="92.93" y="0" xml:space="preserve"> / 180s</tspan></text>
+  <rect class="st99" x="795" y="466" width="220" height="184" rx="7" ry="7"/>
+  <text class="st72" transform="translate(878.35 483)"><tspan x="0" y="0">ReAct Loop</tspan></text>
+  <text class="st84" transform="translate(837.22 502.56)"><tspan x="0" y="0">是非成败转</tspan><tspan x="-12.32" y="14.4">头空，青山依旧</tspan></text>
+  <text class="st25" transform="translate(857.61 512)"><tspan x="0" y="0">Think</tspan></text>
+  <path class="st0" d=""/>
+  <path class="st40" d="M870.16,529.52l-2.16,6.48-2.16-6.48h4.32Z"/>
+  <path class="st81" d="M868,536" marker-end="url(#arrowPurple)"/>
+  <ellipse class="st91" cx="868" cy="552" rx="52" ry="16"/>
+  <text class="st25" transform="translate(842.26 556)"><tspan x="0" y="0">Act (tool_call)</tspan></text>
+  <path class="st0" d=""/>
+  <path class="st40" d="M870.16,573.52l-2.16,6.48-2.16-6.48h4.32Z"/>
+  <path class="st81" d="M868,580" marker-end="url(#arrowPurple)"/>
+  <ellipse class="st91" cx="868" cy="596" rx="52" ry="16"/>
+  <text class="st25" transform="translate(851.94 600)"><tspan x="0" y="0">Observe</tspan></text>
+  <text class="st26" transform="translate(936 556)"><tspan x="0" y="0">&lt;conclude&gt;</tspan></text>
+  <text class="st8" transform="translate(936 568)"><tspan class="st86" x="0" y="0">→</tspan><tspan class="st107" x="7.5" y="0" xml:space="preserve"> Gate Done</tspan></text>
+  <line class="st2" x1="920" y1="552" x2="970" y2="540"/>
+  <path class="st0" d=""/>
+  <path class="st40" d="M810.6,506.2l5.4,1.8-5.4,1.8v-3.6Z"/>
+  <path class="st81" d="M816,508" marker-end="url(#arrowPurple)"/>
+  <text class="st76" transform="translate(796 555) rotate(-90)"><tspan x="0" y="0">loop</tspan></text>
+  <text class="st71" transform="translate(866.64 628)"><tspan class="st86" x="0" y="0">预算耗尽</tspan><tspan class="st107" x="30" y="0"> </tspan><tspan class="st86" x="32.08" y="0">→</tspan><tspan class="st106" x="39.58" y="0" xml:space="preserve"> force conclude</tspan></text>
+  <text class="st46" transform="translate(864.56 640)"><tspan class="st107" x="0" y="0">ToolCallParser: 4</tspan><tspan class="st86" x="57.94" y="0">种格式兼容</tspan></text>
+  <text class="st76" transform="translate(835.37 652)"><tspan x="0" y="0">SSE: gate_text / tool_call / gate_complete</tspan></text>
+  <rect class="st89" x="795" y="658" width="220" height="36" rx="7" ry="7"/>
+  <text class="st69" transform="translate(827.66 672)"><tspan class="st111" x="0" y="0">output_parser </tspan><tspan class="st86" x="66.51" y="0">→</tspan><tspan class="st111" x="76.01" y="0" xml:space="preserve"> Pydantic Schema</tspan></text>
+  <text class="st75" transform="translate(842.88 685)"><tspan class="st107" x="0" y="0">CompanyFullReport </tspan><tspan class="st86" x="73.36" y="0">→</tspan><tspan class="st107" x="81.36" y="0" xml:space="preserve"> PostgreSQL</tspan></text>
+  <g class="st134">
+    <rect class="st129" x="60" y="718" width="975" height="170" rx="10" ry="10"/>
+    <rect class="st5" x="60" y="718" width="975" height="170" rx="10" ry="10"/>
+  </g>
+  <text class="st15" transform="translate(510.34 740)"><tspan x="0" y="0">共用底层基础设施</tspan></text>
+  <rect class="st125" x="80" y="752" width="370" height="120" rx="8" ry="8"/>
+  <text class="st47" transform="translate(174.58 770)"><tspan class="st111" x="0" y="0">LLMAdapterFactory — </tspan><tspan class="st86" x="115.51" y="0">统一</tspan><tspan class="st111" x="136.51" y="0" xml:space="preserve"> LLM </tspan><tspan class="st86" x="163.92" y="0">接入层</tspan></text>
+  <text class="st78" transform="translate(100 790)"><tspan x="0" y="0">优先级：</tspan></text>
+  <rect class="st102" x="150" y="780" width="90" height="18" rx="4" ry="4"/>
+  <text class="st19" transform="translate(167.52 793)"><tspan class="st107" x="0" y="0">AIHubMix</tspan><tspan class="st86" x="34.68" y="0">统一入口</tspan></text>
+  <text class="st78" transform="translate(247 792)"><tspan x="0" y="0">→</tspan></text>
+  <rect class="st102" x="255" y="780" width="80" height="18" rx="4" ry="4"/>
+  <text class="st19" transform="translate(271.92 793)"><tspan class="st107" x="0" y="0">Admin DB</tspan><tspan class="st86" x="36.01" y="0">注册</tspan></text>
+  <text class="st78" transform="translate(340 792)"><tspan x="0" y="0">→</tspan></text>
+  <rect class="st102" x="348" y="780" width="60" height="18" rx="4" ry="4"/>
+  <text class="st19" transform="translate(365.37 793)"><tspan class="st107" x="0" y="0">.env</tspan><tspan class="st86" x="15.12" y="0">直连</tspan></text>
+  <rect class="st137" x="90" y="806" width="64" height="20" rx="4" ry="4"/>
+  <text class="st43" transform="translate(108.44 820)"><tspan x="0" y="0">OpenAI</tspan></text>
+  <rect class="st137" x="162" y="806" width="64" height="20" rx="4" ry="4"/>
+  <text class="st43" transform="translate(177.1 820)"><tspan x="0" y="0">Anthropic</tspan></text>
+  <rect class="st137" x="234" y="806" width="64" height="20" rx="4" ry="4"/>
+  <text class="st43" transform="translate(247.32 820)"><tspan x="0" y="0">DeepSeek</tspan></text>
+  <rect class="st137" x="306" y="806" width="64" height="20" rx="4" ry="4"/>
+  <text class="st43" transform="translate(327.55 820)"><tspan x="0" y="0">Qwen</tspan></text>
+  <rect class="st137" x="90" y="832" width="64" height="20" rx="4" ry="4"/>
+  <text class="st43" transform="translate(109.33 846)"><tspan x="0" y="0">Gemini</tspan></text>
+  <rect class="st137" x="162" y="832" width="64" height="20" rx="4" ry="4"/>
+  <text class="st43" transform="translate(179.99 846)"><tspan x="0" y="0">Doubao</tspan></text>
+  <rect class="st137" x="234" y="832" width="64" height="20" rx="4" ry="4"/>
+  <text class="st43" transform="translate(251.11 846)"><tspan x="0" y="0">MiniMax</tspan></text>
+  <rect class="st137" x="306" y="832" width="64" height="20" rx="4" ry="4"/>
+  <text class="st35" transform="translate(325.52 846)"><tspan class="st107" x="0" y="0">+</tspan><tspan class="st86" x="4.67" y="0">代理路由</tspan></text>
+  <text class="st9" transform="translate(152.04 862)"><tspan x="0" y="0">streaming · tool_calling · extended_thinking · reasoning_content</tspan></text>
+  <rect class="st126" x="462" y="752" width="250" height="120" rx="8" ry="8"/>
+  <text class="st50" transform="translate(520.49 770)"><tspan class="st111" x="0" y="0">agent/core — ReAct </tspan><tspan class="st86" x="102.69" y="0">基础组件</tspan></text>
+  <rect class="st104" x="474" y="782" width="106" height="32" rx="5" ry="5"/>
+  <text class="st28" transform="translate(503.71 796)"><tspan x="0" y="0">ToolBudget</tspan></text>
+  <text class="st10" transform="translate(504.86 808)"><tspan class="st86" x="0" y="0">搜索</tspan><tspan class="st107" x="15" y="0">/</tspan><tspan class="st86" x="17.08" y="0">轮次</tspan><tspan class="st106" x="32.08" y="0">/</tspan><tspan class="st86" x="34.17" y="0">时间</tspan><tspan class="st107" x="49.17" y="0"> </tspan><tspan class="st86" x="51.25" y="0">限制</tspan></text>
+  <rect class="st104" x="588" y="782" width="112" height="32" rx="5" ry="5"/>
+  <text class="st28" transform="translate(614.32 796)"><tspan x="0" y="0">ToolCallParser</tspan></text>
+  <text class="st10" transform="translate(615.5 808)"><tspan class="st107" x="0" y="0">4</tspan><tspan class="st86" x="4.17" y="0">种格式</tspan><tspan class="st107" x="26.67" y="0" xml:space="preserve"> + conclude</tspan></text>
+  <rect class="st104" x="474" y="822" width="226" height="30" rx="5" ry="5"/>
+  <text class="st28" transform="translate(554.88 836)"><tspan x="0" y="0">PipelineContext</tspan></text>
+  <text class="st10" transform="translate(527.68 848)"><tspan class="st86" x="0" y="0">跨</tspan><tspan class="st107" x="7.5" y="0">Gate</tspan><tspan class="st86" x="23.76" y="0">信息流</tspan><tspan class="st107" x="46.26" y="0" xml:space="preserve"> · GateResult · Reflection</tspan></text>
+  <text class="st60" transform="translate(509.48 865)"><tspan x="0" y="0">GateResult · ToolAction · downstream_hints</tspan></text>
+  <rect class="st126" x="724" y="752" width="298" height="120" rx="8" ry="8"/>
+  <text class="st36" transform="translate(861.63 770)"><tspan x="0" y="0">存储层</tspan></text>
+  <rect class="st104" x="736" y="782" width="80" height="40" rx="5" ry="5"/>
+  <text class="st14" transform="translate(751.44 798)"><tspan x="0" y="0">PostgreSQL</tspan></text>
+  <text class="st20" transform="translate(766.49 811)"><tspan x="0" y="0">分析结果</tspan></text>
+  <text class="st20" transform="translate(766.49 822)"><tspan x="0" y="0">聊天历史</tspan></text>
+  <rect class="st104" x="826" y="782" width="80" height="40" rx="5" ry="5"/>
+  <text class="st63" transform="translate(842.85 798)"><tspan x="0" y="0">ClickHouse</tspan></text>
+  <text class="st41" transform="translate(851.62 811)"><tspan class="st107" x="0" y="0">K</tspan><tspan class="st86" x="5" y="0">线时序数据</tspan></text>
+  <rect class="st104" x="916" y="782" width="80" height="40" rx="5" ry="5"/>
+  <text class="st74" transform="translate(944.43 798)"><tspan x="0" y="0">Redis</tspan></text>
+  <text class="st20" transform="translate(946.49 811)"><tspan x="0" y="0">公司数据</tspan></text>
+  <text class="st41" transform="translate(946.78 822)"><tspan class="st86" x="0" y="0">缓存</tspan><tspan class="st107" x="15" y="0">7</tspan><tspan class="st86" x="19.17" y="0">天</tspan></text>
+  <rect class="st104" x="736" y="830" width="260" height="22" rx="4" ry="4"/>
+  <text class="st39" transform="translate(814.42 845)"><tspan class="st107" x="0" y="0">Qdrant</tspan><tspan class="st86" x="24.46" y="0">（向量）</tspan><tspan class="st107" x="56.46" y="0" xml:space="preserve"> · MinIO</tspan><tspan class="st86" x="84.46" y="0">（对象存储）</tspan></text>
+  <text class="st79" transform="translate(814.88 865)"><tspan class="st107" x="0" y="0">Alembic </tspan><tspan class="st86" x="30.68" y="0">迁移</tspan><tspan class="st107" x="46.68" y="0" xml:space="preserve"> · APScheduler </tspan><tspan class="st86" x="102.26" y="0">定时采集</tspan></text>
+  <path class="st0" d=""/>
+  <path class="st31" d="M263.2,705.4l1.8-5.4,1.8,5.4h-3.6Z"/>
+  <path class="st113" d="M265,700" marker-end="url(#arrowGray)"/>
+  <path class="st0" d=""/>
+  <path class="st31" d="M545.2,705.4l1.8-5.4,1.8,5.4h-3.6Z"/>
+  <path class="st113" d="M547,700" marker-end="url(#arrowGray)"/>
+  <path class="st0" d=""/>
+  <path class="st31" d="M800.2,705.4l1.8-5.4,1.8,5.4h-3.6Z"/>
+  <path class="st113" d="M802,700" marker-end="url(#arrowGray)"/>
+  <rect class="st122" x="60" y="898" width="8" height="8" rx="2" ry="2"/>
+  <text class="st60" transform="translate(74 907)"><tspan x="0" y="0">Index Agent</tspan></text>
+  <rect class="st139" x="160" y="898" width="8" height="8" rx="2" ry="2"/>
+  <text class="st60" transform="translate(174 907)"><tspan x="0" y="0">Company Agent</tspan></text>
+  <rect class="st105" x="270" y="898" width="8" height="8" rx="2" ry="2"/>
+  <text class="st57" transform="translate(284 907)"><tspan x="0" y="0">共用基础设施</tspan></text>
+  <rect class="st130" x="370" y="898" width="8" height="8" rx="2" ry="2"/>
+  <text class="st60" transform="translate(384 907)"><tspan x="0" y="0">Reflection Checkpoint</tspan></text>
+  <text class="st53" transform="translate(786.6 907)"><tspan x="0" y="0">uteki.open — agent architecture</tspan></text>
+</svg>

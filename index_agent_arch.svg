@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 640" font-family="'Inter','Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <filter id="s1"><feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-color="#94a3b8" flood-opacity="0.16"/></filter>
+    <filter id="s2"><feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#94a3b8" flood-opacity="0.2"/></filter>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,2 L9,5 L0,8Z" fill="#3b82f6"/>
+    </marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,2 L9,5 L0,8Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,2 L9,5 L0,8Z" fill="#f87171"/>
+    </marker>
+    <marker id="ag2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,2 L9,5 L0,8Z" fill="#10b981"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="760" height="640" fill="#f8fafc" rx="14"/>
+
+  <!-- Title -->
+  <text x="40" y="42" fill="#1e293b" font-size="17" font-weight="700">Index Agent</text>
+  <text x="156" y="42" fill="#94a3b8" font-size="17" font-weight="400"> — Deep Research Pipeline</text>
+  <!-- Label: Agentic RAG -->
+  <rect x="560" y="24" width="160" height="26" rx="6" fill="#fef3c7" stroke="#fcd34d" stroke-width="1.2"/>
+  <text x="640" y="41" text-anchor="middle" fill="#92400e" font-size="10" font-weight="700">⚠ Agentic RAG，非完整 Agent</text>
+  <line x1="40" y1="54" x2="720" y2="54" stroke="#e2e8f0" stroke-width="1.2"/>
+
+  <!-- User Input -->
+  <rect x="270" y="68" width="220" height="44" rx="9" fill="#fff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#s1)"/>
+  <rect x="270" y="68" width="5" height="44" rx="3" fill="#3b82f6"/>
+  <text x="292" y="86" fill="#1e40af" font-size="11" font-weight="700">用户消息</text>
+  <text x="292" y="102" fill="#64748b" font-size="9.5">AgentChatPage / IndexAgentPage</text>
+
+  <line x1="380" y1="112" x2="380" y2="132" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ag)"/>
+
+  <!-- Intent Router -->
+  <rect x="252" y="134" width="256" height="44" rx="9" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5" filter="url(#s1)"/>
+  <text x="380" y="152" text-anchor="middle" fill="#1d4ed8" font-size="10.5" font-weight="700">Intent Router</text>
+  <text x="380" y="167" text-anchor="middle" fill="#3b82f6" font-size="9">LLM 分类 → research | chat</text>
+
+  <!-- branch: chat -->
+  <path d="M508,156 L580,156 L580,180" stroke="#94a3b8" stroke-width="1.2" fill="none" stroke-dasharray="4,3" marker-end="url(#ag)"/>
+  <text x="544" y="150" fill="#94a3b8" font-size="8.5">chat</text>
+  <rect x="536" y="182" width="88" height="28" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="580" y="197" text-anchor="middle" fill="#94a3b8" font-size="9">ChatService</text>
+  <text x="580" y="207" text-anchor="middle" fill="#cbd5e1" font-size="8">直接回答</text>
+
+  <!-- branch: research -->
+  <line x1="380" y1="178" x2="380" y2="198" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ab)"/>
+  <rect x="320" y="182" width="60" height="18" rx="4" fill="#dbeafe"/>
+  <text x="350" y="195" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="600">research</text>
+
+  <!-- Orchestrator box -->
+  <rect x="80" y="200" width="600" height="330" rx="12" fill="#fff" stroke="#bfdbfe" stroke-width="1.5" filter="url(#s2)"/>
+  <rect x="80" y="200" width="600" height="32" rx="12" fill="#eff6ff"/>
+  <rect x="80" y="220" width="600" height="12" fill="#eff6ff"/>
+  <text x="104" y="223" fill="#1e40af" font-size="11" font-weight="700">DeepResearchOrchestrator</text>
+  <text x="104" y="235" fill="#60a5fa" font-size="9">research_stream() — 线性执行，无 ReAct 循环</text>
+
+  <!-- Step 1 -->
+  <rect x="104" y="246" width="552" height="42" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="126" cy="267" r="11" fill="#3b82f6"/>
+  <text x="126" y="271" text-anchor="middle" fill="#fff" font-size="9.5" font-weight="700">1</text>
+  <text x="148" y="262" fill="#1e293b" font-size="10" font-weight="600">_check_needs_search()</text>
+  <text x="148" y="276" fill="#64748b" font-size="9">LLM 判断是否需要联网 — 若不需要，直接输出回答并结束流程</text>
+  <!-- No-loop badge -->
+  <rect x="566" y="252" width="82" height="17" rx="4" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8"/>
+  <text x="607" y="264" text-anchor="middle" fill="#dc2626" font-size="8">无 loop / 单次调用</text>
+
+  <line x1="380" y1="288" x2="380" y2="300" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#ag)"/>
+
+  <!-- Step 2 -->
+  <rect x="104" y="302" width="552" height="42" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="126" cy="323" r="11" fill="#3b82f6"/>
+  <text x="126" y="327" text-anchor="middle" fill="#fff" font-size="9.5" font-weight="700">2</text>
+  <text x="148" y="318" fill="#1e293b" font-size="10" font-weight="600">_decompose_query()</text>
+  <text x="148" y="332" fill="#64748b" font-size="9">LLM 将问题拆解为 subtasks → SSE: thought + plan_created</text>
+  <rect x="566" y="308" width="82" height="17" rx="4" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8"/>
+  <text x="607" y="320" text-anchor="middle" fill="#dc2626" font-size="8">无 loop / 单次调用</text>
+
+  <line x1="380" y1="344" x2="380" y2="356" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#ag)"/>
+
+  <!-- Step 3 -->
+  <rect x="104" y="358" width="552" height="52" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="126" cy="384" r="11" fill="#3b82f6"/>
+  <text x="126" y="388" text-anchor="middle" fill="#fff" font-size="9.5" font-weight="700">3</text>
+  <text x="148" y="374" fill="#1e293b" font-size="10" font-weight="600">SearchEngine — 网页搜索</text>
+  <text x="148" y="388" fill="#64748b" font-size="9">Google CSE（主力）→ DuckDuckGo（自动 fallback）</text>
+  <text x="148" y="401" fill="#94a3b8" font-size="8.5">URL 去重 · 域名统计 · SSE: sources_update / sources_complete</text>
+  <!-- No LLM badge -->
+  <rect x="566" y="364" width="82" height="17" rx="4" fill="#fff7ed" stroke="#fed7aa" stroke-width="0.8"/>
+  <text x="607" y="376" text-anchor="middle" fill="#c2410c" font-size="8">固定调用，非 LLM</text>
+
+  <line x1="380" y1="410" x2="380" y2="422" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#ag)"/>
+
+  <!-- Step 4 -->
+  <rect x="104" y="424" width="552" height="52" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="126" cy="450" r="11" fill="#3b82f6"/>
+  <text x="126" y="454" text-anchor="middle" fill="#fff" font-size="9.5" font-weight="700">4</text>
+  <text x="148" y="440" fill="#1e293b" font-size="10" font-weight="600">WebScraper — asyncio 并发抓取</text>
+  <text x="148" y="454" fill="#64748b" font-size="9">trafilatura 主力 → BeautifulSoup fallback · 超时/SSL 容错</text>
+  <text x="148" y="467" fill="#94a3b8" font-size="8.5">内容清洗 · 长度截断 · SSE: source_read</text>
+  <rect x="566" y="430" width="82" height="17" rx="4" fill="#fff7ed" stroke="#fed7aa" stroke-width="0.8"/>
+  <text x="607" y="442" text-anchor="middle" fill="#c2410c" font-size="8">固定调用，非 LLM</text>
+
+  <line x1="380" y1="476" x2="380" y2="488" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#ag)"/>
+
+  <!-- Step 5 -->
+  <rect x="104" y="490" width="552" height="30" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <circle cx="126" cy="505" r="11" fill="#3b82f6"/>
+  <text x="126" y="509" text-anchor="middle" fill="#fff" font-size="9.5" font-weight="700">5</text>
+  <text x="148" y="502" fill="#1e293b" font-size="10" font-weight="600">LLM Synthesis — 流式合成最终回答</text>
+  <text x="148" y="515" fill="#3b82f6" font-size="9">SSE: content_chunk → research_complete</text>
+  <rect x="566" y="496" width="82" height="17" rx="4" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8"/>
+  <text x="607" y="508" text-anchor="middle" fill="#dc2626" font-size="8">无 loop / 单次调用</text>
+
+  <!-- No feedback arrow annotation -->
+  <line x1="68" y1="246" x2="68" y2="520" stroke="#e2e8f0" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="36" y="390" fill="#cbd5e1" font-size="9" transform="rotate(-90,36,390)">单向流动，无回路</text>
+
+  <!-- SSE Event stream -->
+  <rect x="80" y="548" width="600" height="36" rx="8" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1"/>
+  <text x="380" y="562" text-anchor="middle" fill="#0369a1" font-size="9.5" font-weight="700">SSE 事件流</text>
+  <text x="380" y="575" text-anchor="middle" fill="#0284c7" font-size="8.5">research_start · thought · plan_created · sources_update · sources_complete · source_read · content_chunk · research_complete · error</text>
+
+  <!-- Legend -->
+  <line x1="40" y1="618" x2="720" y2="618" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="40" y="625" width="10" height="10" rx="2" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+  <text x="56" y="634" fill="#64748b" font-size="8.5">固定调用（非 LLM 决策）</text>
+  <rect x="180" y="625" width="10" height="10" rx="2" fill="#fef3c7" stroke="#fcd34d" stroke-width="1"/>
+  <text x="196" y="634" fill="#64748b" font-size="8.5">Agentic RAG 定性</text>
+  <text x="720" y="634" text-anchor="end" fill="#cbd5e1" font-size="8">uteki.open — Index Agent</text>
+</svg>

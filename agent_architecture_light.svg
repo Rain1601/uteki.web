@@ -1,0 +1,378 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 860" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <!-- Shadows -->
+    <filter id="shadow-sm" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#94a3b8" flood-opacity="0.18"/>
+    </filter>
+    <filter id="shadow-md" x="-5%" y="-5%" width="115%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#94a3b8" flood-opacity="0.22"/>
+    </filter>
+
+    <!-- Arrows -->
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,2 L9,5 L0,8 Z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arr-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,2 L9,5 L0,8 Z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,2 L9,5 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arr-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,2 L9,5 L0,8 Z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,2 L9,5 L0,8 Z" fill="#10b981"/>
+    </marker>
+  </defs>
+
+  <!-- ─── Canvas ─── -->
+  <rect width="1080" height="860" fill="#f8fafc" rx="16"/>
+
+  <!-- ─── Title ─── -->
+  <text x="54" y="46" fill="#0f172a" font-size="18" font-weight="700" letter-spacing="-0.3">uteki.open</text>
+  <text x="163" y="46" fill="#64748b" font-size="18" font-weight="400">  Agent 架构全景</text>
+  <line x1="54" y1="58" x2="1026" y2="58" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ROW 1 — 用户入口 -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="380" y="72" width="320" height="50" rx="10" fill="#fff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <rect x="380" y="72" width="6" height="50" rx="3" fill="#3b82f6"/>
+  <text x="402" y="93" fill="#1e40af" font-size="11" font-weight="700">Frontend</text>
+  <text x="402" y="111" fill="#64748b" font-size="10">IndexAgentPage  ·  CompanyAgentPage  ·  AgentChatPage</text>
+
+  <!-- ─── arrow down ─── -->
+  <line x1="540" y1="122" x2="540" y2="145" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr-gray)"/>
+
+  <!-- ─── Intent Router ─── -->
+  <rect x="404" y="147" width="272" height="44" rx="9" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="540" y="165" text-anchor="middle" fill="#1d4ed8" font-size="10.5" font-weight="700">Intent Router</text>
+  <text x="540" y="181" text-anchor="middle" fill="#3b82f6" font-size="9.5">POST /api/agent/route  →  LLM 分类: research | chat</text>
+
+  <!-- branch left -->
+  <path d="M 480,191 L 300,191 L 300,228" stroke="#3b82f6" stroke-width="1.5" fill="none" marker-end="url(#arr-blue)"/>
+  <rect x="258" y="194" width="62" height="17" rx="4" fill="#dbeafe"/>
+  <text x="289" y="206" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="600">research</text>
+
+  <!-- branch right -->
+  <path d="M 600,191 L 780,191 L 780,228" stroke="#7c3aed" stroke-width="1.5" fill="none" marker-end="url(#arr-violet)"/>
+  <rect x="718" y="194" width="80" height="17" rx="4" fill="#ede9fe"/>
+  <text x="758" y="206" text-anchor="middle" fill="#5b21b6" font-size="9" font-weight="600">company</text>
+
+  <!-- branch chat fallback (small) -->
+  <path d="M 540,191 L 540,224" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-gray)"/>
+  <text x="548" y="212" fill="#94a3b8" font-size="8.5">chat</text>
+
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- LEFT PANEL — Index Agent / Deep Research -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="54" y="226" width="462" height="428" rx="12" fill="#fff" stroke="#bfdbfe" stroke-width="1.5" filter="url(#shadow-md)"/>
+  <!-- Panel header bar -->
+  <rect x="54" y="226" width="462" height="36" rx="12" fill="#eff6ff"/>
+  <rect x="54" y="250" width="462" height="12" fill="#eff6ff"/>
+  <text x="76" y="250" fill="#1d4ed8" font-size="12" font-weight="700">Index Agent</text>
+  <text x="168" y="250" fill="#60a5fa" font-size="11">  Deep Research Pipeline</text>
+
+  <!-- Step boxes inside left panel -->
+  <!-- Step ① -->
+  <rect x="74" y="274" width="422" height="38" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="96" cy="293" r="10" fill="#3b82f6"/>
+  <text x="96" y="297" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">1</text>
+  <text x="115" y="290" fill="#1e293b" font-size="10" font-weight="600">Check needs_search</text>
+  <text x="115" y="303" fill="#64748b" font-size="9">LLM 判断是否需要联网 — 简单问题直接回答跳过搜索</text>
+
+  <line x1="285" y1="312" x2="285" y2="324" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr-gray)"/>
+
+  <!-- Step ② -->
+  <rect x="74" y="326" width="422" height="38" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="96" cy="345" r="10" fill="#3b82f6"/>
+  <text x="96" y="349" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">2</text>
+  <text x="115" y="342" fill="#1e293b" font-size="10" font-weight="600">Query Decomposition</text>
+  <text x="115" y="355" fill="#64748b" font-size="9">LLM 将问题拆解为子任务 (subtasks) → SSE: thought + plan_created</text>
+
+  <line x1="285" y1="364" x2="285" y2="376" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr-gray)"/>
+
+  <!-- Step ③ -->
+  <rect x="74" y="378" width="422" height="44" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="96" cy="400" r="10" fill="#3b82f6"/>
+  <text x="96" y="404" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">3</text>
+  <text x="115" y="394" fill="#1e293b" font-size="10" font-weight="600">SearchEngine</text>
+  <text x="115" y="407" fill="#64748b" font-size="9">Google CSE（主）  →  DuckDuckGo（自动兜底）</text>
+  <text x="115" y="418" fill="#94a3b8" font-size="8.5">URL 去重 + 域名统计  ·  SSE: sources_update / sources_complete</text>
+
+  <line x1="285" y1="422" x2="285" y2="434" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr-gray)"/>
+
+  <!-- Step ④ -->
+  <rect x="74" y="436" width="422" height="44" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="96" cy="458" r="10" fill="#3b82f6"/>
+  <text x="96" y="462" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">4</text>
+  <text x="115" y="452" fill="#1e293b" font-size="10" font-weight="600">WebScraper  — 并发抓取</text>
+  <text x="115" y="465" fill="#64748b" font-size="9">trafilatura（主）→ BeautifulSoup（兜底）</text>
+  <text x="115" y="476" fill="#94a3b8" font-size="8.5">asyncio 并发  ·  超时/SSL 容错  ·  SSE: source_read</text>
+
+  <line x1="285" y1="480" x2="285" y2="492" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr-gray)"/>
+
+  <!-- Step ⑤ -->
+  <rect x="74" y="494" width="422" height="38" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="96" cy="513" r="10" fill="#3b82f6"/>
+  <text x="96" y="517" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">5</text>
+  <text x="115" y="510" fill="#1e293b" font-size="10" font-weight="600">LLM Synthesis  — 流式合成</text>
+  <text x="115" y="523" fill="#64748b" font-size="9">聚合内容 → LLM 生成回答  ·  SSE: content_chunk / research_complete</text>
+
+  <!-- ChatService fallback box -->
+  <rect x="74" y="548" width="422" height="36" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="285" y="562" text-anchor="middle" fill="#64748b" font-size="10" font-weight="600">ChatService（普通对话兜底）</text>
+  <text x="285" y="575" text-anchor="middle" fill="#94a3b8" font-size="9">对话历史 · research_data JSONB · Alembic 迁移</text>
+
+  <!-- Data sources row -->
+  <rect x="74" y="596" width="422" height="46" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="285" y="612" text-anchor="middle" fill="#166534" font-size="10" font-weight="600">Data Domain  /api/data</text>
+  <rect x="86" y="618" width="68" height="17" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="120" y="630" text-anchor="middle" fill="#15803d" font-size="8.5">yfinance</text>
+  <rect x="162" y="618" width="68" height="17" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="196" y="630" text-anchor="middle" fill="#15803d" font-size="8.5">akshare</text>
+  <rect x="238" y="618" width="100" height="17" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="288" y="630" text-anchor="middle" fill="#15803d" font-size="8.5">S&amp;P500 + NASDAQ100</text>
+  <rect x="346" y="618" width="140" height="17" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="416" y="630" text-anchor="middle" fill="#15803d" font-size="8.5">ClickHouse · Redis · PostgreSQL</text>
+
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- RIGHT PANEL — Company Agent 7-Gate -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="564" y="226" width="462" height="428" rx="12" fill="#fff" stroke="#ddd6fe" stroke-width="1.5" filter="url(#shadow-md)"/>
+  <rect x="564" y="226" width="462" height="36" rx="12" fill="#f5f3ff"/>
+  <rect x="564" y="250" width="462" height="12" fill="#f5f3ff"/>
+  <text x="586" y="250" fill="#5b21b6" font-size="12" font-weight="700">Company Agent</text>
+  <text x="691" y="250" fill="#8b5cf6" font-size="11">  7-Gate Decision Tree Pipeline</text>
+
+  <!-- PipelineContext strip -->
+  <rect x="584" y="272" width="422" height="28" rx="7" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1"/>
+  <text x="795" y="283" text-anchor="middle" fill="#6d28d9" font-size="9" font-weight="700">PipelineContext</text>
+  <text x="795" y="294" text-anchor="middle" fill="#8b5cf6" font-size="8.5">跨Gate信息流 — G2-6接收摘要  ·  G7接收完整原文  ·  downstream_hints注入</text>
+
+  <!-- Gate list -->
+  <!-- G1 -->
+  <rect x="584" y="310" width="290" height="34" rx="7" fill="#faf5ff" stroke="#ddd6fe" stroke-width="1" filter="url(#shadow-sm)"/>
+  <rect x="584" y="310" width="5" height="34" rx="3" fill="#8b5cf6"/>
+  <text x="600" y="324" fill="#7c3aed" font-size="10" font-weight="700">G1</text>
+  <text x="618" y="324" fill="#1e293b" font-size="10" font-weight="600">业务解析</text>
+  <text x="618" y="337" fill="#64748b" font-size="8.5">商业模式 · 盈利逻辑 · 生意质量评分</text>
+
+  <!-- tools for G1 -->
+  <rect x="882" y="313" width="60" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="912" y="324" text-anchor="middle" fill="#6d28d9" font-size="8">web_search</text>
+
+  <line x1="729" y1="344" x2="729" y2="354" stroke="#c4b5fd" stroke-width="1.2" marker-end="url(#arr-violet)"/>
+
+  <!-- G2 -->
+  <rect x="584" y="356" width="290" height="34" rx="7" fill="#faf5ff" stroke="#ddd6fe" stroke-width="1" filter="url(#shadow-sm)"/>
+  <rect x="584" y="356" width="5" height="34" rx="3" fill="#8b5cf6"/>
+  <text x="600" y="370" fill="#7c3aed" font-size="10" font-weight="700">G2</text>
+  <text x="618" y="370" fill="#1e293b" font-size="10" font-weight="600">成长质量  (Fisher 15问)</text>
+  <text x="618" y="383" fill="#64748b" font-size="8.5">逐题问答 · 评分 · 成长类型判断</text>
+
+  <rect x="882" y="359" width="60" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="912" y="370" text-anchor="middle" fill="#6d28d9" font-size="8">web_search</text>
+  <rect x="882" y="377" width="72" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="918" y="388" text-anchor="middle" fill="#6d28d9" font-size="8">compare_peers</text>
+
+  <line x1="729" y1="390" x2="729" y2="400" stroke="#c4b5fd" stroke-width="1.2" marker-end="url(#arr-violet)"/>
+
+  <!-- G3 -->
+  <rect x="584" y="402" width="290" height="34" rx="7" fill="#faf5ff" stroke="#ddd6fe" stroke-width="1" filter="url(#shadow-sm)"/>
+  <rect x="584" y="402" width="5" height="34" rx="3" fill="#8b5cf6"/>
+  <text x="600" y="416" fill="#7c3aed" font-size="10" font-weight="700">G3</text>
+  <text x="618" y="416" fill="#1e293b" font-size="10" font-weight="600">护城河评估  (Buffett)</text>
+  <text x="618" y="429" fill="#64748b" font-size="8.5">BRAND · NETWORK · SWITCH · COST · IP</text>
+
+  <rect x="882" y="405" width="60" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="912" y="416" text-anchor="middle" fill="#6d28d9" font-size="8">web_search</text>
+  <rect x="882" y="423" width="72" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="918" y="434" text-anchor="middle" fill="#6d28d9" font-size="8">compare_peers</text>
+
+  <!-- Reflection ① -->
+  <rect x="584" y="443" width="422" height="20" rx="5" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="795" y="457" text-anchor="middle" fill="#92400e" font-size="8.5" font-weight="600">⚡ Reflection ①  —  审计 G1-G3 内在矛盾，生成 downstream_hints 注入后续 Gate</text>
+
+  <line x1="729" y1="463" x2="729" y2="473" stroke="#c4b5fd" stroke-width="1.2" marker-end="url(#arr-violet)"/>
+
+  <!-- G4 -->
+  <rect x="584" y="475" width="290" height="34" rx="7" fill="#faf5ff" stroke="#ddd6fe" stroke-width="1" filter="url(#shadow-sm)"/>
+  <rect x="584" y="475" width="5" height="34" rx="3" fill="#8b5cf6"/>
+  <text x="600" y="489" fill="#7c3aed" font-size="10" font-weight="700">G4</text>
+  <text x="618" y="489" fill="#1e293b" font-size="10" font-weight="600">管理层评估  (Fisher + Munger)</text>
+  <text x="618" y="502" fill="#64748b" font-size="8.5">诚信 · 资本配置 · 薪酬 · 接班风险</text>
+
+  <rect x="882" y="478" width="60" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="912" y="489" text-anchor="middle" fill="#6d28d9" font-size="8">web_search</text>
+
+  <line x1="729" y1="509" x2="729" y2="519" stroke="#c4b5fd" stroke-width="1.2" marker-end="url(#arr-violet)"/>
+
+  <!-- G5 -->
+  <rect x="584" y="521" width="290" height="34" rx="7" fill="#faf5ff" stroke="#ddd6fe" stroke-width="1" filter="url(#shadow-sm)"/>
+  <rect x="584" y="521" width="5" height="34" rx="3" fill="#8b5cf6"/>
+  <text x="600" y="535" fill="#7c3aed" font-size="10" font-weight="700">G5</text>
+  <text x="618" y="535" fill="#1e293b" font-size="10" font-weight="600">逆向检验  (Munger)</text>
+  <text x="618" y="548" fill="#64748b" font-size="8.5">毁灭场景 · 红旗清单 · 韧性评分</text>
+
+  <rect x="882" y="524" width="60" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="912" y="535" text-anchor="middle" fill="#6d28d9" font-size="8">web_search</text>
+  <rect x="882" y="542" width="72" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="918" y="553" text-anchor="middle" fill="#6d28d9" font-size="8">compare_peers</text>
+
+  <!-- Reflection ② -->
+  <rect x="584" y="562" width="422" height="20" rx="5" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="795" y="576" text-anchor="middle" fill="#92400e" font-size="8.5" font-weight="600">⚡ Reflection ②  —  G5风险 vs G1-G4 正面结论矛盾审计</text>
+
+  <line x1="729" y1="582" x2="729" y2="592" stroke="#c4b5fd" stroke-width="1.2" marker-end="url(#arr-violet)"/>
+
+  <!-- G6 -->
+  <rect x="584" y="594" width="290" height="34" rx="7" fill="#faf5ff" stroke="#ddd6fe" stroke-width="1" filter="url(#shadow-sm)"/>
+  <rect x="584" y="594" width="5" height="34" rx="3" fill="#8b5cf6"/>
+  <text x="600" y="608" fill="#7c3aed" font-size="10" font-weight="700">G6</text>
+  <text x="618" y="608" fill="#1e293b" font-size="10" font-weight="600">估值与时机  (Buffett)</text>
+  <text x="618" y="621" fill="#64748b" font-size="8.5">PE/FCF · 同行对比 · 安全边际 · 市场温度</text>
+
+  <rect x="882" y="597" width="60" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="912" y="608" text-anchor="middle" fill="#6d28d9" font-size="8">web_search</text>
+  <rect x="882" y="615" width="72" height="16" rx="4" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="918" y="626" text-anchor="middle" fill="#6d28d9" font-size="8">compare_peers</text>
+
+  <line x1="729" y1="628" x2="729" y2="638" stroke="#c4b5fd" stroke-width="1.2" marker-end="url(#arr-violet)"/>
+
+  <!-- G7 -->
+  <rect x="584" y="640" width="422" height="36" rx="8" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.8" filter="url(#shadow-sm)"/>
+  <rect x="584" y="640" width="5" height="36" rx="3" fill="#6d28d9"/>
+  <text x="600" y="656" fill="#4c1d95" font-size="10" font-weight="700">G7</text>
+  <text x="618" y="656" fill="#1e293b" font-size="10" font-weight="700">综合裁决  —  读取 G1-G6 全部原文</text>
+  <text x="618" y="669" fill="#7c3aed" font-size="9">输出结构化 JSON: BUY / WATCH / AVOID · conviction · quality · position_size</text>
+
+  <!-- G7 fallback note -->
+  <text x="795" y="686" text-anchor="middle" fill="#94a3b8" font-size="8">JSON 解析失败时: _structurize_prompt 二次兜底</text>
+
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ReAct Loop sidebar (between panels, or floating) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ReAct Loop illustration — right of G7, float to bottom right -->
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ROW 3 — Shared Infrastructure -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="54" y="674" width="975" height="162" rx="12" fill="#fff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#shadow-md)"/>
+  <rect x="54" y="674" width="975" height="30" rx="12" fill="#f8fafc"/>
+  <rect x="54" y="692" width="975" height="12" fill="#f8fafc"/>
+  <text x="76" y="694" fill="#475569" font-size="11" font-weight="700" letter-spacing="0.2">共用底层基础设施</text>
+
+  <!-- LLM Adapter block -->
+  <rect x="72" y="712" width="330" height="108" rx="9" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.2"/>
+  <text x="237" y="730" text-anchor="middle" fill="#166534" font-size="10.5" font-weight="700">LLMAdapterFactory</text>
+  <text x="237" y="745" text-anchor="middle" fill="#16a34a" font-size="8.5">优先级: AIHubMix → Admin DB → .env 直连</text>
+
+  <!-- Adapters -->
+  <rect x="84"  y="752" width="72" height="22" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="120" y="767" text-anchor="middle" fill="#15803d" font-size="9">OpenAI / o-series</text>
+  <rect x="162" y="752" width="72" height="22" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="198" y="767" text-anchor="middle" fill="#15803d" font-size="9">Anthropic Claude</text>
+  <rect x="240" y="752" width="72" height="22" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="276" y="767" text-anchor="middle" fill="#15803d" font-size="9">DeepSeek</text>
+  <rect x="318" y="752" width="72" height="22" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="0.8"/>
+  <text x="354" y="767" text-anchor="middle" fill="#15803d" font-size="9">Qwen / Gemini</text>
+
+  <text x="237" y="796" text-anchor="middle" fill="#4ade80" font-size="8.5">streaming  ·  tool_calling  ·  extended_thinking  ·  reasoning_content</text>
+  <text x="237" y="810" text-anchor="middle" fill="#86efac" font-size="8">model name mapping: AIHubMix 兼容名自动转换</text>
+
+  <!-- Agent Core block -->
+  <rect x="416" y="712" width="280" height="108" rx="9" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.2"/>
+  <text x="556" y="730" text-anchor="middle" fill="#9a3412" font-size="10.5" font-weight="700">agent/core  — ReAct 基础组件</text>
+
+  <!-- ToolBudget -->
+  <rect x="428" y="742" width="118" height="48" rx="7" fill="#ffedd5" stroke="#fdba74" stroke-width="0.8"/>
+  <text x="487" y="757" text-anchor="middle" fill="#c2410c" font-size="9" font-weight="700">ToolBudget</text>
+  <text x="487" y="770" text-anchor="middle" fill="#92400e" font-size="8">max_searches: 6</text>
+  <text x="487" y="781" text-anchor="middle" fill="#92400e" font-size="8">max_rounds: 5  ·  timeout: 180s</text>
+
+  <!-- ToolCallParser -->
+  <rect x="554" y="742" width="130" height="48" rx="7" fill="#ffedd5" stroke="#fdba74" stroke-width="0.8"/>
+  <text x="619" y="757" text-anchor="middle" fill="#c2410c" font-size="9" font-weight="700">ToolCallParser</text>
+  <text x="619" y="770" text-anchor="middle" fill="#92400e" font-size="8">4种格式兼容</text>
+  <text x="619" y="781" text-anchor="middle" fill="#92400e" font-size="8">&lt;conclude&gt; 终止检测</text>
+
+  <text x="556" y="808" text-anchor="middle" fill="#ea580c" font-size="8.5">GateResult · PipelineContext · Reflection</text>
+
+  <!-- Storage block -->
+  <rect x="710" y="712" width="306" height="108" rx="9" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="863" y="730" text-anchor="middle" fill="#334155" font-size="10.5" font-weight="700">存储层</text>
+
+  <rect x="722" y="742" width="70" height="44" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.8"/>
+  <text x="757" y="758" text-anchor="middle" fill="#1e40af" font-size="8.5" font-weight="600">PostgreSQL</text>
+  <text x="757" y="770" text-anchor="middle" fill="#3b82f6" font-size="7.5">分析结果</text>
+  <text x="757" y="781" text-anchor="middle" fill="#3b82f6" font-size="7.5">对话历史</text>
+
+  <rect x="800" y="742" width="70" height="44" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8"/>
+  <text x="835" y="758" text-anchor="middle" fill="#991b1b" font-size="8.5" font-weight="600">ClickHouse</text>
+  <text x="835" y="770" text-anchor="middle" fill="#dc2626" font-size="7.5">K线时序</text>
+  <text x="835" y="781" text-anchor="middle" fill="#dc2626" font-size="7.5">分析型查询</text>
+
+  <rect x="878" y="742" width="60" height="44" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="0.8"/>
+  <text x="908" y="758" text-anchor="middle" fill="#166534" font-size="8.5" font-weight="600">Redis</text>
+  <text x="908" y="770" text-anchor="middle" fill="#16a34a" font-size="7.5">公司数据</text>
+  <text x="908" y="781" text-anchor="middle" fill="#16a34a" font-size="7.5">缓存7天</text>
+
+  <rect x="946" y="742" width="60" height="44" rx="6" fill="#faf5ff" stroke="#e9d5ff" stroke-width="0.8"/>
+  <text x="976" y="758" text-anchor="middle" fill="#6d28d9" font-size="8.5" font-weight="600">Qdrant</text>
+  <text x="976" y="770" text-anchor="middle" fill="#7c3aed" font-size="7.5">向量存储</text>
+
+  <text x="863" y="806" text-anchor="middle" fill="#94a3b8" font-size="8">APScheduler 定时采集  ·  Alembic 迁移</text>
+
+  <!-- Connector lines from panels to infra -->
+  <line x1="285" y1="654" x2="285" y2="674" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-gray)"/>
+  <line x1="795" y1="676" x2="795" y2="674" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-gray)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ReAct Loop mini diagram — floating top-right corner -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Placed below Intent Router, above panels on far right — actually let's put it as a small callout -->
+  <rect x="890" y="310" width="136" height="166" rx="9" fill="#fffbeb" stroke="#fde68a" stroke-width="1.2" filter="url(#shadow-sm)"/>
+  <text x="958" y="327" text-anchor="middle" fill="#92400e" font-size="9.5" font-weight="700">ReAct Loop</text>
+  <text x="958" y="340" text-anchor="middle" fill="#b45309" font-size="8">Gates 1 – 6</text>
+
+  <!-- Think -->
+  <ellipse cx="958" cy="364" rx="46" ry="16" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <text x="958" y="368" text-anchor="middle" fill="#78350f" font-size="9" font-weight="600">Think</text>
+
+  <line x1="958" y1="380" x2="958" y2="390" stroke="#f59e0b" stroke-width="1.2" marker-end="url(#arr-amber)"/>
+
+  <!-- Act -->
+  <ellipse cx="958" cy="405" rx="46" ry="16" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <text x="958" y="409" text-anchor="middle" fill="#78350f" font-size="9" font-weight="600">Act  (tool)</text>
+
+  <line x1="958" y1="421" x2="958" y2="431" stroke="#f59e0b" stroke-width="1.2" marker-end="url(#arr-amber)"/>
+
+  <!-- Observe -->
+  <ellipse cx="958" cy="446" rx="46" ry="16" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <text x="958" y="450" text-anchor="middle" fill="#78350f" font-size="9" font-weight="600">Observe</text>
+
+  <!-- Loop back -->
+  <path d="M 912,446 L 900,446 L 900,364 L 912,364" fill="none" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-amber)"/>
+
+  <!-- Conclude exit -->
+  <path d="M 958,462 L 958,472" fill="none" stroke="#10b981" stroke-width="1.2" marker-end="url(#arr-green)"/>
+  <rect x="920" y="472" width="76" height="16" rx="4" fill="#d1fae5" stroke="#6ee7b7" stroke-width="0.8"/>
+  <text x="958" y="483" text-anchor="middle" fill="#065f46" font-size="8" font-weight="600">&lt;conclude&gt; → 结束</text>
+
+  <!-- Legend -->
+  <line x1="54" y1="844" x2="1026" y2="844" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="74" cy="856" r="5" fill="#3b82f6"/>
+  <text x="84" y="860" fill="#64748b" font-size="8.5">Index Agent</text>
+  <circle cx="160" cy="856" r="5" fill="#7c3aed"/>
+  <text x="170" y="860" fill="#64748b" font-size="8.5">Company Agent</text>
+  <rect x="244" y="851" width="10" height="10" rx="2" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+  <text x="260" y="860" fill="#64748b" font-size="8.5">Reflection Checkpoint</text>
+  <rect x="374" y="851" width="10" height="10" rx="2" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="390" y="860" fill="#64748b" font-size="8.5">共用基础设施</text>
+  <text x="1026" y="860" text-anchor="end" fill="#cbd5e1" font-size="8">uteki.open</text>
+</svg>

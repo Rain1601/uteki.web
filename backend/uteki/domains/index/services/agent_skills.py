@@ -45,13 +45,14 @@ SKILL_ANALYZE_MARKET = AgentSkill(
     skill_name="analyze_market",
     system_prompt_template=(
         "你是一名专业的指数 ETF 投资分析师，正在进行技术面与估值分析。\n\n"
-        "【重要】所有需要的市场数据已经在用户消息中提供，请直接基于已有数据进行分析。不要请求更多数据，不要说「我需要获取」。\n\n"
-        "请基于以下市场行情和估值数据进行分析：\n"
+        "基础市场数据已在用户消息中提供。如果你需要验证某个关键数据点、获取最新市场动态，"
+        "或发现数据可能过时，可以使用 web_search 工具搜索最新信息。\n\n"
+        "分析维度：\n"
         "1. 价格趋势：当前价格 vs MA50/MA200，判断趋势方向\n"
         "2. RSI 信号：超买(>70)、超卖(<30)、中性区间\n"
         "3. 估值水平：PE 所处历史分位、CAPE 估值、盈利收益率 vs 无风险利率\n"
         "4. 股息率吸引力\n\n"
-        "你的输出必须是且仅是一个 JSON 对象（不含 markdown 标记、不含解释文字），直接以 { 开始、以 } 结束：\n"
+        "【输出规则】你的最终输出必须是且仅是一个 JSON 对象（不含 markdown 标记），直接以 { 开始、以 } 结束：\n"
         "{\n"
         '  "market_regime": "bullish" / "bearish" / "neutral" / "transitioning",\n'
         '  "trend_signals": {"SYMBOL": {"trend": "...", "strength": "..."}},\n'
@@ -60,7 +61,7 @@ SKILL_ANALYZE_MARKET = AgentSkill(
         '  "summary": "一句话总结"\n'
         "}"
     ),
-    tools=["get_symbol_detail"],
+    tools=["get_symbol_detail", "web_search"],
     output_schema={
         "type": "object",
         "properties": {
@@ -76,8 +77,9 @@ SKILL_ANALYZE_MACRO = AgentSkill(
     skill_name="analyze_macro",
     system_prompt_template=(
         "你是一名专业的宏观经济分析师，正在分析宏观环境对指数 ETF 投资的影响。\n\n"
-        "【重要】所有需要的宏观经济数据和新闻数据已经在用户消息中提供，请直接基于已有数据进行分析。不要请求更多数据，不要说「我需要获取」。\n\n"
-        "请基于以下宏观经济数据和市场情绪数据，结合前一步的技术面分析进行分析：\n"
+        "基础宏观数据已在用户消息中提供。如果数据可能过时（特别是近期利率决议、CPI数据、就业报告等），"
+        "请使用 web_search 搜索最新信息以确保分析准确。\n\n"
+        "结合前一步的技术面分析进行分析：\n"
         "1. 利率环境：联邦基金利率水平与方向，对股票估值的影响\n"
         "2. 通胀态势：CPI/PCE 趋势，对实际回报的影响\n"
         "3. 经济增长：GDP、就业、PMI 信号\n"
@@ -94,7 +96,7 @@ SKILL_ANALYZE_MACRO = AgentSkill(
         '  "summary": "一句话总结"\n'
         "}"
     ),
-    tools=["get_recent_news"],
+    tools=["get_recent_news", "web_search"],
     output_schema={
         "type": "object",
         "properties": {
@@ -112,8 +114,7 @@ SKILL_RECALL_MEMORY = AgentSkill(
     skill_name="recall_memory",
     system_prompt_template=(
         "你正在回顾你的决策历史和记忆，以辅助当前的投资决策。\n\n"
-        "【重要】所有需要的记忆数据已经在用户消息中提供，请直接基于已有数据进行分析。不要请求更多数据，不要说「我需要获取」。\n\n"
-        "请分析以下记忆内容，提取与当前市场环境相关的经验教训：\n"
+        "记忆数据已在用户消息中提供。请分析这些内容，提取与当前市场环境相关的经验教训：\n"
         "1. 近期决策回顾：之前做了什么决策？结果如何？\n"
         "2. 经验教训：有哪些已记录的投资经验？\n"
         "3. 投票获胜方案：之前哪些方案赢得了投票？为什么？\n"
@@ -142,7 +143,8 @@ SKILL_MAKE_DECISION = AgentSkill(
     skill_name="make_decision",
     system_prompt_template=(
         "你是一名专业的指数 ETF 投资顾问，需要基于完整的分析做出最终投资决策。\n\n"
-        "【重要】所有需要的数据和前序分析结果已经在用户消息中提供，请直接基于已有信息做出决策。不要请求更多数据，不要说「我需要获取」。\n\n"
+        "前序分析结果已在用户消息中提供。如果在综合分析时发现关键信息缺失，"
+        "可以使用 web_search 进行最后验证（例如确认最新的市场事件）。\n\n"
         "你已经完成了以下分析步骤：\n"
         "1. 技术面与估值分析\n"
         "2. 宏观经济与情绪分析\n"
@@ -166,7 +168,7 @@ SKILL_MAKE_DECISION = AgentSkill(
         '  "失效条件": "什么情况下此建议无效"\n'
         "}"
     ),
-    tools=["calculate_position_size"],
+    tools=["calculate_position_size", "web_search"],
     output_schema={
         "type": "object",
         "required": ["操作", "信心度", "决策理由"],
@@ -519,30 +521,25 @@ class AgentSkillRunner:
                     skill, user_prompt, accumulated_context
                 )
 
-                # Inject web search note into system prompt when enabled
                 sys_prompt = skill.system_prompt_template
-                if self.web_search_enabled:
-                    sys_prompt += (
-                        "\n\n【联网搜索】你可以使用 web_search 工具搜索互联网获取最新信息。"
-                        "当你需要验证数据、获取最新新闻或补充分析依据时，请主动使用搜索。"
-                    )
 
                 messages = [
                     LLMMessage(role="system", content=sys_prompt),
                     LLMMessage(role="user", content=skill_user_msg),
                 ]
 
-                # Prepare tools: web_search when enabled via google tool
+                # Provide tools defined in the skill (always available)
                 skill_tools = None
-                if self.web_search_enabled and self.web_search_provider == "google":
-                    ws_def = TOOL_DEFINITIONS["web_search"]
-                    skill_tools = [
-                        LLMTool(
-                            name=ws_def["name"],
-                            description=ws_def["description"],
-                            parameters=ws_def["parameters"],
-                        )
-                    ]
+                if skill.tools:
+                    skill_tools = []
+                    for tool_name in skill.tools:
+                        tool_def = TOOL_DEFINITIONS.get(tool_name)
+                        if tool_def:
+                            skill_tools.append(LLMTool(
+                                name=tool_def["name"],
+                                description=tool_def["description"],
+                                parameters=tool_def["parameters"],
+                            ))
 
                 # Use thinking adapter for make_decision if available
                 active_adapter = adapter
@@ -671,7 +668,11 @@ class AgentSkillRunner:
             messages.append(LLMMessageClass(role="assistant", content=output))
             messages.append(LLMMessageClass(
                 role="user",
-                content=f"工具 {tool_name} 的执行结果:\n{tool_result}\n\n请基于此结果继续分析。",
+                content=(
+                    f"工具 {tool_name} 的执行结果:\n{tool_result}\n\n"
+                    f"请基于此结果继续分析。如果信息已充分，请直接输出最终 JSON 结果。"
+                    f"记住：最终输出必须是纯 JSON 对象，以 {{ 开始、以 }} 结束，不含 markdown 标记。"
+                ),
             ))
 
         return output, tool_calls_record
