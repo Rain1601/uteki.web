@@ -14,7 +14,7 @@ import {
   Tooltip,
   SwipeableDrawer,
 } from '@mui/material';
-import { SendHorizonal as SendIcon, Plus as AddIcon, History as HistoryIcon, Search as SearchIcon } from 'lucide-react';
+import { SendHorizonal as SendIcon, Plus as AddIcon, History as HistoryIcon, Search as SearchIcon, Loader2, Globe } from 'lucide-react';
 import { useTheme } from '../theme/ThemeProvider';
 import { useResponsive, useKeyboardVisibility } from '../hooks/useResponsive';
 import ChatMessage from '../components/ChatMessage';
@@ -77,7 +77,7 @@ export default function AgentChatPage() {
   const textFieldRef = useRef<HTMLTextAreaElement>(null);
 
   // Deep Research state
-  const [researchMode, setResearchMode] = useState(false);
+  // researchMode removed — auto-detected by intent router
   const [researchStatus, setResearchStatus] = useState('');
   const [researchThoughts, setResearchThoughts] = useState<string[]>([]);
   const [researchSources, setResearchSources] = useState<Record<string, number>>({});
@@ -131,13 +131,18 @@ export default function AgentChatPage() {
   };
 
   // Deep Research 发送处理
-  const handleDeepResearchSend = async () => {
-    if (!message.trim() || isStreaming) return;
+  // Direct variants that accept message text (for auto-routing)
+  const handleDeepResearchSendDirect = (text: string) => handleDeepResearchSend(text);
+  const handleRegularChatDirect = (text: string) => handleRegularChat(text);
+
+  const handleDeepResearchSend = async (overrideText?: string) => {
+    const text = overrideText || message;
+    if (!text.trim() || isStreaming) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: message,
+      content: text,
       timestamp: new Date(),
     };
 
@@ -276,23 +281,53 @@ export default function AgentChatPage() {
     return 'chat';
   };
 
+  // ── Research confirmation state ──
+  const [pendingResearchMsg, setPendingResearchMsg] = useState<string | null>(null);
+  const [classifying, setClassifying] = useState(false);
+
+  const confirmResearch = () => {
+    if (pendingResearchMsg) {
+      const msg = pendingResearchMsg;
+      setPendingResearchMsg(null);
+      handleDeepResearchSend(msg);
+    }
+  };
+
+  const declineResearch = () => {
+    if (pendingResearchMsg) {
+      const msg = pendingResearchMsg;
+      setPendingResearchMsg(null);
+      handleRegularChat(msg);
+    }
+  };
+
   // 发送消息（SSE流式）
   const handleSendMessage = async () => {
-    if (!message.trim() || isStreaming) return;
+    if (!message.trim() || isStreaming || classifying) return;
 
-    // Auto-route: when research mode is on, let the LLM decide
-    if (researchMode) {
-      const intent = await classifyIntent(message);
-      if (intent === 'research') {
-        return handleDeepResearchSend();
-      }
-      // else: fall through to regular chat
+    // Always auto-classify intent
+    setClassifying(true);
+    const intent = await classifyIntent(message);
+    setClassifying(false);
+
+    if (intent === 'research') {
+      // Show confirmation card
+      setPendingResearchMsg(message);
+      setMessage('');
+      return;
     }
+
+    // Regular chat
+    handleRegularChat(message);
+  };
+
+  const handleRegularChat = async (text: string) => {
+    if (!text.trim() || isStreaming) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: message,
+      content: text,
       timestamp: new Date(),
     };
 
@@ -466,32 +501,15 @@ export default function AgentChatPage() {
             pt: 0,
           }}
         >
-          {/* Left: Research toggle */}
-          <Box
-            onClick={() => setResearchMode(!researchMode)}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.75,
-              px: 1.5,
-              py: 0.5,
-              borderRadius: '10px',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: 500,
-              color: researchMode ? theme.brand.primary : theme.text.muted,
-              bgcolor: researchMode ? `${theme.brand.primary}14` : 'transparent',
-              transition: 'all 0.2s',
-              userSelect: 'none',
-              '&:hover': {
-                bgcolor: researchMode ? `${theme.brand.primary}1f` : theme.background.hover,
-                color: researchMode ? theme.brand.primary : theme.text.secondary,
-              },
-            }}
-          >
-            <SearchIcon size={14} />
-            <span>Research</span>
-          </Box>
+          {/* Left: classifying indicator */}
+          {classifying ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1, color: theme.text.muted, fontSize: '0.75rem' }}>
+              <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} />
+              <span>Routing...</span>
+            </Box>
+          ) : (
+            <Box sx={{ width: 1 }} />
+          )}
 
           {/* Right: Model selector + Send */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -752,6 +770,53 @@ export default function AgentChatPage() {
               )}
 
               {isStreaming && !researchInProgress && <TypingIndicator />}
+
+              {/* Research confirmation card */}
+              {pendingResearchMsg && (
+                <Box sx={{
+                  display: 'flex', flexDirection: 'column', gap: 1.5,
+                  p: 2, borderRadius: '12px',
+                  bgcolor: theme.background.secondary,
+                  border: `1px solid ${theme.border.default}`,
+                  maxWidth: 480,
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Globe size={16} style={{ color: theme.brand.primary }} />
+                    <Typography sx={{ fontSize: 13, fontWeight: 600, color: theme.text.primary, fontFamily: 'var(--font-ui)' }}>
+                      This needs web research
+                    </Typography>
+                  </Box>
+                  <Typography sx={{ fontSize: 12, color: theme.text.muted, lineHeight: 1.6 }}>
+                    "{pendingResearchMsg.slice(0, 80)}{pendingResearchMsg.length > 80 ? '...' : ''}"
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box
+                      onClick={confirmResearch}
+                      sx={{
+                        px: 2, py: 0.6, borderRadius: '8px', cursor: 'pointer',
+                        bgcolor: theme.brand.primary, color: '#fff',
+                        fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-ui)',
+                        transition: 'all 0.15s',
+                        '&:hover': { bgcolor: theme.brand.hover },
+                      }}
+                    >
+                      Search the web
+                    </Box>
+                    <Box
+                      onClick={declineResearch}
+                      sx={{
+                        px: 2, py: 0.6, borderRadius: '8px', cursor: 'pointer',
+                        border: `1px solid ${theme.border.default}`, color: theme.text.muted,
+                        fontSize: 12, fontWeight: 500, fontFamily: 'var(--font-ui)',
+                        transition: 'all 0.15s',
+                        '&:hover': { bgcolor: theme.background.hover, color: theme.text.secondary },
+                      }}
+                    >
+                      Just answer
+                    </Box>
+                  </Box>
+                </Box>
+              )}
 
               <div ref={messagesEndRef} />
             </Box>
