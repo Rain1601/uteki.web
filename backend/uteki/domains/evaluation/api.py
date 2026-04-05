@@ -1,0 +1,126 @@
+"""
+Evaluation API — endpoints for agent quality testing.
+
+POST /api/evaluation/consistency-test       — SSE streaming consistency test
+GET  /api/evaluation/runs                   — list evaluation runs
+GET  /api/evaluation/runs/{id}              — get run detail
+"""
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Query
+from starlette.responses import StreamingResponse
+
+from uteki.common.config import settings
+from uteki.domains.evaluation.schemas import ConsistencyTestRequest
+from uteki.domains.evaluation.repository import EvaluationRepository
+from uteki.domains.evaluation.service import run_consistency_test
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+
+
+async def _resolve_model(model_override: Optional[str] = None) -> Optional[dict]:
+    """Resolve model config — same pattern as company/api.py."""
+    aihub_key = getattr(settings, "aihubmix_api_key", None)
+    aihub_url = getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
+
+    if aihub_key:
+        model = model_override or "deepseek-chat"
+        return {
+            "provider": "openai",
+            "model": model,
+            "api_key": aihub_key,
+            "base_url": aihub_url,
+        }
+
+    # Fallback to env keys
+    for attr, model_name in [
+        ("deepseek_api_key", "deepseek-chat"),
+        ("openai_api_key", "gpt-4.1"),
+        ("anthropic_api_key", "claude-sonnet-4-20250514"),
+    ]:
+        key = getattr(settings, attr, None)
+        if key:
+            return {
+                "provider": attr.replace("_api_key", ""),
+                "model": model_override or model_name,
+                "api_key": key,
+            }
+    return None
+
+
+@router.post("/consistency-test")
+async def consistency_test_stream(req: ConsistencyTestRequest):
+    """Run N analyses of the same symbol and measure output consistency. SSE streaming."""
+    model_config = await _resolve_model(req.model)
+    if not model_config:
+        raise HTTPException(status_code=503, detail="No LLM model configured.")
+
+    queue: asyncio.Queue = asyncio.Queue()
+
+    def emit_progress(event: dict):
+        queue.put_nowait(event)
+
+    async def run_task():
+        try:
+            await run_consistency_test(
+                symbol=req.symbol,
+                num_runs=req.num_runs,
+                model_config=model_config,
+                on_progress=emit_progress,
+            )
+        except Exception as e:
+            logger.error(f"[eval] consistency test error: {e}", exc_info=True)
+            queue.put_nowait({"type": "error", "message": str(e)})
+        finally:
+            queue.put_nowait(None)  # sentinel
+
+    async def event_generator():
+        task = asyncio.create_task(run_task())
+        try:
+            while True:
+                event = await queue.get()
+                if event is None:
+                    break
+                yield f"data: {json.dumps(event, ensure_ascii=False, default=str)}\n\n"
+        finally:
+            if not task.done():
+                logger.info("[eval] SSE disconnected, task continues in background")
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.get("/runs")
+async def list_runs(
+    test_type: Optional[str] = Query(None),
+    symbol: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+):
+    """List evaluation runs."""
+    runs, total = await EvaluationRepository.list_runs(
+        test_type=test_type, symbol=symbol, skip=skip, limit=limit,
+    )
+    return {"runs": runs, "total": total}
+
+
+@router.get("/runs/{run_id}")
+async def get_run(run_id: str):
+    """Get evaluation run detail."""
+    row = await EvaluationRepository.get_by_id(run_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Evaluation run not found")
+    return row

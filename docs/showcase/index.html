@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>uteki.open — Agent Architecture Showcase</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --blue: #3b82f6;
+      --blue-light: #eff6ff;
+      --blue-border: #bfdbfe;
+      --violet: #7c3aed;
+      --violet-light: #f5f3ff;
+      --violet-border: #ddd6fe;
+      --green: #10b981;
+      --green-light: #f0fdf4;
+      --green-border: #bbf7d0;
+      --amber: #f59e0b;
+      --amber-light: #fffbeb;
+      --amber-border: #fcd34d;
+      --red-light: #fef2f2;
+      --red-border: #fecaca;
+      --red: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex; align-items: center; gap: 32px;
+      height: 56px;
+    }
+    .nav-logo { font-weight: 800; font-size: 16px; color: var(--text-primary); text-decoration: none; }
+    .nav-logo span { color: var(--blue); }
+    nav a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .15s; }
+    nav a:hover { color: var(--text-primary); }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--green-light); border: 1px solid var(--green-border);
+      color: #166534; font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 20px;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-light); border: 1px solid var(--blue-border);
+      color: #1d4ed8; font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 20px; margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: 48px; font-weight: 800; line-height: 1.15;
+      letter-spacing: -0.5px; margin-bottom: 20px;
+    }
+    .hero h1 span { color: var(--blue); }
+    .hero-sub {
+      font-size: 18px; color: var(--text-secondary);
+      max-width: 680px; margin-bottom: 36px; line-height: 1.7;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+    .tag {
+      padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+      border: 1px solid;
+    }
+    .tag-blue   { background: var(--blue-light);   border-color: var(--blue-border);   color: #1d4ed8; }
+    .tag-violet { background: var(--violet-light);  border-color: var(--violet-border); color: #5b21b6; }
+    .tag-green  { background: var(--green-light);   border-color: var(--green-border);  color: #166534; }
+    .tag-amber  { background: var(--amber-light);   border-color: var(--amber-border);  color: #92400e; }
+    .hero-actions { display: flex; gap: 12px; }
+    .btn-primary {
+      background: var(--blue); color: #fff;
+      padding: 11px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      text-decoration: none; transition: background .15s;
+    }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-secondary {
+      background: var(--surface); color: var(--text-primary);
+      border: 1px solid var(--border-strong);
+      padding: 11px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      text-decoration: none; transition: border-color .15s;
+    }
+    .btn-secondary:hover { border-color: #94a3b8; }
+
+    /* ── Section ── */
+    section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+    section:last-child { border-bottom: none; }
+    .section-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--blue); margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 32px; font-weight: 800; letter-spacing: -0.3px;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 16px; color: var(--text-secondary);
+      max-width: 640px; line-height: 1.7; margin-bottom: 48px;
+    }
+
+    /* ── Positioning card ── */
+    .positioning-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px 36px;
+      border-left: 4px solid var(--blue);
+      margin-bottom: 32px;
+    }
+    .positioning-card p {
+      font-size: 17px; line-height: 1.8; color: var(--text-secondary);
+    }
+    .positioning-card strong { color: var(--text-primary); }
+
+    /* ── Two-col grid ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+    /* ── Feature cards ── */
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+    }
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 16px;
+    }
+    .icon-blue   { background: var(--blue-light); }
+    .icon-violet { background: var(--violet-light); }
+    .icon-green  { background: var(--green-light); }
+    .icon-amber  { background: var(--amber-light); }
+    .feature-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p  { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .feature-card .ref {
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--text-muted);
+    }
+    .feature-card .ref a { color: var(--blue); text-decoration: none; }
+    .feature-card .ref a:hover { text-decoration: underline; }
+
+    /* ── Agent evaluation table ── */
+    .eval-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+    .eval-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .eval-header {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .eval-header h3 { font-size: 15px; font-weight: 700; }
+    .eval-verdict {
+      font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    }
+    .verdict-rag    { background: var(--amber-light); color: #92400e; border: 1px solid var(--amber-border); }
+    .verdict-agent  { background: var(--green-light);  color: #166534; border: 1px solid var(--green-border); }
+    .eval-body { padding: 20px 24px; }
+    .eval-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--bg);
+      font-size: 13px;
+    }
+    .eval-row:last-child { border-bottom: none; }
+    .eval-icon { flex-shrink: 0; width: 18px; font-size: 13px; margin-top: 1px; }
+    .eval-text { color: var(--text-secondary); line-height: 1.5; }
+    .eval-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ── Architecture diagram ── */
+    .diagram-tabs {
+      display: flex; gap: 0; margin-bottom: 24px;
+      border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; background: var(--bg); width: fit-content;
+    }
+    .diagram-tab {
+      padding: 10px 22px; font-size: 13px; font-weight: 500;
+      color: var(--text-secondary); cursor: pointer;
+      border: none; background: none; transition: all .15s;
+    }
+    .diagram-tab.active {
+      background: var(--surface); color: var(--text-primary);
+      font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .diagram-tab:not(:last-child) { border-right: 1px solid var(--border); }
+    .diagram-panel { display: none; }
+    .diagram-panel.active { display: block; }
+    .diagram-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px; overflow-x: auto;
+    }
+    .diagram-wrap img, .diagram-wrap object {
+      width: 100%; height: auto; display: block;
+    }
+
+    /* ── References ── */
+    .ref-list { display: flex; flex-direction: column; gap: 14px; }
+    .ref-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px 24px;
+      display: grid; grid-template-columns: auto 1fr auto;
+      gap: 16px; align-items: start;
+    }
+    .ref-num {
+      width: 28px; height: 28px; background: var(--blue-light);
+      border: 1px solid var(--blue-border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #1d4ed8;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .ref-content h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .ref-content p  { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .ref-tag {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+    }
+    .ref-link {
+      font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 500;
+    }
+    .ref-link:hover { text-decoration: underline; }
+    .mapping-note {
+      margin-top: 8px; padding: 8px 12px;
+      background: var(--blue-light); border-radius: 6px;
+      font-size: 12px; color: #1d4ed8; line-height: 1.5;
+    }
+
+    /* ── Innovation ── */
+    .innovation-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px 32px;
+      display: grid; grid-template-columns: 28px 1fr; gap: 20px;
+    }
+    .innovation-num {
+      width: 28px; height: 28px; background: var(--violet-light);
+      border: 1px solid var(--violet-border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #5b21b6; flex-shrink: 0;
+    }
+    .innovation-body h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .innovation-body p  { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .innovation-body .basis {
+      margin-top: 10px; font-size: 12px; color: var(--text-muted);
+      border-top: 1px solid var(--border); padding-top: 10px;
+    }
+
+    /* ── One-liner quote ── */
+    .quote-block {
+      background: var(--violet-light); border: 1px solid var(--violet-border);
+      border-left: 4px solid var(--violet);
+      border-radius: 12px; padding: 28px 32px; margin-top: 40px;
+    }
+    .quote-block p {
+      font-size: 16px; line-height: 1.8; color: #3b0764;
+    }
+
+    /* ── Stack table ── */
+    .stack-table { width: 100%; border-collapse: collapse; }
+    .stack-table th {
+      text-align: left; font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--text-muted); padding: 0 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stack-table td {
+      padding: 14px 16px; font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stack-table tr:last-child td { border-bottom: none; }
+    .stack-table td:first-child { font-weight: 600; color: var(--text-primary); }
+    .stack-table td:nth-child(2) { color: var(--text-secondary); }
+
+    /* ── Footer ── */
+    footer {
+      padding: 40px 0; text-align: center;
+      font-size: 13px; color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; gap: 16px; }
+      .container { padding: 0 20px; }
+      .hero h1 { font-size: 32px; }
+      .grid-2, .grid-3, .eval-grid { grid-template-columns: 1fr; }
+      .ref-item { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a class="nav-logo" href="#"><span>uteki</span>.open</a>
+  <a href="#architecture">架构</a>
+  <a href="#evaluation">Agent 评估</a>
+  <a href="#references">学术依据</a>
+  <a href="#innovations">工程创新</a>
+  <span class="nav-badge">MIT License · Open Source</span>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">🤖 AI-Powered Investment Research</div>
+    <h1>用 <span>Agentic Workflow</span> 实现<br/>价值投资分析自动化</h1>
+    <p class="hero-sub">
+      uteki.open 将 Buffett / Fisher / Munger 三大价值投资框架转化为可执行的 7-Gate AI 分析流水线，
+      在每个分析节点实现真正的 ReAct 自主推理，并通过跨步骤 Reflection 机制保证输出一致性。
+    </p>
+    <div class="hero-tags">
+      <span class="tag tag-blue">ReAct (ICLR 2023)</span>
+      <span class="tag tag-violet">Reflexion (NeurIPS 2023)</span>
+      <span class="tag tag-green">Orchestrator-Workers Pattern</span>
+      <span class="tag tag-amber">7-Gate Decision Pipeline</span>
+      <span class="tag tag-blue">Multi-LLM · 7 Providers</span>
+      <span class="tag tag-violet">SSE Streaming</span>
+    </div>
+    <div class="hero-actions">
+      <a class="btn-primary" href="https://github.com/yourusername/uteki.open">GitHub →</a>
+      <a class="btn-secondary" href="#architecture">查看架构</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Positioning ── -->
+<section id="positioning">
+  <div class="container">
+    <div class="section-label">定位</div>
+    <h2 class="section-title">不只是"调 LLM"的分析工具</h2>
+    <p class="section-desc">
+      市面上大多数 AI 投资工具本质是 Prompt + LLM 的单次调用。
+      uteki.open 的差异化在于对 Agentic 架构的深度工程实践。
+    </p>
+
+    <div class="positioning-card">
+      <p>
+        本项目的核心贡献是：<strong>将结构化的价值投资分析框架与 Agentic AI 的自主推理能力深度融合</strong>。
+        每个分析节点（Gate）都是一个独立的 ReAct Agent，能够自主决定何时搜索外部信息、
+        何时对比同行数据、何时得出结论；多个 Gate 之间通过 PipelineContext 实现信息累积，
+        并在关键节点引入 Reflection 机制进行跨步骤一致性校验——这是对 Reflexion 论文思路在
+        <strong>多步骤生产流水线</strong>中的扩展应用。
+      </p>
+    </div>
+
+    <div class="grid-3">
+      <div class="feature-card">
+        <div class="feature-icon icon-blue">🔄</div>
+        <h3>ReAct Loop per Gate</h3>
+        <p>每个分析 Gate 内独立运行 Think→Act→Observe 循环，LLM 自主决策工具调用时机与终止条件，而非固定步骤。</p>
+        <div class="ref">基于 <a href="https://arxiv.org/abs/2210.03629" target="_blank">ReAct (Yao et al., ICLR 2023)</a></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-violet">🪞</div>
+        <h3>Cross-Gate Reflection</h3>
+        <p>Gate 3/5 后触发独立的矛盾审计 LLM，检查前序分析的内在一致性并将提示注入后续 Gate——单步 Reflexion 的多步扩展。</p>
+        <div class="ref">基于 <a href="https://arxiv.org/abs/2303.11366" target="_blank">Reflexion (Shinn et al., NeurIPS 2023)</a></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-green">🏭</div>
+        <h3>Orchestrator-Workers</h3>
+        <p>CompanySkillRunner 作为编排层，GateExecutor 作为工人层，严格遵循 Anthropic《Building Effective Agents》中的最佳实践。</p>
+        <div class="ref">基于 <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank">Anthropic, 2024</a></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-amber">⚖️</div>
+        <h3>Tool Budget Control</h3>
+        <p>每个 Gate 独立的 ToolBudget（搜索≤6次 / 轮次≤5 / 超时≤180s），解决生产环境中 ReAct 无限循环的工程难题。</p>
+        <div class="ref">工程实践，填补 ReAct 论文未解决的生产化问题</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-blue">🔗</div>
+        <h3>Multi-LLM Unified Layer</h3>
+        <p>统一 LLMAdapterFactory 支持 7+ 模型提供商，三级优先级路由（AIHubMix → Admin DB → .env），单一接口屏蔽所有差异。</p>
+        <div class="ref">OpenAI / Anthropic / DeepSeek / Qwen / Gemini / Doubao</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-violet">📊</div>
+        <h3>Structured JSON Output</h3>
+        <p>G7 综合裁决输出完整 Pydantic Schema，包含 BUY/WATCH/AVOID、conviction、position_size_pct 等 50+ 字段，双重解析兜底。</p>
+        <div class="ref">Buffett / Fisher / Munger 三大框架结构化实现</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Agent 评估 ── -->
+<section id="evaluation">
+  <div class="container">
+    <div class="section-label">Agent 评估</div>
+    <h2 class="section-title">诚实的架构定性</h2>
+    <p class="section-desc">
+      我们对两个子系统进行了严格的 Agent 属性评估，
+      清楚地区分"真正的 ReAct Agent"与"Agentic Workflow"的边界——
+      这种自我评估能力本身体现了工程成熟度。
+    </p>
+
+    <div class="eval-grid">
+      <div class="eval-card">
+        <div class="eval-header">
+          <h3>Index Agent — Deep Research</h3>
+          <span class="eval-verdict verdict-rag">Agentic RAG</span>
+        </div>
+        <div class="eval-body">
+          <div class="eval-row"><span class="eval-icon">✅</span><span class="eval-text"><strong>意图感知</strong>：LLM 分类 research vs chat</span></div>
+          <div class="eval-row"><span class="eval-icon">✅</span><span class="eval-text"><strong>目标分解</strong>：query → subtasks</span></div>
+          <div class="eval-row"><span class="eval-icon">⚠️</span><span class="eval-text"><strong>工具调用</strong>：固定流程调用，非 LLM 自主选择时机</span></div>
+          <div class="eval-row"><span class="eval-icon">❌</span><span class="eval-text"><strong>ReAct 循环</strong>：线性流程，无 Observe→Think 迭代</span></div>
+          <div class="eval-row"><span class="eval-icon">❌</span><span class="eval-text"><strong>自主终止</strong>：固定五步，无提前退出机制</span></div>
+          <div class="eval-row"><span class="eval-icon">❌</span><span class="eval-text"><strong>动态路由</strong>：步骤硬编码，不能跳步或回溯</span></div>
+        </div>
+      </div>
+
+      <div class="eval-card">
+        <div class="eval-header">
+          <h3>Company Agent — Gate Executor</h3>
+          <span class="eval-verdict verdict-agent">真正的 ReAct Agent ✓</span>
+        </div>
+        <div class="eval-body">
+          <div class="eval-row"><span class="eval-icon">✅</span><span class="eval-text"><strong>ReAct 循环</strong>：完整 Think→Act→Observe 迭代</span></div>
+          <div class="eval-row"><span class="eval-icon">✅</span><span class="eval-text"><strong>工具自主调用</strong>：LLM 决定是否调用、调用哪个工具</span></div>
+          <div class="eval-row"><span class="eval-icon">✅</span><span class="eval-text"><strong>自主终止</strong>：&lt;conclude&gt; 标签由 LLM 自己触发</span></div>
+          <div class="eval-row"><span class="eval-icon">✅</span><span class="eval-text"><strong>元认知</strong>：Reflection 审计跨 Gate 矛盾</span></div>
+          <div class="eval-row"><span class="eval-icon">✅</span><span class="eval-text"><strong>预算约束</strong>：ToolBudget 防止无限循环</span></div>
+          <div class="eval-row"><span class="eval-icon">❌</span><span class="eval-text"><strong>动态 Gate 路由</strong>：G1→G7 顺序固定（Agentic Workflow 层面的约束）</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      <p>
+        整体定性：<strong>Gate 内是真正的 ReAct Agent，Gate 间编排是结构化 Agentic Workflow</strong>。
+        这是刻意的工程取舍——用结构化管控分析质量与可预测性，用 ReAct 在每个分析节点保留自主灵活性。
+        遵循 Anthropic 所述：<em>"use workflows for predictable, agents for unpredictable"</em>。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Architecture ── -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-label">架构图</div>
+    <h2 class="section-title">系统架构</h2>
+    <p class="section-desc">三张架构图从不同粒度展示系统设计。</p>
+
+    <div class="diagram-tabs">
+      <button class="diagram-tab active" onclick="switchTab(0)">全景架构</button>
+      <button class="diagram-tab" onclick="switchTab(1)">Index Agent</button>
+      <button class="diagram-tab" onclick="switchTab(2)">Company Agent</button>
+    </div>
+
+    <div class="diagram-panel active" id="tab-0">
+      <div class="diagram-wrap">
+        <img src="assets/agent_architecture_light.svg" alt="Agent 全景架构图"/>
+      </div>
+    </div>
+    <div class="diagram-panel" id="tab-1">
+      <div class="diagram-wrap">
+        <img src="assets/index_agent_arch.svg" alt="Index Agent 架构图"/>
+      </div>
+    </div>
+    <div class="diagram-panel" id="tab-2">
+      <div class="diagram-wrap">
+        <img src="assets/company_agent_arch.svg" alt="Company Agent 架构图"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── References ── -->
+<section id="references">
+  <div class="container">
+    <div class="section-label">学术依据</div>
+    <h2 class="section-title">站在巨人的肩膀上</h2>
+    <p class="section-desc">
+      项目的核心设计均有明确的学术或工业权威来源，
+      在此基础上针对金融投资场景进行了工程化扩展与优化。
+    </p>
+
+    <div class="ref-list">
+      <div class="ref-item">
+        <div class="ref-num">1</div>
+        <div class="ref-content">
+          <h4>ReAct: Synergizing Reasoning and Acting in Language Models</h4>
+          <p>Yao et al. · Google Brain / Princeton · <strong>ICLR 2023</strong></p>
+          <p style="margin-top:6px">提出 Think-Action-Observation 交替循环架构，使 LLM 能够在推理过程中动态调用外部工具。uteki.open 的 GateExecutor 直接实现了此模式。</p>
+          <div class="mapping-note">→ 映射：每个 Gate 的 ReAct Loop、&lt;conclude&gt; 自主终止、ToolCallParser 4种格式兼容</div>
+        </div>
+        <a class="ref-link" href="https://arxiv.org/abs/2210.03629" target="_blank">arxiv →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">2</div>
+        <div class="ref-content">
+          <h4>Reflexion: Language Agents with Verbal Reinforcement Learning</h4>
+          <p>Shinn et al. · Northeastern / MIT · <strong>NeurIPS 2023</strong></p>
+          <p style="margin-top:6px">Agent 通过语言反思（verbal reflection）而非梯度更新改进输出，将反思文本存入 episodic memory 影响后续决策。本项目将单步 Reflexion 扩展为跨 Gate 的多步一致性审计。</p>
+          <div class="mapping-note">→ 映射：Gate 3/5 后的 Reflection Checkpoint、矛盾检测、downstream_hints 注入后续 Gate system prompt</div>
+        </div>
+        <a class="ref-link" href="https://arxiv.org/abs/2303.11366" target="_blank">arxiv →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">3</div>
+        <div class="ref-content">
+          <h4>Building Effective Agents</h4>
+          <p>Anthropic Engineering · <strong>2024</strong></p>
+          <p style="margin-top:6px">系统化定义了 Prompt Chaining、Routing、Parallelization、Orchestrator-Workers、Evaluator-Optimizer 五大 Agentic 模式，并明确指出生产环境中需要 budget 控制与 monitoring。</p>
+          <div class="mapping-note">→ 映射：整体 Orchestrator-Workers 模式、ToolBudget 工程实践、Agentic Workflow vs Agent 的边界判断</div>
+        </div>
+        <a class="ref-link" href="https://www.anthropic.com/research/building-effective-agents" target="_blank">anthropic.com →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">4</div>
+        <div class="ref-content">
+          <h4>AI Agentic Workflows — Four Design Patterns</h4>
+          <p>Andrew Ng · DeepLearning.AI · <strong>2024</strong></p>
+          <p style="margin-top:6px">定义了 Agentic AI 的四大设计模式：Reflection、Tool Use、Planning、Multi-Agent Collaboration，并指出结合这些模式的系统将显著超越单次 LLM 调用。</p>
+          <div class="mapping-one">→ 映射：项目同时体现 Reflection + Tool Use + Planning 三个模式</div>
+        </div>
+        <a class="ref-link" href="https://landing.ai/blog/andrew-ng-a-look-at-ai-agentic-workflows-and-their-potential-for-driving-ai-progress" target="_blank">landing.ai →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">5</div>
+        <div class="ref-content">
+          <h4>Improving Factuality and Reasoning via Multiagent Debate</h4>
+          <p>Du et al. · MIT · <strong>ICML 2023</strong></p>
+          <p style="margin-top:6px">多个 LLM 从不同角度分析同一问题并相互批判，显著降低幻觉率并提升事实准确性。本项目以"7个专业视角串行分析 + G7 综合裁决"实现类似的多视角校验。</p>
+          <div class="mapping-note">→ 映射：7-Gate 串行多视角 + G7 综合裁决 + Reflection 矛盾检测</div>
+        </div>
+        <a class="ref-link" href="https://arxiv.org/abs/2305.14325" target="_blank">arxiv →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Engineering Innovations ── -->
+<section id="innovations">
+  <div class="container">
+    <div class="section-label">工程创新</div>
+    <h2 class="section-title">在先进研究基础上的扩展</h2>
+    <p class="section-desc">
+      以下三点是超出原始论文范畴、针对金融投资场景生产化所做的工程贡献。
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div class="innovation-card">
+        <div class="innovation-num">1</div>
+        <div class="innovation-body">
+          <h3>ToolBudget — ReAct 的生产化约束层</h3>
+          <p>
+            原始 ReAct 论文未解决无限循环问题。本项目设计了精确的资源限制器：
+            每 Gate 独立的 <code>max_searches=6 / max_rounds=5 / timeout=180s</code>，
+            预算耗尽时向 LLM 发送强制终止提示，而非直接中断——保留了输出的完整性。
+          </p>
+          <div class="basis">理论基础：Anthropic《Building Effective Agents》指出生产环境必须解决 budget 控制问题，但未给出实现细节。</div>
+        </div>
+      </div>
+
+      <div class="innovation-card">
+        <div class="innovation-num">2</div>
+        <div class="innovation-body">
+          <h3>Cross-Gate Reflexion — 单步反思的多步扩展</h3>
+          <p>
+            Reflexion 论文中 Agent 反思自身在<strong>同一任务</strong>中的输出。
+            本项目将其扩展为：在固定 Checkpoint（Gate 3/5 后）由独立 LLM 审计
+            <strong>多个不同 Gate 之间的结论一致性</strong>，
+            并将 <code>downstream_hints</code> 动态注入后续 Gate 的 system prompt——
+            这是 Reflexion 思路在多步 Pipeline 中的首个工程落地形式之一。
+          </p>
+          <div class="basis">理论基础：Reflexion (Shinn et al., NeurIPS 2023) — 将语言反思从单步扩展为跨步骤一致性校验。</div>
+        </div>
+      </div>
+
+      <div class="innovation-card">
+        <div class="innovation-num">3</div>
+        <div class="innovation-body">
+          <h3>领域知识结构化 — 三大投资框架的 Prompt 工程</h3>
+          <p>
+            将 Buffett（护城河/估值）、Fisher（成长质量/管理层）、Munger（逆向检验/多元心智模型）
+            三大框架转化为 7 个独立的专业 Agent，每个 Agent 有明确的分析维度、评分标准和工具权限。
+            这是"投资领域知识"与"Agentic AI"的系统性融合，而非简单的 Prompt 拼接。
+          </p>
+          <div class="basis">理论基础：Multiagent Debate (Du et al., ICML 2023) — 多视角分析降低幻觉，提升一致性。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Tech Stack ── -->
+<section id="stack">
+  <div class="container">
+    <div class="section-label">技术栈</div>
+    <h2 class="section-title">完整的工程实现</h2>
+    <p class="section-desc">从 LLM 接入到数据存储，全栈自研，无框架依赖。</p>
+
+    <div class="grid-2" style="gap:40px; align-items:start;">
+      <div>
+        <table class="stack-table">
+          <thead><tr><th>层次</th><th>技术选型</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td>后端框架</td><td>FastAPI + Uvicorn</td><td>异步 API / SSE 流式</td></tr>
+            <tr><td>LLM 接入</td><td>自研 LLMAdapterFactory</td><td>7+ 模型统一接口</td></tr>
+            <tr><td>Agent 核心</td><td>自研 ReAct Engine</td><td>无框架依赖</td></tr>
+            <tr><td>主数据库</td><td>PostgreSQL + Alembic</td><td>分析结果 / 对话历史</td></tr>
+            <tr><td>时序数据</td><td>ClickHouse</td><td>K 线 / 行情数据</td></tr>
+            <tr><td>缓存</td><td>Redis</td><td>公司数据 7 天缓存</td></tr>
+            <tr><td>向量库</td><td>Qdrant</td><td>语义检索</td></tr>
+            <tr><td>对象存储</td><td>MinIO</td><td>文件 / 报告</td></tr>
+            <tr><td>前端</td><td>React 18 + TypeScript</td><td>Dark theme UI</td></tr>
+            <tr><td>移动端</td><td>Flutter</td><td>iOS / Android</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="feature-card">
+          <div class="feature-icon icon-blue">📦</div>
+          <h3>一键本地部署</h3>
+          <p>Docker Compose 启动全部 5 个数据库，<code>poetry install</code> + <code>pnpm dev</code>，5 分钟内可运行。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon icon-green">🔑</div>
+          <h3>多 LLM 灵活切换</h3>
+          <p>Admin 页面配置 API Key，支持 OpenAI / Claude / DeepSeek / Qwen / Gemini / Doubao，无需修改代码。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon icon-violet">📡</div>
+          <h3>全程 SSE 流式输出</h3>
+          <p>前端实时可见每个 Gate 的推理过程、工具调用、Reflection 结果，体验 Agent 真实工作过程。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="container">
+    <p>uteki.open · MIT License · Built with ReAct, Reflexion, and Anthropic Agentic Patterns</p>
+    <p style="margin-top:8px">
+      <a href="https://arxiv.org/abs/2210.03629">ReAct</a> ·
+      <a href="https://arxiv.org/abs/2303.11366">Reflexion</a> ·
+      <a href="https://www.anthropic.com/research/building-effective-agents">Anthropic Agents</a> ·
+      <a href="https://arxiv.org/abs/2305.14325">Multiagent Debate</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  function switchTab(idx) {
+    document.querySelectorAll('.diagram-tab').forEach((t, i) => {
+      t.classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.diagram-panel').forEach((p, i) => {
+      p.classList.toggle('active', i === idx);
+    });
+  }
+</script>
+</body>
+</html>

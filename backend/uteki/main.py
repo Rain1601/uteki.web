@@ -254,7 +254,7 @@ from uteki.domains.data.api import router as data_router
 from uteki.domains.data.udf_api import router as udf_router
 from uteki.domains.company.api import router as company_router
 # from uteki.domains.trading.api import router as trading_router  # 待实现
-# from uteki.domains.evaluation.api import router as evaluation_router  # 待实现
+from uteki.domains.evaluation.api import router as evaluation_router
 # from uteki.domains.dashboard.api import router as dashboard_router  # 待实现
 
 # 注册domain路由
@@ -274,7 +274,7 @@ app.include_router(data_router, prefix="/api/data", tags=["market-data"])
 app.include_router(udf_router, prefix="/api/udf", tags=["udf-datafeed"])
 app.include_router(company_router, prefix="/api/company", tags=["company"])
 # app.include_router(trading_router, prefix="/api/trading", tags=["trading"])  # 待实现
-# app.include_router(evaluation_router, prefix="/api/evaluation", tags=["evaluation"])  # 待实现
+app.include_router(evaluation_router, prefix="/api/evaluation", tags=["evaluation"])
 # app.include_router(dashboard_router, prefix="/api/dashboard", tags=["dashboard"])  # 待实现
 
 
