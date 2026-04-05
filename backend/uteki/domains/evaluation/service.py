@@ -304,3 +304,231 @@ async def run_consistency_test(
 
     emit({"type": "result", "data": result})
     return result
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# LLM-as-Judge — Gate Quality Scorer
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Gates to judge (most critical for quality assessment)
+JUDGE_GATES = {
+    1: "business_analysis",
+    3: "moat_assessment",
+    5: "reverse_test",
+    7: "final_verdict",
+}
+
+_JUDGE_SYSTEM_PROMPT = """你是一名投资分析质量审计员。你的任务是评估一段投资分析报告的质量。
+
+你将收到：
+1. 待评分的分析报告（某个分析维度的输出）
+2. 该公司的实际财务数据（yfinance 基准数据）
+3. 分析师原始任务要求（system prompt）
+
+【重要】你必须先逐条列出问题和扣分理由，然后再给出分数。不要先给分数再找理由。
+
+【评分维度】（每项 1-10 分）
+
+A. 事实准确性 (accuracy)
+- 10分：所有引用的数据与实际数据完全一致
+- 7-9分：大部分数据准确，有少量四舍五入差异
+- 4-6分：有明显的数据错误或编造
+- 1-3分：大量数据与实际不符或完全编造
+
+B. 分析深度 (depth)
+- 10分：完全覆盖任务要求的所有分析维度，有独到见解
+- 7-9分：覆盖了大部分维度，分析有一定深度
+- 4-6分：分析较浅，遗漏了部分重要维度
+- 1-3分：严重不足，只是泛泛而谈
+
+C. 内部一致性 (consistency)
+- 10分：结论与数据完全自洽，逻辑严密
+- 7-9分：基本自洽，有轻微不一致
+- 4-6分：存在明显的逻辑矛盾
+- 1-3分：结论与数据严重矛盾
+
+【输出格式】
+输出一个 JSON 对象，以 { 开始、以 } 结束，不含 markdown 标记：
+{
+  "deductions": [
+    {"dimension": "A/B/C", "issue": "具体问题描述", "severity": "minor/major/critical"}
+  ],
+  "scores": {
+    "accuracy": N,
+    "depth": N,
+    "consistency": N
+  },
+  "overall": N,
+  "summary": "一句话总评"
+}"""
+
+_JUDGE_USER_TEMPLATE = """请评估以下投资分析报告的质量。
+
+═══ 分析报告（Gate {gate_number}: {gate_name}）═══
+{report_text}
+
+═══ 实际财务数据（yfinance 基准）═══
+{financial_data}
+
+═══ 分析师原始任务要求 ═══
+{task_prompt}"""
+
+
+async def judge_analysis(
+    analysis_id: str,
+    judge_model: str = "deepseek-chat",
+) -> Dict[str, Any]:
+    """Judge the quality of a completed company analysis.
+
+    Evaluates G1/G3/G5/G7 using an independent LLM judge.
+
+    Returns:
+        {analysis_id, symbol, scores: [{gate, skill, accuracy, depth, consistency, overall, deductions}], summary}
+    """
+    import asyncio
+    import json
+    import re
+
+    from uteki.domains.company.repository import CompanyAnalysisRepository
+    from uteki.domains.company.financials import format_company_data_for_prompt
+    from uteki.domains.company.skills import COMPANY_SKILL_PIPELINE
+    from uteki.domains.agent.llm_adapter import LLMAdapterFactory, LLMConfig, LLMMessage
+    from uteki.domains.evaluation.repository import GateScoreRepository
+
+    # 1. Load the analysis
+    analysis = await CompanyAnalysisRepository.get_by_id(analysis_id)
+    if not analysis:
+        raise ValueError(f"Analysis {analysis_id} not found")
+    if analysis.get("status") != "completed":
+        raise ValueError(f"Analysis {analysis_id} is not completed (status={analysis.get('status')})")
+
+    full_report = analysis.get("full_report", {})
+    skills = full_report.get("skills", {})
+    symbol = analysis.get("symbol", "")
+
+    # 2. Fetch fresh financial data as ground truth
+    company_data = await fetch_company_data(symbol)
+    financial_text = format_company_data_for_prompt(company_data)[:4000]  # truncate for judge context
+
+    # 3. Build skill prompt lookup
+    skill_prompts = {}
+    for skill in COMPANY_SKILL_PIPELINE:
+        skill_prompts[skill.skill_name] = skill.system_prompt[:1000]  # truncate
+
+    # 4. Create judge adapter
+    adapter = LLMAdapterFactory.create_unified(
+        model=judge_model,
+        config=LLMConfig(temperature=0, max_tokens=2000),
+    )
+
+    # 5. Judge each gate
+    gate_scores = []
+
+    for gate_num, skill_name in JUDGE_GATES.items():
+        gate_data = skills.get(skill_name, {})
+        raw_text = gate_data.get("raw", "")
+
+        if not raw_text:
+            logger.warning(f"[judge] gate {gate_num} ({skill_name}) has no raw output, skipping")
+            continue
+
+        # Build gate name
+        gate_name = gate_data.get("display_name", skill_name)
+
+        # Build judge prompt
+        user_msg = _JUDGE_USER_TEMPLATE.format(
+            gate_number=gate_num,
+            gate_name=gate_name,
+            report_text=raw_text[:3000],
+            financial_data=financial_text,
+            task_prompt=skill_prompts.get(skill_name, "(not available)")
+        )
+
+        try:
+            messages = [
+                LLMMessage(role="system", content=_JUDGE_SYSTEM_PROMPT),
+                LLMMessage(role="user", content=user_msg),
+            ]
+
+            result_text = ""
+            async for chunk in adapter.chat(messages, stream=False):
+                result_text += chunk
+
+            # Parse JSON from judge output
+            json_match = re.search(r'\{[\s\S]*\}', result_text)
+            if json_match:
+                judge_result = json.loads(json_match.group(0))
+            else:
+                logger.warning(f"[judge] gate {gate_num} failed to parse JSON, raw: {result_text[:200]}")
+                judge_result = {
+                    "deductions": [],
+                    "scores": {"accuracy": 5, "depth": 5, "consistency": 5},
+                    "overall": 5,
+                    "summary": "Judge output parsing failed",
+                }
+
+            scores = judge_result.get("scores", {})
+            accuracy = float(scores.get("accuracy", 5))
+            depth = float(scores.get("depth", 5))
+            consistency = float(scores.get("consistency", 5))
+            overall = float(judge_result.get("overall", (accuracy + depth + consistency) / 3))
+            deductions = judge_result.get("deductions", [])
+            summary = judge_result.get("summary", "")
+
+            # Save to DB
+            score_record = await GateScoreRepository.create({
+                "analysis_id": analysis_id,
+                "gate_number": gate_num,
+                "skill_name": skill_name,
+                "judge_model": judge_model,
+                "accuracy_score": accuracy,
+                "depth_score": depth,
+                "consistency_score": consistency,
+                "overall_score": overall,
+                "deductions": deductions,
+                "judge_reasoning": result_text,
+            })
+
+            gate_scores.append({
+                "gate": gate_num,
+                "skill": skill_name,
+                "gate_name": gate_name,
+                "accuracy": accuracy,
+                "depth": depth,
+                "consistency": consistency,
+                "overall": overall,
+                "deductions": deductions,
+                "summary": summary,
+            })
+
+            logger.info(f"[judge] gate {gate_num} ({skill_name}): accuracy={accuracy} depth={depth} consistency={consistency} overall={overall}")
+
+        except Exception as e:
+            logger.error(f"[judge] gate {gate_num} ({skill_name}) failed: {e}", exc_info=True)
+            gate_scores.append({
+                "gate": gate_num,
+                "skill": skill_name,
+                "gate_name": gate_name,
+                "error": str(e),
+            })
+
+    # 6. Compute aggregate
+    scored_gates = [g for g in gate_scores if "overall" in g]
+    avg_accuracy = statistics.mean([g["accuracy"] for g in scored_gates]) if scored_gates else 0
+    avg_depth = statistics.mean([g["depth"] for g in scored_gates]) if scored_gates else 0
+    avg_consistency = statistics.mean([g["consistency"] for g in scored_gates]) if scored_gates else 0
+    avg_overall = statistics.mean([g["overall"] for g in scored_gates]) if scored_gates else 0
+
+    return {
+        "analysis_id": analysis_id,
+        "symbol": symbol,
+        "judge_model": judge_model,
+        "gates_judged": len(scored_gates),
+        "scores": gate_scores,
+        "aggregate": {
+            "accuracy": round(avg_accuracy, 1),
+            "depth": round(avg_depth, 1),
+            "consistency": round(avg_consistency, 1),
+            "overall": round(avg_overall, 1),
+        },
+    }

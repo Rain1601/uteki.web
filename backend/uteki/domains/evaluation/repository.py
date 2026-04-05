@@ -9,7 +9,7 @@ from uuid import uuid4
 from sqlalchemy import select, func
 
 from uteki.common.database import db_manager
-from uteki.domains.evaluation.models import EvaluationRun
+from uteki.domains.evaluation.models import EvaluationRun, EvaluationGateScore
 
 logger = logging.getLogger(__name__)
 
@@ -92,3 +92,26 @@ class EvaluationRepository:
             rows = (await session.execute(q)).scalars().all()
 
             return [_row_to_dict(r) for r in rows], total
+
+
+class GateScoreRepository:
+
+    @staticmethod
+    async def create(data: dict) -> dict:
+        _ensure_id(data)
+        async with db_manager.get_postgres_session() as session:
+            obj = EvaluationGateScore(**{k: v for k, v in data.items() if hasattr(EvaluationGateScore, k)})
+            session.add(obj)
+            await session.flush()
+            return _row_to_dict(obj)
+
+    @staticmethod
+    async def get_by_analysis(analysis_id: str) -> List[dict]:
+        async with db_manager.get_postgres_session() as session:
+            q = (
+                select(EvaluationGateScore)
+                .where(EvaluationGateScore.analysis_id == analysis_id)
+                .order_by(EvaluationGateScore.gate_number)
+            )
+            rows = (await session.execute(q)).scalars().all()
+            return [_row_to_dict(r) for r in rows]

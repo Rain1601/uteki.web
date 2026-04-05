@@ -37,3 +37,33 @@ class EvaluationRun(Base, UUIDMixin, TimestampMixin):
 
     def __repr__(self):
         return f"<EvaluationRun(id={self.id}, type={self.test_type}, symbol={self.symbol}, status={self.status})>"
+
+
+class EvaluationGateScore(Base, UUIDMixin, TimestampMixin):
+    """
+    LLM-as-Judge score for a single gate's output.
+    """
+
+    __tablename__ = "evaluation_gate_scores"
+    __table_args__ = get_table_args(
+        Index("idx_egs_analysis", "analysis_id"),
+        schema="evaluation"
+    )
+
+    analysis_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    gate_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    skill_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    judge_model: Mapped[str] = mapped_column(String(100), nullable=False)
+
+    # Scores (1-10)
+    accuracy_score: Mapped[float] = mapped_column(Float, nullable=False, default=5.0)
+    depth_score: Mapped[float] = mapped_column(Float, nullable=False, default=5.0)
+    consistency_score: Mapped[float] = mapped_column(Float, nullable=False, default=5.0)
+    overall_score: Mapped[float] = mapped_column(Float, nullable=False, default=5.0)
+
+    # Structured deductions + full reasoning
+    deductions: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, nullable=False, default=list)
+    judge_reasoning: Mapped[str] = mapped_column(Text, nullable=False, default="")
+
+    def __repr__(self):
+        return f"<EvaluationGateScore(analysis={self.analysis_id}, gate={self.gate_number}, overall={self.overall_score})>"

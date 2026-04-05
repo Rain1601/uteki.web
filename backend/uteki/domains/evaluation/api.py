@@ -16,9 +16,9 @@ from fastapi import APIRouter, HTTPException, Query
 from starlette.responses import StreamingResponse
 
 from uteki.common.config import settings
-from uteki.domains.evaluation.schemas import ConsistencyTestRequest
-from uteki.domains.evaluation.repository import EvaluationRepository
-from uteki.domains.evaluation.service import run_consistency_test
+from uteki.domains.evaluation.schemas import ConsistencyTestRequest, JudgeRequest
+from uteki.domains.evaluation.repository import EvaluationRepository, GateScoreRepository
+from uteki.domains.evaluation.service import run_consistency_test, judge_analysis
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -124,3 +124,30 @@ async def get_run(run_id: str):
     if not row:
         raise HTTPException(status_code=404, detail="Evaluation run not found")
     return row
+
+
+@router.post("/judge/{analysis_id}")
+async def judge_gate_quality(analysis_id: str, req: JudgeRequest = JudgeRequest()):
+    """LLM-as-Judge: evaluate gate output quality for a completed analysis.
+
+    Judges G1/G3/G5/G7 on: accuracy, depth, consistency.
+    Scores each 1-10, with deduction reasoning (anti position-bias).
+    """
+    try:
+        result = await judge_analysis(
+            analysis_id=analysis_id,
+            judge_model=req.judge_model or "deepseek-chat",
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"[eval] judge failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/judge/{analysis_id}/scores")
+async def get_judge_scores(analysis_id: str):
+    """Get saved judge scores for an analysis."""
+    scores = await GateScoreRepository.get_by_analysis(analysis_id)
+    return {"analysis_id": analysis_id, "scores": scores}
