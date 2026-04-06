@@ -317,3 +317,166 @@ export const getCompanyAnalysis = (id: string) =>
 
 export const deleteCompanyAnalysis = (id: string) =>
   del<{ status: string; id: string }>(`/api/company/analyses/${id}`);
+
+// ── Prompt management ──
+
+export const listPrompts = (gate?: number) =>
+  get<any[]>('/api/company/prompts', { params: gate != null ? { gate } : undefined });
+
+export const createPrompt = (data: { gate_number: number; system_prompt: string; description: string }) =>
+  post<any>('/api/company/prompts', data);
+
+export const activatePrompt = (id: string) =>
+  post<any>(`/api/company/prompts/${id}/activate`);
+
+export const runABTest = (data: {
+  symbol: string;
+  gate_number: number;
+  version_a_id: string;
+  version_b_id: string;
+  runs_per_version: number;
+  judge_model: string;
+}) => post<any>('/api/company/prompts/ab-test', data);
+
+// ── Compare models ──
+
+export const compareModelsStream = (
+  params: { symbol: string; models: string[] },
+  onEvent: (event: any) => void,
+): { cancel: () => void } => {
+  const controller = new AbortController();
+  const token = localStorage.getItem('auth_token');
+
+  (async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/company/analyze/compare`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(params),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const errBody = await response.text().catch(() => '');
+        let detail = `HTTP ${response.status}`;
+        try {
+          const parsed = JSON.parse(errBody);
+          detail = parsed.detail || detail;
+        } catch { /* ignore */ }
+        onEvent({ type: 'error', message: detail });
+        return;
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) return;
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const event = JSON.parse(line.slice(6));
+              onEvent(event);
+            } catch { /* ignore */ }
+          }
+        }
+      }
+
+      if (buffer.startsWith('data: ')) {
+        try {
+          const event = JSON.parse(buffer.slice(6));
+          onEvent(event);
+        } catch { /* ignore */ }
+      }
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
+        onEvent({ type: 'error', message: e.message || 'Compare stream failed' });
+      }
+    }
+  })();
+
+  return { cancel: () => controller.abort() };
+};
+
+// ── Share ──
+
+export const createShareLink = (analysisId: string) =>
+  post<{ share_url: string; expires_at: string }>(`/api/company/analyses/${analysisId}/share`);
+
+export const getSharedAnalysis = (token: string) =>
+  get<any>(`/api/company/shared/${token}`);
+
+// ── Quality dashboard ──
+
+export const getQualityDashboard = () =>
+  get<any>('/api/company/quality/dashboard');
+
+
+// ── Task reconnection ──
+
+export interface RunningTask {
+  id: string;
+  symbol: string;
+  company_name: string;
+  model: string;
+  provider: string;
+  status: string;
+  current_gate: number;
+  created_at: string;
+}
+
+export const listRunningTasks = () =>
+  get<{ tasks: RunningTask[] }>('/api/company/tasks/running');
+
+/**
+ * Connect to a task's reconnectable SSE stream.
+ * Replays completed gates, then streams live events.
+ */
+export const connectTaskStream = (
+  analysisId: string,
+  onEvent: (event: any) => void,
+  onDone?: () => void,
+  onError?: (err: Error) => void,
+): (() => void) => {
+  const token = localStorage.getItem('auth_token');
+  const url = `${API_BASE}/api/company/tasks/${analysisId}/stream`;
+
+  const eventSource = new EventSource(
+    `${url}${url.includes('?') ? '&' : '?'}token=${token}`,
+  );
+
+  eventSource.onmessage = (e) => {
+    try {
+      const event = JSON.parse(e.data);
+      if (event.type === 'task_status') {
+        onEvent(event);
+        onDone?.();
+        eventSource.close();
+      } else {
+        onEvent(event);
+      }
+    } catch {
+      // ignore parse errors
+    }
+  };
+
+  eventSource.onerror = () => {
+    onError?.(new Error('SSE connection lost'));
+    eventSource.close();
+  };
+
+  // Return cleanup function
+  return () => eventSource.close();
+};
