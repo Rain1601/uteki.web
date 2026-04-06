@@ -504,6 +504,8 @@ class AgentSkillRunner:
         accumulated_context: List[Dict[str, Any]] = []
         all_tool_calls: List[Dict[str, Any]] = []
         has_fatal_failure = False
+        total_input_tokens = 0
+        total_output_tokens = 0
 
         agent_key = f"{provider_name}:{model_name}"
         for step_idx, skill in enumerate(SKILL_PIPELINE):
@@ -551,6 +553,11 @@ class AgentSkillRunner:
                 )
 
                 skill_latency = int((time.time() - skill_start) * 1000)
+
+                # Accumulate token usage from adapter
+                if active_adapter.last_usage:
+                    total_input_tokens += active_adapter.last_usage.input_tokens
+                    total_output_tokens += active_adapter.last_usage.output_tokens
 
                 accumulated_context.append({
                     "skill": skill.skill_name,
@@ -618,6 +625,11 @@ class AgentSkillRunner:
             "tool_calls": all_tool_calls or None,
             "latency_ms": total_latency,
             "status": "pipeline_success",
+            "total_usage": {
+                "input_tokens": total_input_tokens,
+                "output_tokens": total_output_tokens,
+                "total_tokens": total_input_tokens + total_output_tokens,
+            },
         }
 
     async def _execute_skill_with_tools(

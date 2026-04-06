@@ -206,6 +206,72 @@ class MemoryService:
         )
 
 
+    async def compress_if_needed(
+        self,
+        user_id: str,
+        max_experiences: int = 30,
+        compress_to: int = 10,
+    ) -> Optional[str]:
+        """Compress old experience memories when count exceeds threshold.
+
+        When experiences > max_experiences:
+        1. Keep the newest `compress_to` experiences
+        2. Summarize the rest into a single consolidated memory
+        3. Delete the old individual memories
+
+        Returns the consolidated memory content, or None if no compression needed.
+        """
+        experiences = await self.read(
+            user_id, category="experience", limit=200, agent_key="shared"
+        )
+
+        if len(experiences) <= max_experiences:
+            return None
+
+        # Split: keep recent, compress old
+        recent = experiences[:compress_to]
+        old = experiences[compress_to:]
+
+        # Build summary from old memories (no LLM needed — just concatenate key points)
+        old_contents = [m.get("content", "")[:150] for m in old]
+        summary_lines = []
+        for i, content in enumerate(old_contents):
+            summary_lines.append(f"- {content}")
+            if i >= 49:  # cap at 50 items in summary
+                summary_lines.append(f"... and {len(old_contents) - 50} more")
+                break
+
+        consolidated = (
+            f"[Consolidated from {len(old)} memories, "
+            f"oldest: {old[-1].get('created_at', '?')[:10]}]\n"
+            + "\n".join(summary_lines)
+        )
+
+        # Write consolidated memory
+        await self.write(
+            user_id=user_id,
+            category="experience",
+            content=consolidated,
+            metadata={"consolidated_count": len(old), "type": "compressed"},
+            agent_key="shared",
+        )
+
+        # Delete old individual memories
+        for m in old:
+            mid = m.get("id")
+            if mid:
+                try:
+                    await self.delete(mid, user_id)
+                except Exception as e:
+                    logger.warning(f"Failed to delete memory {mid}: {e}")
+
+        logger.info(
+            f"[memory] Compressed {len(old)} experiences → 1 consolidated + "
+            f"{len(recent)} recent for user {user_id}"
+        )
+        return consolidated
+
+
 _memory_service: Optional[MemoryService] = None
 
 
