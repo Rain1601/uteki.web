@@ -57,3 +57,33 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
+
+
+async def get_current_user_sse(request: Request) -> dict:
+    """
+    SSE-compatible auth: supports query param ?token=xxx in addition to
+    Authorization header and Cookie. Needed because EventSource API
+    cannot send custom headers.
+    """
+    # Try normal auth first (header + cookie)
+    user = await get_current_user_optional(request)
+    if user:
+        return user
+
+    # Fallback: check query param
+    token = request.query_params.get("token")
+    if token:
+        payload = verify_token(token)
+        if payload:
+            return {
+                "user_id": payload.get("sub"),
+                "email": payload.get("email"),
+                "name": payload.get("name"),
+                "avatar": payload.get("avatar"),
+                "provider": payload.get("provider"),
+            }
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authenticated",
+    )
