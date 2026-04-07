@@ -1134,7 +1134,7 @@ export default function CompanyAgentPage() {
           <>
             {/* Left: Watchlist / Recommendations tabs */}
             <Box sx={{
-              width: '15%', minWidth: 150, flexShrink: 0,
+              width: '18%', minWidth: 200, maxWidth: 260, flexShrink: 0,
               borderRight: `1px solid ${theme.border.subtle}`,
               display: 'flex', flexDirection: 'column', overflow: 'hidden',
             }}>
@@ -1143,29 +1143,29 @@ export default function CompanyAgentPage() {
                 <Box
                   onClick={() => setLeftTab('watchlist')}
                   sx={{
-                    flex: 1, px: 1, py: 1.25, cursor: 'pointer', textAlign: 'center',
+                    flex: 1, py: 1.5, cursor: 'pointer', textAlign: 'center',
                     borderBottom: leftTab === 'watchlist' ? `2px solid ${theme.brand.primary}` : '2px solid transparent',
                     transition: 'border-color 0.15s ease',
                   }}
                 >
-                  <Typography sx={{ fontSize: 11, fontWeight: 600, color: leftTab === 'watchlist' ? theme.text.primary : theme.text.disabled, letterSpacing: '0.04em' }}>
+                  <Typography sx={{ fontSize: 12, fontWeight: 600, color: leftTab === 'watchlist' ? theme.text.primary : theme.text.disabled, letterSpacing: '0.03em' }}>
                     关注
                   </Typography>
                 </Box>
                 <Box
                   onClick={() => setLeftTab('recommend')}
                   sx={{
-                    flex: 1, px: 1, py: 1.25, cursor: 'pointer', textAlign: 'center', position: 'relative',
+                    flex: 1, py: 1.5, cursor: 'pointer', textAlign: 'center', position: 'relative',
                     borderBottom: leftTab === 'recommend' ? `2px solid ${theme.brand.primary}` : '2px solid transparent',
                     transition: 'border-color 0.15s ease',
                   }}
                 >
-                  <Typography sx={{ fontSize: 11, fontWeight: 600, color: leftTab === 'recommend' ? theme.text.primary : theme.text.disabled, letterSpacing: '0.04em' }}>
+                  <Typography sx={{ fontSize: 12, fontWeight: 600, color: leftTab === 'recommend' ? theme.text.primary : theme.text.disabled, letterSpacing: '0.03em' }}>
                     推荐
                     {pendingCount > 0 && (
                       <Box component="span" sx={{
-                        ml: 0.5, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        minWidth: 15, height: 15, borderRadius: '8px', fontSize: 9, fontWeight: 700,
+                        ml: 0.75, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        minWidth: 16, height: 16, borderRadius: '8px', fontSize: 10, fontWeight: 700,
                         bgcolor: theme.brand.primary, color: '#fff', px: 0.4, verticalAlign: 'middle',
                       }}>
                         {pendingCount}
@@ -1185,17 +1185,17 @@ export default function CompanyAgentPage() {
                   /* ── Watchlist tab with groups ── */
                   <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     {/* Group tabs with arrows */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0, px: 0.5, borderBottom: `1px solid ${theme.border.subtle}15` }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0, px: 1, py: 0.75, borderBottom: `1px solid ${theme.border.subtle}15` }}>
                       {groupScrollState.canLeft && (
-                        <IconButton size="small" onClick={() => scrollGroup('left')} sx={{ p: 0.25, flexShrink: 0, color: theme.text.muted, '&:hover': { color: theme.text.primary }, transition: 'color 0.15s ease' }}>
-                          <ChevronLeft size={13} />
+                        <IconButton size="small" onClick={() => scrollGroup('left')} sx={{ p: 0.25, mr: 0.25, flexShrink: 0, color: theme.text.muted, '&:hover': { color: theme.text.primary }, transition: 'color 0.15s ease' }}>
+                          <ChevronLeft size={14} />
                         </IconButton>
                       )}
                       <Box
                         ref={groupScrollRef}
                         onScroll={updateGroupScroll}
                         sx={{
-                          flex: 1, display: 'flex', alignItems: 'center', gap: 0.25, overflow: 'hidden', minWidth: 0, py: 0.5,
+                          flex: 1, display: 'flex', alignItems: 'center', gap: 0.5, overflow: 'hidden', minWidth: 0,
                           '&::-webkit-scrollbar': { display: 'none' },
                         }}
                       >
@@ -1204,21 +1204,18 @@ export default function CompanyAgentPage() {
                             key={g.id}
                             onClick={() => setActiveGroupId(g.id)}
                             sx={{
-                              px: 1, py: 0.5, cursor: 'pointer', flexShrink: 0, borderRadius: '4px',
-                              bgcolor: activeGroupId === g.id ? `${theme.brand.primary}12` : 'transparent',
+                              px: 1.25, py: 0.5, cursor: 'pointer', flexShrink: 0, borderRadius: '12px',
+                              bgcolor: activeGroupId === g.id ? `${theme.brand.primary}15` : 'transparent',
+                              border: `1px solid ${activeGroupId === g.id ? theme.brand.primary + '25' : 'transparent'}`,
                               transition: 'all 0.15s ease',
-                              '&:hover': { bgcolor: activeGroupId === g.id ? `${theme.brand.primary}12` : `${theme.text.primary}06` },
+                              '&:hover': { bgcolor: activeGroupId === g.id ? `${theme.brand.primary}15` : `${theme.text.primary}06` },
                             }}
                           >
                             <Typography sx={{
-                              fontSize: 10, fontWeight: activeGroupId === g.id ? 600 : 500, whiteSpace: 'nowrap',
+                              fontSize: 11, fontWeight: activeGroupId === g.id ? 600 : 400, whiteSpace: 'nowrap',
                               color: activeGroupId === g.id ? theme.text.primary : theme.text.muted,
-                              lineHeight: 1.4,
                             }}>
                               {g.name}
-                              <Box component="span" sx={{ ml: 0.4, fontSize: 9, color: theme.text.disabled, fontWeight: 400 }}>
-                                {g.symbols.length}
-                              </Box>
                             </Typography>
                           </Box>
                         ))}
@@ -1233,8 +1230,8 @@ export default function CompanyAgentPage() {
                               onBlur={() => { if (newGroupName.trim()) handleAddGroup(); else { setAddingGroup(false); setNewGroupName(''); } }}
                               placeholder="名称"
                               style={{
-                                width: 44, border: 'none', outline: 'none', fontSize: 10,
-                                background: 'transparent', color: theme.text.primary, padding: '3px 4px',
+                                width: 48, border: 'none', outline: 'none', fontSize: 11,
+                                background: 'transparent', color: theme.text.primary, padding: '4px 6px',
                                 borderBottom: `1px solid ${theme.brand.primary}`,
                               }}
                             />
@@ -1243,15 +1240,15 @@ export default function CompanyAgentPage() {
                           <IconButton
                             size="small"
                             onClick={() => setAddingGroup(true)}
-                            sx={{ p: 0.25, flexShrink: 0, color: theme.text.disabled, '&:hover': { color: theme.text.primary }, transition: 'color 0.15s ease' }}
+                            sx={{ p: 0.35, flexShrink: 0, color: theme.text.disabled, '&:hover': { color: theme.text.primary }, transition: 'color 0.15s ease' }}
                           >
-                            <Plus size={11} />
+                            <Plus size={13} />
                           </IconButton>
                         )}
                       </Box>
                       {groupScrollState.canRight && (
-                        <IconButton size="small" onClick={() => scrollGroup('right')} sx={{ p: 0.25, flexShrink: 0, color: theme.text.muted, '&:hover': { color: theme.text.primary }, transition: 'color 0.15s ease' }}>
-                          <ChevronRight size={13} />
+                        <IconButton size="small" onClick={() => scrollGroup('right')} sx={{ p: 0.25, ml: 0.25, flexShrink: 0, color: theme.text.muted, '&:hover': { color: theme.text.primary }, transition: 'color 0.15s ease' }}>
+                          <ChevronRight size={14} />
                         </IconButton>
                       )}
                     </Box>
@@ -1262,11 +1259,11 @@ export default function CompanyAgentPage() {
                         const group = watchlistGroups.find(g => g.id === activeGroupId);
                         if (!group || group.symbols.length === 0) {
                           return (
-                            <Box sx={{ p: 2, textAlign: 'center' }}>
-                              <Typography sx={{ fontSize: 10, color: theme.text.disabled, lineHeight: 1.6 }}>
+                            <Box sx={{ p: 3, textAlign: 'center' }}>
+                              <Typography sx={{ fontSize: 11, color: theme.text.disabled, lineHeight: 1.6 }}>
                                 暂无关注
                               </Typography>
-                              <Typography sx={{ fontSize: 9, color: theme.text.disabled, mt: 0.5 }}>
+                              <Typography sx={{ fontSize: 10, color: theme.text.disabled, mt: 0.75 }}>
                                 在搜索框中搜索并添加
                               </Typography>
                             </Box>
@@ -1283,7 +1280,7 @@ export default function CompanyAgentPage() {
                               onClick={() => setWatchlistSymbol(ws.symbol)}
                               sx={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                px: 1.5, py: 1.25, cursor: 'pointer',
+                                px: 2, py: 1.5, cursor: 'pointer',
                                 borderBottom: `1px solid ${theme.border.subtle}10`,
                                 bgcolor: isActive ? `${theme.brand.primary}08` : 'transparent',
                                 transition: 'background-color 0.15s ease',
@@ -1291,22 +1288,22 @@ export default function CompanyAgentPage() {
                               }}
                             >
                               <Box sx={{ minWidth: 0, flex: 1 }}>
-                                <Typography sx={{ fontSize: 12, fontWeight: 600, color: theme.text.primary, letterSpacing: '0.01em', lineHeight: 1.3 }}>
+                                <Typography sx={{ fontSize: 13, fontWeight: 600, color: theme.text.primary, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                                   {ws.symbol}
                                 </Typography>
-                                <Typography sx={{ fontSize: 10, color: theme.text.disabled, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', mt: 0.25, lineHeight: 1.3 }}>
+                                <Typography sx={{ fontSize: 11, color: theme.text.disabled, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', mt: 0.4, lineHeight: 1.3 }}>
                                   {ws.company}
                                 </Typography>
                               </Box>
                               {analysis ? (
-                                <Box sx={{ px: 0.75, py: 0.25, borderRadius: '4px', bgcolor: `${actionColor}10`, flexShrink: 0, ml: 1 }}>
-                                  <Typography sx={{ fontSize: 9, fontWeight: 700, color: actionColor, lineHeight: 1.2, letterSpacing: '0.02em' }}>
+                                <Box sx={{ px: 1, py: 0.35, borderRadius: '4px', bgcolor: `${actionColor}10`, flexShrink: 0, ml: 1.5 }}>
+                                  <Typography sx={{ fontSize: 10, fontWeight: 700, color: actionColor, lineHeight: 1.2, letterSpacing: '0.02em' }}>
                                     {analysis.verdict_action}
                                   </Typography>
                                 </Box>
                               ) : (
-                                <Box sx={{ px: 0.75, py: 0.25, borderRadius: '4px', bgcolor: `${theme.text.disabled}08`, flexShrink: 0, ml: 1 }}>
-                                  <Typography sx={{ fontSize: 9, fontWeight: 600, color: theme.text.disabled, lineHeight: 1.2, letterSpacing: '0.02em' }}>
+                                <Box sx={{ px: 1, py: 0.35, borderRadius: '4px', bgcolor: `${theme.text.disabled}08`, flexShrink: 0, ml: 1.5 }}>
+                                  <Typography sx={{ fontSize: 10, fontWeight: 500, color: theme.text.disabled, lineHeight: 1.2, letterSpacing: '0.02em' }}>
                                     WATCH
                                   </Typography>
                                 </Box>
@@ -1323,7 +1320,7 @@ export default function CompanyAgentPage() {
                     <Box
                       key={rec.id}
                       sx={{
-                        px: 1.5, py: 1.25, borderBottom: `1px solid ${theme.border.subtle}10`,
+                        px: 2, py: 1.5, borderBottom: `1px solid ${theme.border.subtle}10`,
                         opacity: rec.status === 'rejected' ? 0.45 : 1,
                       }}
                     >
@@ -1391,7 +1388,7 @@ export default function CompanyAgentPage() {
 
             {/* Center 45%: Chart with mode toggle */}
             <Box sx={{
-              width: '45%', flexShrink: 0,
+              width: '42%', flexShrink: 0,
               borderRight: `1px solid ${theme.border.subtle}`,
               display: 'flex', flexDirection: 'column',
             }}>
