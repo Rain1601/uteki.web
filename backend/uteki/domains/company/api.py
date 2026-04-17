@@ -44,8 +44,12 @@ _FALLBACK_MODELS = [
 ]
 
 
-async def _resolve_model(provider_override: Optional[str], model_override: Optional[str]) -> Optional[dict]:
-    """Resolve model config.
+async def _resolve_model(
+    provider_override: Optional[str],
+    model_override: Optional[str],
+    user_id: str,
+) -> Optional[dict]:
+    """Resolve model config for a specific user.
 
     Priority:
     1. AIHubMix unified (single key for all models) — Admin DB controls which models are enabled
@@ -72,7 +76,7 @@ async def _resolve_model(provider_override: Optional[str], model_override: Optio
         try:
             from uteki.domains.admin.service import LLMProviderService
             svc = LLMProviderService()
-            models = await svc.get_active_models_for_runtime()
+            models = await svc.get_active_models_for_runtime(user_id=user_id)
             for m in models:
                 if provider_override and m["provider"] != provider_override:
                     continue
@@ -232,7 +236,7 @@ async def analyze_company(
     user: dict = Depends(get_current_user),
 ):
     """Run 7-gate company analysis pipeline (synchronous)."""
-    model_config = await _resolve_model(req.provider, req.model)
+    model_config = await _resolve_model(req.provider, req.model, user_id=user["user_id"])
     if not model_config:
         raise HTTPException(
             status_code=503,
@@ -264,7 +268,7 @@ async def analyze_company_stream(
     user: dict = Depends(get_current_user),
 ):
     """Run 7-gate company analysis pipeline with SSE streaming."""
-    model_config = await _resolve_model(req.provider, req.model)
+    model_config = await _resolve_model(req.provider, req.model, user_id=user["user_id"])
     if not model_config:
         raise HTTPException(
             status_code=503,
@@ -626,7 +630,7 @@ async def run_ab_test(
         raise HTTPException(status_code=400, detail=f"Failed to fetch data for {req.symbol}")
 
     # Resolve model
-    model_config = await _resolve_model(None, req.judge_model)
+    model_config = await _resolve_model(None, req.judge_model, user_id=user["user_id"])
     if not model_config:
         raise HTTPException(status_code=503, detail="No model available")
 
@@ -703,8 +707,10 @@ async def compare_models(
     active_prompts = await CompanyPromptRepository.get_active_prompts()
     prompt_overrides = active_prompts if active_prompts else None
 
+    current_user_id = user["user_id"]
+
     async def _run_model(model_name: str):
-        model_config = await _resolve_model(None, model_name)
+        model_config = await _resolve_model(None, model_name, user_id=current_user_id)
         if not model_config:
             await queue.put({"type": "error", "model": model_name, "error": "Model not available"})
             return
@@ -835,7 +841,7 @@ async def retry_gate(
     if not full_report:
         raise HTTPException(status_code=400, detail="No report data to retry against")
 
-    model_config = await _resolve_model(provider, model_name)
+    model_config = await _resolve_model(provider, model_name, user_id=user_id)
     company_data = await fetch_company_data(symbol)
     if not company_data:
         raise HTTPException(status_code=400, detail=f"Cannot fetch data for {symbol}")

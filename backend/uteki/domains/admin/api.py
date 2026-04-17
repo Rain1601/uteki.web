@@ -1,9 +1,13 @@
 """
 Admin domain API routes - FastAPI路由
+
+All endpoints require authentication (router-level dependency). Resources that
+hold user secrets (api_keys, llm_providers, exchange_configs) are additionally
+filtered by the authenticated user's id to prevent cross-user leakage.
 """
 
 from datetime import datetime, date
-from fastapi import APIRouter, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.encoders import jsonable_encoder
 from typing import List
 
@@ -20,6 +24,7 @@ from uteki.domains.admin.service import (
     get_data_source_config_service,
     get_encryption_service,
 )
+from uteki.domains.auth.deps import get_current_user
 
 _TTL = 86400
 
@@ -28,7 +33,8 @@ def _today() -> str:
     return date.today().isoformat()
 
 
-router = APIRouter()
+# All admin endpoints require authentication.
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 def _maybe_reset_snb_client(provider: str) -> None:
@@ -62,7 +68,10 @@ datasource_svc = get_data_source_config_service()
     status_code=status.HTTP_201_CREATED,
     summary="创建API密钥",
 )
-async def create_api_key(data: schemas.APIKeyCreate):
+async def create_api_key(
+    data: schemas.APIKeyCreate,
+    user: dict = Depends(get_current_user),
+):
     """
     创建新的API密钥配置
 
@@ -71,7 +80,8 @@ async def create_api_key(data: schemas.APIKeyCreate):
     - **api_secret**: API密钥Secret（可选，会被加密存储）
     - **environment**: 环境 (production, sandbox, testnet)
     """
-    api_key = await api_key_svc.create_api_key(data)
+    user_id = user["user_id"]
+    api_key = await api_key_svc.create_api_key(data, user_id=user_id)
     _maybe_reset_snb_client(data.provider)
 
     await audit_svc.log_action(
@@ -79,9 +89,10 @@ async def create_api_key(data: schemas.APIKeyCreate):
         resource_type="api_key",
         resource_id=api_key["id"],
         status="success",
+        user_id=user_id,
         details={"provider": data.provider, "environment": data.environment},
     )
-    await get_cache_service().delete_pattern("uteki:admin:api_keys:")
+    await get_cache_service().delete_pattern(f"uteki:admin:api_keys:{user_id}:")
 
     return schemas.APIKeyResponse(
         id=api_key["id"],
@@ -102,12 +113,14 @@ async def create_api_key(data: schemas.APIKeyCreate):
 async def list_api_keys(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
+    user: dict = Depends(get_current_user),
 ):
-    """列出所有API密钥配置（不包含敏感信息）"""
+    """列出当前用户的API密钥配置（不包含敏感信息）"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        items, total = await api_key_svc.list_api_keys(skip, limit)
+        items, total = await api_key_svc.list_api_keys(user_id, skip, limit)
         return jsonable_encoder(schemas.PaginatedAPIKeysResponse(
             items=items,
             total=total,
@@ -117,17 +130,21 @@ async def list_api_keys(
         ))
 
     return await cache.get_or_set(
-        f"uteki:admin:api_keys:list:{_today()}:{skip}:{limit}", _fetch, ttl=_TTL,
+        f"uteki:admin:api_keys:{user_id}:list:{_today()}:{skip}:{limit}", _fetch, ttl=_TTL,
     )
 
 
 @router.get("/api-keys/{api_key_id}", response_model=schemas.APIKeyResponse, summary="获取API密钥")
-async def get_api_key(api_key_id: str):
+async def get_api_key(
+    api_key_id: str,
+    user: dict = Depends(get_current_user),
+):
     """获取指定API密钥（不包含敏感信息）"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        api_key = await api_key_svc.get_api_key(api_key_id, decrypt=False)
+        api_key = await api_key_svc.get_api_key(api_key_id, user_id=user_id, decrypt=False)
         if not api_key:
             raise HTTPException(status_code=404, detail="API key not found")
         return jsonable_encoder(schemas.APIKeyResponse(
@@ -143,14 +160,19 @@ async def get_api_key(api_key_id: str):
         ))
 
     return await cache.get_or_set(
-        f"uteki:admin:api_keys:get:{_today()}:{api_key_id}", _fetch, ttl=_TTL,
+        f"uteki:admin:api_keys:{user_id}:get:{_today()}:{api_key_id}", _fetch, ttl=_TTL,
     )
 
 
 @router.patch("/api-keys/{api_key_id}", response_model=schemas.APIKeyResponse, summary="更新API密钥")
-async def update_api_key(api_key_id: str, data: schemas.APIKeyUpdate):
+async def update_api_key(
+    api_key_id: str,
+    data: schemas.APIKeyUpdate,
+    user: dict = Depends(get_current_user),
+):
     """更新API密钥配置"""
-    api_key = await api_key_svc.update_api_key(api_key_id, data)
+    user_id = user["user_id"]
+    api_key = await api_key_svc.update_api_key(api_key_id, user_id=user_id, data=data)
     if not api_key:
         raise HTTPException(status_code=404, detail="API key not found")
     _maybe_reset_snb_client(api_key["provider"])
@@ -160,8 +182,9 @@ async def update_api_key(api_key_id: str, data: schemas.APIKeyUpdate):
         resource_type="api_key",
         resource_id=api_key_id,
         status="success",
+        user_id=user_id,
     )
-    await get_cache_service().delete_pattern("uteki:admin:api_keys:")
+    await get_cache_service().delete_pattern(f"uteki:admin:api_keys:{user_id}:")
 
     return schemas.APIKeyResponse(
         id=api_key["id"],
@@ -177,11 +200,15 @@ async def update_api_key(api_key_id: str, data: schemas.APIKeyUpdate):
 
 
 @router.delete("/api-keys/{api_key_id}", response_model=schemas.MessageResponse, summary="删除API密钥")
-async def delete_api_key(api_key_id: str):
+async def delete_api_key(
+    api_key_id: str,
+    user: dict = Depends(get_current_user),
+):
     """删除API密钥"""
+    user_id = user["user_id"]
     # Get provider before deletion so we can reset relevant singletons
-    existing = await api_key_svc.get_api_key(api_key_id, decrypt=False)
-    success = await api_key_svc.delete_api_key(api_key_id)
+    existing = await api_key_svc.get_api_key(api_key_id, user_id=user_id, decrypt=False)
+    success = await api_key_svc.delete_api_key(api_key_id, user_id=user_id)
     if not success:
         raise HTTPException(status_code=404, detail="API key not found")
     if existing:
@@ -192,8 +219,9 @@ async def delete_api_key(api_key_id: str):
         resource_type="api_key",
         resource_id=api_key_id,
         status="success",
+        user_id=user_id,
     )
-    await get_cache_service().delete_pattern("uteki:admin:api_keys:")
+    await get_cache_service().delete_pattern(f"uteki:admin:api_keys:{user_id}:")
 
     return schemas.MessageResponse(message="API key deleted successfully")
 
@@ -378,7 +406,10 @@ async def list_user_audit_logs(
     status_code=status.HTTP_201_CREATED,
     summary="创建LLM提供商配置",
 )
-async def create_llm_provider(data: schemas.LLMProviderCreate):
+async def create_llm_provider(
+    data: schemas.LLMProviderCreate,
+    user: dict = Depends(get_current_user),
+):
     """
     创建LLM提供商配置
 
@@ -386,16 +417,18 @@ async def create_llm_provider(data: schemas.LLMProviderCreate):
     - **model**: 模型名称 (gpt-4, claude-3-5-sonnet-20241022, qwen-max)
     - **api_key_id**: 关联的API密钥ID
     """
-    provider = await llm_svc.create_provider(data)
+    user_id = user["user_id"]
+    provider = await llm_svc.create_provider(data, user_id=user_id)
 
     await audit_svc.log_action(
         action="llm_provider.create",
         resource_type="llm_provider",
         resource_id=provider["id"],
         status="success",
+        user_id=user_id,
         details={"provider": data.provider, "model": data.model},
     )
-    await get_cache_service().delete_pattern("uteki:admin:llm_providers:")
+    await get_cache_service().delete_pattern(f"uteki:admin:llm_providers:{user_id}:")
 
     return provider
 
@@ -408,12 +441,14 @@ async def create_llm_provider(data: schemas.LLMProviderCreate):
 async def list_llm_providers(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
+    user: dict = Depends(get_current_user),
 ):
-    """列出所有LLM提供商配置"""
+    """列出当前用户的LLM提供商配置"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        items, total = await llm_svc.list_providers(skip, limit)
+        items, total = await llm_svc.list_providers(user_id, skip, limit)
         return jsonable_encoder(schemas.PaginatedLLMProvidersResponse(
             items=items,
             total=total,
@@ -423,7 +458,7 @@ async def list_llm_providers(
         ))
 
     return await cache.get_or_set(
-        f"uteki:admin:llm_providers:list:{_today()}:{skip}:{limit}", _fetch, ttl=_TTL,
+        f"uteki:admin:llm_providers:{user_id}:list:{_today()}:{skip}:{limit}", _fetch, ttl=_TTL,
     )
 
 
@@ -432,16 +467,17 @@ async def list_llm_providers(
     response_model=List[schemas.LLMProviderResponse],
     summary="列出激活的LLM提供商",
 )
-async def list_active_llm_providers():
-    """列出所有激活的LLM提供商（按优先级排序）"""
+async def list_active_llm_providers(user: dict = Depends(get_current_user)):
+    """列出当前用户激活的LLM提供商（按优先级排序）"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        providers = await llm_svc.list_active_providers()
+        providers = await llm_svc.list_active_providers(user_id)
         return jsonable_encoder(providers)
 
     return await cache.get_or_set(
-        f"uteki:admin:llm_providers:active:{_today()}", _fetch, ttl=_TTL,
+        f"uteki:admin:llm_providers:{user_id}:active:{_today()}", _fetch, ttl=_TTL,
     )
 
 
@@ -450,18 +486,19 @@ async def list_active_llm_providers():
     response_model=schemas.LLMProviderResponse,
     summary="获取默认LLM提供商",
 )
-async def get_default_llm_provider():
-    """获取默认LLM提供商"""
+async def get_default_llm_provider(user: dict = Depends(get_current_user)):
+    """获取当前用户的默认LLM提供商"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        provider = await llm_svc.get_default_provider()
+        provider = await llm_svc.get_default_provider(user_id)
         if not provider:
             raise HTTPException(status_code=404, detail="No default LLM provider configured")
         return jsonable_encoder(provider)
 
     return await cache.get_or_set(
-        f"uteki:admin:llm_providers:default:{_today()}", _fetch, ttl=_TTL,
+        f"uteki:admin:llm_providers:{user_id}:default:{_today()}", _fetch, ttl=_TTL,
     )
 
 
@@ -471,11 +508,15 @@ async def get_default_llm_provider():
     status_code=status.HTTP_201_CREATED,
     summary="创建LLM提供商（自动管理API Key）",
 )
-async def create_llm_provider_with_key(data: schemas.LLMProviderCreateWithKey):
+async def create_llm_provider_with_key(
+    data: schemas.LLMProviderCreateWithKey,
+    user: dict = Depends(get_current_user),
+):
     """
     两步创建：自动查找或新建 API Key，然后创建 LLM Provider。
     前端使用此端点简化配置流程。
     """
+    user_id = user["user_id"]
     enc = get_encryption_service()
     config = {}
     if data.base_url:
@@ -490,6 +531,7 @@ async def create_llm_provider_with_key(data: schemas.LLMProviderCreateWithKey):
         model=data.model,
         api_key=data.api_key,
         display_name=data.display_name,
+        user_id=user_id,
         config=config,
         is_default=data.is_default,
         is_active=data.is_active,
@@ -502,10 +544,11 @@ async def create_llm_provider_with_key(data: schemas.LLMProviderCreateWithKey):
         resource_type="llm_provider",
         resource_id=provider["id"],
         status="success",
+        user_id=user_id,
         details={"provider": data.provider, "model": data.model},
     )
-    await get_cache_service().delete_pattern("uteki:admin:llm_providers:")
-    await get_cache_service().delete_pattern("uteki:admin:api_keys:")
+    await get_cache_service().delete_pattern(f"uteki:admin:llm_providers:{user_id}:")
+    await get_cache_service().delete_pattern(f"uteki:admin:api_keys:{user_id}:")
 
     return provider
 
@@ -514,10 +557,12 @@ async def create_llm_provider_with_key(data: schemas.LLMProviderCreateWithKey):
     "/llm-providers/runtime",
     summary="获取运行时模型列表（内部使用）",
 )
-async def get_runtime_models():
-    """返回所有 active 的 LLM Provider + 解密的 API Key，供 Arena/Agent 运行时使用"""
+async def get_runtime_models(user: dict = Depends(get_current_user)):
+    """返回当前用户 active 的 LLM Provider + 解密的 API Key，供 Arena/Agent 运行时使用"""
     enc = get_encryption_service()
-    models = await llm_svc.get_active_models_for_runtime(encryption_service=enc)
+    models = await llm_svc.get_active_models_for_runtime(
+        user_id=user["user_id"], encryption_service=enc,
+    )
     return {"models": models, "count": len(models)}
 
 
@@ -526,18 +571,22 @@ async def get_runtime_models():
     response_model=schemas.LLMProviderResponse,
     summary="获取LLM提供商",
 )
-async def get_llm_provider(provider_id: str):
+async def get_llm_provider(
+    provider_id: str,
+    user: dict = Depends(get_current_user),
+):
     """获取指定LLM提供商"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        provider = await llm_svc.get_provider(provider_id)
+        provider = await llm_svc.get_provider(provider_id, user_id=user_id)
         if not provider:
             raise HTTPException(status_code=404, detail="LLM provider not found")
         return jsonable_encoder(provider)
 
     return await cache.get_or_set(
-        f"uteki:admin:llm_providers:get:{_today()}:{provider_id}", _fetch, ttl=_TTL,
+        f"uteki:admin:llm_providers:{user_id}:get:{_today()}:{provider_id}", _fetch, ttl=_TTL,
     )
 
 
@@ -546,16 +595,21 @@ async def get_llm_provider(provider_id: str):
     response_model=schemas.LLMProviderResponse,
     summary="更新LLM提供商",
 )
-async def update_llm_provider(provider_id: str, data: schemas.LLMProviderUpdate):
+async def update_llm_provider(
+    provider_id: str,
+    data: schemas.LLMProviderUpdate,
+    user: dict = Depends(get_current_user),
+):
     """更新LLM提供商配置。如果提供了 api_key，会更新关联的 API Key 记录。"""
+    user_id = user["user_id"]
     # If api_key is provided, update the associated API key record
     if data.api_key:
-        existing = await llm_svc.get_provider(provider_id)
+        existing = await llm_svc.get_provider(provider_id, user_id=user_id)
         if existing and existing.get("api_key_id"):
             enc = get_encryption_service()
             encrypted = enc.encrypt(data.api_key)
             from uteki.domains.admin.repository import APIKeyRepository
-            await APIKeyRepository.update(existing["api_key_id"], api_key=encrypted)
+            await APIKeyRepository.update(existing["api_key_id"], user_id, api_key=encrypted)
 
     # Remove api_key from the update data (it's not a field on llm_providers table)
     update_dict = data.dict(exclude_unset=True)
@@ -563,9 +617,11 @@ async def update_llm_provider(provider_id: str, data: schemas.LLMProviderUpdate)
 
     if update_dict:
         from uteki.domains.admin import schemas as s
-        provider = await llm_svc.update_provider(provider_id, s.LLMProviderUpdate(**update_dict))
+        provider = await llm_svc.update_provider(
+            provider_id, user_id=user_id, data=s.LLMProviderUpdate(**update_dict),
+        )
     else:
-        provider = await llm_svc.get_provider(provider_id)
+        provider = await llm_svc.get_provider(provider_id, user_id=user_id)
 
     if not provider:
         raise HTTPException(status_code=404, detail="LLM provider not found")
@@ -575,8 +631,9 @@ async def update_llm_provider(provider_id: str, data: schemas.LLMProviderUpdate)
         resource_type="llm_provider",
         resource_id=provider_id,
         status="success",
+        user_id=user_id,
     )
-    await get_cache_service().delete_pattern("uteki:admin:llm_providers:")
+    await get_cache_service().delete_pattern(f"uteki:admin:llm_providers:{user_id}:")
 
     return provider
 
@@ -586,9 +643,13 @@ async def update_llm_provider(provider_id: str, data: schemas.LLMProviderUpdate)
     response_model=schemas.MessageResponse,
     summary="删除LLM提供商",
 )
-async def delete_llm_provider(provider_id: str):
+async def delete_llm_provider(
+    provider_id: str,
+    user: dict = Depends(get_current_user),
+):
     """删除LLM提供商"""
-    success = await llm_svc.delete_provider(provider_id)
+    user_id = user["user_id"]
+    success = await llm_svc.delete_provider(provider_id, user_id=user_id)
     if not success:
         raise HTTPException(status_code=404, detail="LLM provider not found")
 
@@ -597,8 +658,9 @@ async def delete_llm_provider(provider_id: str):
         resource_type="llm_provider",
         resource_id=provider_id,
         status="success",
+        user_id=user_id,
     )
-    await get_cache_service().delete_pattern("uteki:admin:llm_providers:")
+    await get_cache_service().delete_pattern(f"uteki:admin:llm_providers:{user_id}:")
 
     return schemas.MessageResponse(message="LLM provider deleted successfully")
 
@@ -614,7 +676,10 @@ async def delete_llm_provider(provider_id: str):
     status_code=status.HTTP_201_CREATED,
     summary="创建交易所配置",
 )
-async def create_exchange_config(data: schemas.ExchangeConfigCreate):
+async def create_exchange_config(
+    data: schemas.ExchangeConfigCreate,
+    user: dict = Depends(get_current_user),
+):
     """
     创建交易所配置
 
@@ -622,16 +687,18 @@ async def create_exchange_config(data: schemas.ExchangeConfigCreate):
     - **api_key_id**: 关联的API密钥ID
     - **trading_enabled**: 是否启用交易
     """
-    exchange = await exchange_svc.create_exchange(data)
+    user_id = user["user_id"]
+    exchange = await exchange_svc.create_exchange(data, user_id=user_id)
 
     await audit_svc.log_action(
         action="exchange_config.create",
         resource_type="exchange_config",
         resource_id=exchange["id"],
         status="success",
+        user_id=user_id,
         details={"exchange": data.exchange},
     )
-    await get_cache_service().delete_pattern("uteki:admin:exchanges:")
+    await get_cache_service().delete_pattern(f"uteki:admin:exchanges:{user_id}:")
 
     return exchange
 
@@ -644,12 +711,14 @@ async def create_exchange_config(data: schemas.ExchangeConfigCreate):
 async def list_exchange_configs(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
+    user: dict = Depends(get_current_user),
 ):
-    """列出所有交易所配置"""
+    """列出当前用户的交易所配置"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        items, total = await exchange_svc.list_exchanges(skip, limit)
+        items, total = await exchange_svc.list_exchanges(user_id, skip, limit)
         return jsonable_encoder(schemas.PaginatedExchangeConfigsResponse(
             items=items,
             total=total,
@@ -659,7 +728,7 @@ async def list_exchange_configs(
         ))
 
     return await cache.get_or_set(
-        f"uteki:admin:exchanges:list:{_today()}:{skip}:{limit}", _fetch, ttl=_TTL,
+        f"uteki:admin:exchanges:{user_id}:list:{_today()}:{skip}:{limit}", _fetch, ttl=_TTL,
     )
 
 
@@ -668,16 +737,17 @@ async def list_exchange_configs(
     response_model=List[schemas.ExchangeConfigResponse],
     summary="列出激活的交易所",
 )
-async def list_active_exchanges():
-    """列出所有激活的交易所配置"""
+async def list_active_exchanges(user: dict = Depends(get_current_user)):
+    """列出当前用户激活的交易所配置"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        exchanges = await exchange_svc.list_active_exchanges()
+        exchanges = await exchange_svc.list_active_exchanges(user_id)
         return jsonable_encoder(exchanges)
 
     return await cache.get_or_set(
-        f"uteki:admin:exchanges:active:{_today()}", _fetch, ttl=_TTL,
+        f"uteki:admin:exchanges:{user_id}:active:{_today()}", _fetch, ttl=_TTL,
     )
 
 
@@ -686,18 +756,22 @@ async def list_active_exchanges():
     response_model=schemas.ExchangeConfigResponse,
     summary="获取交易所配置",
 )
-async def get_exchange_config(config_id: str):
+async def get_exchange_config(
+    config_id: str,
+    user: dict = Depends(get_current_user),
+):
     """获取指定交易所配置"""
+    user_id = user["user_id"]
     cache = get_cache_service()
 
     async def _fetch():
-        exchange = await exchange_svc.get_exchange(config_id)
+        exchange = await exchange_svc.get_exchange(config_id, user_id=user_id)
         if not exchange:
             raise HTTPException(status_code=404, detail="Exchange config not found")
         return jsonable_encoder(exchange)
 
     return await cache.get_or_set(
-        f"uteki:admin:exchanges:get:{_today()}:{config_id}", _fetch, ttl=_TTL,
+        f"uteki:admin:exchanges:{user_id}:get:{_today()}:{config_id}", _fetch, ttl=_TTL,
     )
 
 
@@ -706,9 +780,14 @@ async def get_exchange_config(config_id: str):
     response_model=schemas.ExchangeConfigResponse,
     summary="更新交易所配置",
 )
-async def update_exchange_config(config_id: str, data: schemas.ExchangeConfigUpdate):
+async def update_exchange_config(
+    config_id: str,
+    data: schemas.ExchangeConfigUpdate,
+    user: dict = Depends(get_current_user),
+):
     """更新交易所配置"""
-    exchange = await exchange_svc.update_exchange(config_id, data)
+    user_id = user["user_id"]
+    exchange = await exchange_svc.update_exchange(config_id, user_id=user_id, data=data)
     if not exchange:
         raise HTTPException(status_code=404, detail="Exchange config not found")
 
@@ -717,8 +796,9 @@ async def update_exchange_config(config_id: str, data: schemas.ExchangeConfigUpd
         resource_type="exchange_config",
         resource_id=config_id,
         status="success",
+        user_id=user_id,
     )
-    await get_cache_service().delete_pattern("uteki:admin:exchanges:")
+    await get_cache_service().delete_pattern(f"uteki:admin:exchanges:{user_id}:")
 
     return exchange
 
@@ -728,9 +808,13 @@ async def update_exchange_config(config_id: str, data: schemas.ExchangeConfigUpd
     response_model=schemas.MessageResponse,
     summary="删除交易所配置",
 )
-async def delete_exchange_config(config_id: str):
+async def delete_exchange_config(
+    config_id: str,
+    user: dict = Depends(get_current_user),
+):
     """删除交易所配置"""
-    success = await exchange_svc.delete_exchange(config_id)
+    user_id = user["user_id"]
+    success = await exchange_svc.delete_exchange(config_id, user_id=user_id)
     if not success:
         raise HTTPException(status_code=404, detail="Exchange config not found")
 
@@ -739,8 +823,9 @@ async def delete_exchange_config(config_id: str):
         resource_type="exchange_config",
         resource_id=config_id,
         status="success",
+        user_id=user_id,
     )
-    await get_cache_service().delete_pattern("uteki:admin:exchanges:")
+    await get_cache_service().delete_pattern(f"uteki:admin:exchanges:{user_id}:")
 
     return schemas.MessageResponse(message="Exchange config deleted successfully")
 
@@ -931,15 +1016,16 @@ async def get_server_ip():
 
 
 @router.get("/system/health", summary="系统健康检查")
-async def system_health_check():
+async def system_health_check(user: dict = Depends(get_current_user)):
     """
-    详细的系统健康检查
+    详细的系统健康检查（对当前用户作用域内的配置进行检查）
 
     检查项：
     - 数据库连接状态
-    - 配置完整性（API密钥、LLM提供商、交易所配置等）
+    - 配置完整性（当前用户的 API密钥、LLM提供商、交易所配置等）
     - 审计日志功能
     """
+    user_id = user["user_id"]
     health_info = {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
@@ -950,7 +1036,7 @@ async def system_health_check():
 
     # 检查API密钥配置
     try:
-        api_keys, total = await api_key_svc.list_api_keys(0, 100)
+        api_keys, total = await api_key_svc.list_api_keys(user_id, 0, 100)
         active_keys = [k for k in api_keys if k.is_active]
         health_info["configurations"]["api_keys"] = {
             "total": total,
@@ -965,8 +1051,8 @@ async def system_health_check():
 
     # 检查LLM提供商配置
     try:
-        llm_providers = await llm_svc.list_active_providers()
-        default_provider = await llm_svc.get_default_provider()
+        llm_providers = await llm_svc.list_active_providers(user_id)
+        default_provider = await llm_svc.get_default_provider(user_id)
         health_info["configurations"]["llm_providers"] = {
             "total_active": len(llm_providers),
             "has_default": default_provider is not None,
@@ -980,7 +1066,7 @@ async def system_health_check():
 
     # 检查交易所配置
     try:
-        exchanges = await exchange_svc.list_active_exchanges()
+        exchanges = await exchange_svc.list_active_exchanges(user_id)
         health_info["configurations"]["exchanges"] = {
             "total_active": len(exchanges),
             "trading_enabled": sum(1 for e in exchanges if e.get("trading_enabled")),

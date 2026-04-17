@@ -49,19 +49,19 @@ class EncryptionService:
 
 
 class APIKeyService:
-    """API密钥服务"""
+    """API密钥服务 — 所有方法强制按 user_id 隔离。"""
 
     def __init__(self, encryption_service: EncryptionService):
         self.encryption = encryption_service
 
-    async def create_api_key(self, data: schemas.APIKeyCreate) -> dict:
+    async def create_api_key(self, data: schemas.APIKeyCreate, user_id: str) -> dict:
         encrypted_key = self.encryption.encrypt(data.api_key)
         encrypted_secret = (
             self.encryption.encrypt(data.api_secret) if data.api_secret else None
         )
 
         api_key_data = {
-            "user_id": "default",
+            "user_id": user_id,
             "provider": data.provider,
             "display_name": data.display_name,
             "api_key": encrypted_key,
@@ -75,9 +75,9 @@ class APIKeyService:
         return await APIKeyRepository.create(api_key_data)
 
     async def get_api_key(
-        self, api_key_id: str, decrypt: bool = False
+        self, api_key_id: str, user_id: str, decrypt: bool = False
     ) -> Optional[dict]:
-        api_key = await APIKeyRepository.get_by_id(api_key_id)
+        api_key = await APIKeyRepository.get_by_id(api_key_id, user_id)
         if api_key and decrypt:
             api_key["api_key"] = self.encryption.decrypt(api_key["api_key"])
             if api_key.get("api_secret"):
@@ -85,9 +85,9 @@ class APIKeyService:
         return api_key
 
     async def get_api_key_by_provider(
-        self, provider: str, environment: str = "production"
+        self, provider: str, user_id: str, environment: str = "production"
     ) -> Optional[dict]:
-        api_key = await APIKeyRepository.get_by_provider(provider, environment)
+        api_key = await APIKeyRepository.get_by_provider(provider, user_id, environment)
         if api_key:
             api_key["api_key"] = self.encryption.decrypt(api_key["api_key"])
             if api_key.get("api_secret"):
@@ -95,9 +95,9 @@ class APIKeyService:
         return api_key
 
     async def list_api_keys(
-        self, skip: int = 0, limit: int = 100
+        self, user_id: str, skip: int = 0, limit: int = 100
     ) -> Tuple[List[schemas.APIKeyDetailResponse], int]:
-        items, total = await APIKeyRepository.list_all(skip, limit)
+        items, total = await APIKeyRepository.list_all(user_id, skip, limit)
 
         response_items = []
         for item in items:
@@ -126,7 +126,7 @@ class APIKeyService:
         return response_items, total
 
     async def update_api_key(
-        self, api_key_id: str, data: schemas.APIKeyUpdate
+        self, api_key_id: str, user_id: str, data: schemas.APIKeyUpdate
     ) -> Optional[dict]:
         update_data = data.dict(exclude_unset=True)
 
@@ -135,10 +135,10 @@ class APIKeyService:
         if "api_secret" in update_data and update_data["api_secret"]:
             update_data["api_secret"] = self.encryption.encrypt(update_data["api_secret"])
 
-        return await APIKeyRepository.update(api_key_id, **update_data)
+        return await APIKeyRepository.update(api_key_id, user_id, **update_data)
 
-    async def delete_api_key(self, api_key_id: str) -> bool:
-        return await APIKeyRepository.delete(api_key_id)
+    async def delete_api_key(self, api_key_id: str, user_id: str) -> bool:
+        return await APIKeyRepository.delete(api_key_id, user_id)
 
 
 class UserService:
@@ -265,11 +265,11 @@ class AuditLogService:
 
 
 class LLMProviderService:
-    """LLM提供商服务"""
+    """LLM提供商服务 — 所有方法强制按 user_id 隔离。"""
 
-    async def create_provider(self, data: schemas.LLMProviderCreate) -> dict:
+    async def create_provider(self, data: schemas.LLMProviderCreate, user_id: str) -> dict:
         provider_data = {
-            "user_id": "default",
+            "user_id": user_id,
             "provider": data.provider,
             "model": data.model,
             "api_key_id": data.api_key_id,
@@ -282,28 +282,28 @@ class LLMProviderService:
         }
         return await LLMProviderRepository.create(provider_data)
 
-    async def get_provider(self, provider_id: str) -> Optional[dict]:
-        return await LLMProviderRepository.get_by_id(provider_id)
+    async def get_provider(self, provider_id: str, user_id: str) -> Optional[dict]:
+        return await LLMProviderRepository.get_by_id(provider_id, user_id)
 
-    async def get_default_provider(self) -> Optional[dict]:
-        return await LLMProviderRepository.get_default_provider()
+    async def get_default_provider(self, user_id: str) -> Optional[dict]:
+        return await LLMProviderRepository.get_default_provider(user_id)
 
     async def list_providers(
-        self, skip: int = 0, limit: int = 100
+        self, user_id: str, skip: int = 0, limit: int = 100
     ) -> Tuple[List[dict], int]:
-        return await LLMProviderRepository.list_all(skip, limit)
+        return await LLMProviderRepository.list_all(user_id, skip, limit)
 
-    async def list_active_providers(self) -> List[dict]:
-        return await LLMProviderRepository.list_active_providers()
+    async def list_active_providers(self, user_id: str) -> List[dict]:
+        return await LLMProviderRepository.list_active_providers(user_id)
 
     async def update_provider(
-        self, provider_id: str, data: schemas.LLMProviderUpdate
+        self, provider_id: str, user_id: str, data: schemas.LLMProviderUpdate
     ) -> Optional[dict]:
         update_data = data.dict(exclude_unset=True)
-        return await LLMProviderRepository.update(provider_id, **update_data)
+        return await LLMProviderRepository.update(provider_id, user_id, **update_data)
 
-    async def delete_provider(self, provider_id: str) -> bool:
-        return await LLMProviderRepository.delete(provider_id)
+    async def delete_provider(self, provider_id: str, user_id: str) -> bool:
+        return await LLMProviderRepository.delete(provider_id, user_id)
 
     async def create_provider_with_key(
         self,
@@ -311,6 +311,7 @@ class LLMProviderService:
         model: str,
         api_key: str,
         display_name: str,
+        user_id: str,
         config: Optional[dict] = None,
         is_default: bool = False,
         is_active: bool = True,
@@ -321,18 +322,18 @@ class LLMProviderService:
         """两步创建：先查找或新建 API Key，再创建 LLM Provider"""
         enc = encryption_service or EncryptionService()
 
-        # Step 1: Find existing active API key for this provider, or create new
-        existing_key = await APIKeyRepository.get_by_provider(provider, "production")
+        # Step 1: Find existing active API key for this provider (scoped to user), or create new
+        existing_key = await APIKeyRepository.get_by_provider(provider, user_id, "production")
         if existing_key:
             api_key_id = existing_key["id"]
             # Update the API key if a new one is provided
             if api_key:
                 encrypted = enc.encrypt(api_key)
-                await APIKeyRepository.update(api_key_id, api_key=encrypted)
+                await APIKeyRepository.update(api_key_id, user_id, api_key=encrypted)
         else:
             encrypted = enc.encrypt(api_key)
             key_data = {
-                "user_id": "default",
+                "user_id": user_id,
                 "provider": provider,
                 "display_name": f"{provider} API Key",
                 "api_key": encrypted,
@@ -348,7 +349,7 @@ class LLMProviderService:
             provider_config["base_url"] = base_url
 
         provider_data = {
-            "user_id": "default",
+            "user_id": user_id,
             "provider": provider,
             "model": model,
             "api_key_id": api_key_id,
@@ -362,11 +363,22 @@ class LLMProviderService:
 
     async def get_active_models_for_runtime(
         self,
+        user_id: Optional[str] = None,
         encryption_service: Optional["EncryptionService"] = None,
     ) -> list:
-        """获取运行时可用模型列表（解密 API Key）"""
+        """获取指定用户可用模型列表（解密 API Key）。
+
+        如果 user_id 为 None（例如从无认证上下文的后台调度调用），返回空列表并记录警告。
+        调用方应优先透传当前登录用户的 user_id。
+        """
+        if not user_id:
+            logger.warning(
+                "get_active_models_for_runtime called without user_id — returning empty. "
+                "Callers with a user context should pass user_id explicitly."
+            )
+            return []
         enc = encryption_service or EncryptionService()
-        providers = await LLMProviderRepository.list_active_providers()
+        providers = await LLMProviderRepository.list_active_providers(user_id)
         if not providers:
             return []
 
@@ -376,7 +388,7 @@ class LLMProviderService:
             if not api_key_id:
                 continue
 
-            key_row = await APIKeyRepository.get_by_id(api_key_id)
+            key_row = await APIKeyRepository.get_by_id(api_key_id, user_id)
             if not key_row or not key_row.get("is_active", True):
                 continue
 
@@ -401,11 +413,11 @@ class LLMProviderService:
 
 
 class ExchangeConfigService:
-    """交易所配置服务"""
+    """交易所配置服务 — 所有方法强制按 user_id 隔离。"""
 
-    async def create_exchange(self, data: schemas.ExchangeConfigCreate) -> dict:
+    async def create_exchange(self, data: schemas.ExchangeConfigCreate, user_id: str) -> dict:
         exchange_data = {
-            "user_id": "default",
+            "user_id": user_id,
             "exchange": data.exchange,
             "api_key_id": data.api_key_id,
             "display_name": data.display_name,
@@ -420,30 +432,30 @@ class ExchangeConfigService:
         }
         return await ExchangeConfigRepository.create(exchange_data)
 
-    async def get_exchange(self, config_id: str) -> Optional[dict]:
-        return await ExchangeConfigRepository.get_by_id(config_id)
+    async def get_exchange(self, config_id: str, user_id: str) -> Optional[dict]:
+        return await ExchangeConfigRepository.get_by_id(config_id, user_id)
 
-    async def get_exchange_by_name(self, exchange: str) -> Optional[dict]:
-        return await ExchangeConfigRepository.get_by_exchange(exchange)
+    async def get_exchange_by_name(self, exchange: str, user_id: str) -> Optional[dict]:
+        return await ExchangeConfigRepository.get_by_exchange(exchange, user_id)
 
     async def list_exchanges(
-        self, skip: int = 0, limit: int = 100
+        self, user_id: str, skip: int = 0, limit: int = 100
     ) -> Tuple[List[dict], int]:
-        return await ExchangeConfigRepository.list_all(skip, limit)
+        return await ExchangeConfigRepository.list_all(user_id, skip, limit)
 
-    async def list_active_exchanges(self) -> List[dict]:
-        return await ExchangeConfigRepository.list_active_exchanges()
+    async def list_active_exchanges(self, user_id: str) -> List[dict]:
+        return await ExchangeConfigRepository.list_active_exchanges(user_id)
 
     async def update_exchange(
-        self, config_id: str, data: schemas.ExchangeConfigUpdate
+        self, config_id: str, user_id: str, data: schemas.ExchangeConfigUpdate
     ) -> Optional[dict]:
         update_data = data.dict(exclude_unset=True)
         if "max_position_size" in update_data:
             update_data["max_position_size"] = float(update_data["max_position_size"])
-        return await ExchangeConfigRepository.update(config_id, **update_data)
+        return await ExchangeConfigRepository.update(config_id, user_id, **update_data)
 
-    async def delete_exchange(self, config_id: str) -> bool:
-        return await ExchangeConfigRepository.delete(config_id)
+    async def delete_exchange(self, config_id: str, user_id: str) -> bool:
+        return await ExchangeConfigRepository.delete(config_id, user_id)
 
 
 class DataSourceConfigService:

@@ -24,7 +24,7 @@ class APIKey(Base, UUIDMixin, TimestampMixin):
     )
 
     # 用户ID (多租户隔离)
-    user_id: Mapped[str] = mapped_column(String(36), nullable=False, default="default")
+    user_id: Mapped[str] = mapped_column(String(36), nullable=False)
 
     # 服务提供商 (okx, binance, fmp, openai, anthropic, dashscope, etc.)
     provider: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -189,7 +189,7 @@ class LLMProvider(Base, UUIDMixin, TimestampMixin):
     )
 
     # 用户ID (多租户隔离)
-    user_id: Mapped[str] = mapped_column(String(36), nullable=False, default="default")
+    user_id: Mapped[str] = mapped_column(String(36), nullable=False)
 
     # 提供商 (openai, anthropic, dashscope, deepseek, etc.)
     provider: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -241,7 +241,7 @@ class ExchangeConfig(Base, UUIDMixin, TimestampMixin):
     )
 
     # 用户ID (多租户隔离)
-    user_id: Mapped[str] = mapped_column(String(36), nullable=False, default="default")
+    user_id: Mapped[str] = mapped_column(String(36), nullable=False)
 
     # 交易所名称 (okx, binance, xueying, etc.)
     exchange: Mapped[str] = mapped_column(String(50), nullable=False)
