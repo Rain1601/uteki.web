@@ -147,6 +147,35 @@ export interface DatabaseStatus {
   details?: string;
 }
 
+// Aggregator (Unified LLM Provider) types
+export type AggregatorProvider = 'aihubmix' | 'openrouter';
+
+export interface AggregatorBalance {
+  credits: number | null;
+  limit: number | null;
+  usage: number | null;
+  currency: string;
+  label?: string | null;
+}
+
+export interface AggregatorVerifyResult {
+  valid: boolean;
+  balance?: AggregatorBalance | null;
+  error?: string | null;
+}
+
+export interface AggregatorConfig {
+  provider: AggregatorProvider;
+  display_name: string;
+  configured: boolean;
+  api_key_masked?: string | null;
+  is_active: boolean;
+  base_url: string;
+  supports_balance: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 // Paginated Response
 export interface PaginatedResponse<T> {
   items: T[];

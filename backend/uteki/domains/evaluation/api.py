@@ -12,10 +12,11 @@ import json
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.responses import StreamingResponse
 
 from uteki.common.config import settings
+from uteki.domains.auth.deps import get_current_user
 from uteki.domains.evaluation.schemas import ConsistencyTestRequest, JudgeRequest
 from uteki.domains.evaluation.repository import EvaluationRepository, GateScoreRepository
 from uteki.domains.evaluation.service import run_consistency_test, judge_analysis
@@ -24,21 +25,23 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-async def _resolve_model(model_override: Optional[str] = None) -> Optional[dict]:
-    """Resolve model config — same pattern as company/api.py."""
-    aihub_key = getattr(settings, "aihubmix_api_key", None)
-    aihub_url = getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
+async def _resolve_model(
+    model_override: Optional[str] = None, user_id: Optional[str] = None,
+) -> Optional[dict]:
+    """Resolve model config — DB-first (user-scoped aggregator) then env fallback."""
+    from uteki.domains.admin.aggregator_service import resolve_unified_provider
 
-    if aihub_key:
-        model = model_override or "deepseek-chat"
+    resolved = await resolve_unified_provider(user_id=user_id)
+    if resolved:
+        _agg, api_key, base_url = resolved
         return {
             "provider": "openai",
-            "model": model,
-            "api_key": aihub_key,
-            "base_url": aihub_url,
+            "model": model_override or "deepseek-chat",
+            "api_key": api_key,
+            "base_url": base_url,
         }
 
-    # Fallback to env keys
+    # Final fallback: provider-specific env keys (legacy)
     for attr, model_name in [
         ("deepseek_api_key", "deepseek-chat"),
         ("openai_api_key", "gpt-4.1"),
@@ -55,9 +58,12 @@ async def _resolve_model(model_override: Optional[str] = None) -> Optional[dict]
 
 
 @router.post("/consistency-test")
-async def consistency_test_stream(req: ConsistencyTestRequest):
+async def consistency_test_stream(
+    req: ConsistencyTestRequest,
+    user: dict = Depends(get_current_user),
+):
     """Run N analyses of the same symbol and measure output consistency. SSE streaming."""
-    model_config = await _resolve_model(req.model)
+    model_config = await _resolve_model(req.model, user_id=user["user_id"])
     if not model_config:
         raise HTTPException(status_code=503, detail="No LLM model configured.")
 

@@ -1,0 +1,109 @@
+# ─────────────────────────────────────────────────────────────────────
+# Luckin Coffee (LK) — 2019-Q4 快照 (造假曝光前)
+# 用途: Trap set — 已暴雷公司, 测"能否在暴雷前识别财务造假红旗"
+# 覆盖: Effectiveness (雷股 recall) + Logic (矛盾识别)
+# ─────────────────────────────────────────────────────────────────────
+
+meta:
+  symbol: "LK"
+  name: "Luckin Coffee"
+  exchange: "NASDAQ"
+  vintage: "2019-Q4"
+  category: trap
+  bucket:
+    region: cn_us_adr
+    market_cap: mid
+    industry: "Consumer / Restaurants"
+    special: [under_investigation_later, accounting_fraud]
+
+input:
+  financials:
+    revenue:
+      fy: 4087000000          # TODO: 填实际 2019 年报披露值 (造假后)
+      ttm: 4087000000
+      growth_5y: null         # 2017 刚成立, 无 5 年数据
+    net_income:
+      fy: -1684000000         # 仍亏损
+      ttm: -1684000000
+    operating_cash_flow: -867000000
+    free_cash_flow: -2100000000
+    total_assets: 8700000000
+    total_equity: 3100000000
+    total_debt: 1200000000
+    gross_margin: 0.122
+    operating_margin: -0.41
+    roe: -0.54
+    pe_ratio: null            # 亏损无 PE
+    pb_ratio: 3.1
+    market_cap: 10500000000
+  segments:
+    - {name: "自营咖啡", revenue_pct: 0.82, growth: 5.8}     # 超高增长 — 疑点
+    - {name: "其他饮品", revenue_pct: 0.12, growth: 3.2}
+    - {name: "其他商品", revenue_pct: 0.06, growth: 2.1}
+  peers: ["SBUX", "DPZ"]       # 星巴克、达美乐 (规模完全不同, 警示)
+  tool_mocks:
+    web_search:
+      - query_pattern: "Luckin coffee revenue"
+        response: |
+          Luckin reported 557% YoY revenue growth in 2019, opening 4,500 stores
+          in 2 years. Some short sellers (Muddy Waters) published a report in
+          Jan 2020 questioning the per-store sales numbers.
+      - query_pattern: "Luckin Muddy Waters"
+        response: |
+          Muddy Waters Research published an 89-page report in Jan 2020
+          alleging Luckin's per-store sales were inflated ~70%.
+    compare_peers:
+      - metrics: ["gross_margin", "operating_margin", "revenue_growth"]
+        response:
+          LK: {gross_margin: 0.122, operating_margin: -0.41, revenue_growth: 5.57}
+          SBUX: {gross_margin: 0.686, operating_margin: 0.152, revenue_growth: 0.07}
+          DPZ: {gross_margin: 0.389, operating_margin: 0.171, revenue_growth: 0.05}
+
+expected:
+  consistency:
+    run_count: 10
+    tolerate_cv: 0.15         # 雷股判断可能有分歧, 稍放宽
+
+  credibility:
+    allowed_number_sources: [financials_input, tool_result]
+    max_hallucination_rate: 0.02
+
+  logic:
+    must_trigger_red_flags:
+      - "收入质量差"            # 现金流与利润严重背离
+      - "经营CF持续低于净利润"
+      - "依赖融资扩张"
+      - "增长速度超出行业合理范围"
+    forbidden_contradictions:
+      - "业务可持续性高 + 现金流大幅为负"
+      - "管理层诚信高 + 做空报告存在"
+    adversarial_expected_findings:
+      - "同店数据真实性存疑"
+      - "扩张速度不合常理"
+
+  effectiveness:
+    expected_action: AVOID
+    acceptable_actions: [AVOID, WATCH]
+    min_conviction: 0.60      # 不需要 100% 确信, 但 AVOID 方向要对
+    max_conviction: 1.0
+    growth_verdict: declining
+    moat_width: none
+    forward_return_12m: -0.72 # 2020 退市, 实际暴跌
+    forward_return_36m: -0.85
+
+  key_field_expectations:
+    - path: "reverse_test.resilience_score"
+      max: 4
+    - path: "management_assessment.integrity_score"
+      max: 5                  # 审计期望给管理层诚信打低分
+    - path: "valuation.safety_margin"
+      enum: [thin, negative]
+
+notes: |
+  瑞幸咖啡 2020-01 被 Muddy Waters 做空, 2020-04 自曝 22 亿人民币财务造假,
+  纳斯达克退市。本 fixture 用 2019-Q4 数据 (官方披露, 造假版本), 测试 agent 能否
+  在暴雷前通过财务线索识别问题:
+    1. 收入增速 557% 与同业差距巨大 (SBUX 7%) — 异常信号
+    2. 经营 CF 远低于净利润 — 利润质量差
+    3. 依赖持续融资 — 资本结构脆弱
+  期望 agent 至少标记 AVOID 或 WATCH, 不能标 BUY。雷股 recall 的核心 case。

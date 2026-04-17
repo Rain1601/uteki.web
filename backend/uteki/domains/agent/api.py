@@ -72,9 +72,13 @@ Examples:
 
 
 @router.post("/route", response_model=IntentRouteResponse)
-async def route_intent(req: IntentRouteRequest):
+async def route_intent(
+    req: IntentRouteRequest,
+    current_user: Optional[dict] = Depends(get_current_user_optional),
+):
     """Classify user intent: research vs chat. Uses a fast/cheap model."""
     from uteki.domains.agent.llm_adapter import LLMConfig, LLMMessage
+    from uteki.domains.admin.aggregator_service import resolve_unified_provider
 
     # Build context
     user_content = req.message
@@ -89,11 +93,12 @@ async def route_intent(req: IntentRouteRequest):
 
     try:
         from openai import AsyncOpenAI
-        aihub_key = getattr(settings, "aihubmix_api_key", None)
-        aihub_url = getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
 
-        if not aihub_key:
-            return IntentRouteResponse(route="chat", reason="no api key")
+        user_id = current_user.get("user_id") if current_user else None
+        resolved = await resolve_unified_provider(user_id=user_id)
+        if not resolved:
+            return IntentRouteResponse(route="chat", reason="no aggregator key configured")
+        _agg, aihub_key, aihub_url = resolved
 
         client = AsyncOpenAI(api_key=aihub_key, base_url=aihub_url)
         resp = await client.chat.completions.create(

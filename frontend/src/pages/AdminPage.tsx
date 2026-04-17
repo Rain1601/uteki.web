@@ -23,7 +23,7 @@ import {
   InputLabel,
   Slider,
 } from '@mui/material';
-import { RefreshCw as RefreshIcon, Copy as CopyIcon, Globe as PublicIcon, Plus as AddIcon, Trash2 as DeleteIcon, X as CloseIcon, Pencil as EditIcon, Save as SaveIcon, Eye as VisibilityIcon, EyeOff as VisibilityOffIcon, ChevronDown as ExpandMoreIcon, ChevronUp as ExpandLessIcon, Star as StarIcon, LogOut as LogOutIcon } from 'lucide-react';
+import { RefreshCw as RefreshIcon, Copy as CopyIcon, Globe as PublicIcon, Plus as AddIcon, Trash2 as DeleteIcon, X as CloseIcon, Pencil as EditIcon, Save as SaveIcon, Eye as VisibilityIcon, EyeOff as VisibilityOffIcon, ChevronDown as ExpandMoreIcon, ChevronUp as ExpandLessIcon, Star as StarIcon, LogOut as LogOutIcon, ShieldCheck as ShieldCheckIcon, Zap as ZapIcon, CircleCheck as CheckIcon, CircleAlert as AlertIcon } from 'lucide-react';
 import LoadingDots from '../components/LoadingDots';
 import { useTheme } from '../theme/ThemeProvider';
 import { toast } from 'sonner';
@@ -33,7 +33,7 @@ import { useSystemHealth } from '../hooks/useAdmin';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { ModelLogo, getProviderDisplayName } from '../components/index/ModelLogos';
-import type { APIKey, LLMProvider } from '../types/admin';
+import type { APIKey, LLMProvider, AggregatorConfig, AggregatorBalance, AggregatorProvider } from '../types/admin';
 
 /* ─── constants ─── */
 
@@ -419,6 +419,347 @@ function ExchangesTab({ theme, isDark, cardBg, cardBorder }: { theme: any; isDar
   );
 }
 
+/* ═══════════════ Interface For LLMs (Unified Aggregators) ═══════════════ */
+
+const AGGREGATOR_META: Record<AggregatorProvider, { accent: string; tagline: string }> = {
+  aihubmix: {
+    accent: '#6366f1',
+    tagline: '国内友好 · 单一 Key 访问 GPT/Claude/Gemini/DeepSeek 等',
+  },
+  openrouter: {
+    accent: '#f59e0b',
+    tagline: '全球开放 · 覆盖 300+ 模型，余额实时可查',
+  },
+};
+
+function formatCredits(balance: AggregatorBalance | null | undefined): {
+  text: string;
+  color: string;
+} | null {
+  if (!balance) return null;
+  if (balance.credits == null) return null;
+  const c = balance.credits;
+  const text = `${balance.currency === 'USD' ? '$' : ''}${c.toFixed(2)}`;
+  let color = '#10b981'; // green
+  if (c < 1) color = '#ef4444';
+  else if (c < 5) color = '#f59e0b';
+  return { text, color };
+}
+
+function InterfaceForLLMs({
+  theme,
+  isDark,
+  cardBg,
+  cardBorder,
+}: {
+  theme: any;
+  isDark: boolean;
+  cardBg: string;
+  cardBorder: string;
+}) {
+  const [configs, setConfigs] = useState<AggregatorConfig[]>([]);
+  const [balances, setBalances] = useState<Record<string, AggregatorBalance | null>>({});
+  const [inputs, setInputs] = useState<Record<string, string>>({});
+  const [editing, setEditing] = useState<Record<string, boolean>>({});
+  const [showKey, setShowKey] = useState<Record<string, boolean>>({});
+  const [verifying, setVerifying] = useState<Record<string, boolean>>({});
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+  const [refreshing, setRefreshing] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const items = await adminApi.aggregators.list();
+      setConfigs(items);
+      // Auto-refresh balance for configured providers that support it
+      items.forEach(cfg => {
+        if (cfg.configured && cfg.supports_balance) {
+          adminApi.aggregators.balance(cfg.provider as AggregatorProvider)
+            .then(r => setBalances(prev => ({ ...prev, [cfg.provider]: r.balance || null })))
+            .catch(() => {});
+        }
+      });
+    } catch {
+      toast.error('加载聚合 Provider 失败');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleVerify = async (provider: AggregatorProvider) => {
+    const key = inputs[provider]?.trim();
+    if (!key) { toast.error('请先输入 API Key'); return; }
+    setVerifying(prev => ({ ...prev, [provider]: true }));
+    try {
+      const r = await adminApi.aggregators.verify(provider, key);
+      if (r.valid) {
+        const balanceInfo = formatCredits(r.balance);
+        toast.success(balanceInfo
+          ? `Key 有效 · 余额 ${balanceInfo.text}`
+          : 'Key 有效（余额查询不支持）');
+      } else {
+        toast.error(r.error || 'Key 无效');
+      }
+    } catch (e: any) {
+      toast.error(e.message || '验证失败');
+    } finally {
+      setVerifying(prev => ({ ...prev, [provider]: false }));
+    }
+  };
+
+  const handleSave = async (provider: AggregatorProvider) => {
+    const key = inputs[provider]?.trim();
+    if (!key) { toast.error('请先输入 API Key'); return; }
+    setSaving(prev => ({ ...prev, [provider]: true }));
+    try {
+      await adminApi.aggregators.save(provider, key);
+      toast.success('已保存');
+      setInputs(prev => ({ ...prev, [provider]: '' }));
+      setEditing(prev => ({ ...prev, [provider]: false }));
+      await load();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.detail || e.message || '保存失败');
+    } finally {
+      setSaving(prev => ({ ...prev, [provider]: false }));
+    }
+  };
+
+  const handleRefreshBalance = async (provider: AggregatorProvider) => {
+    setRefreshing(prev => ({ ...prev, [provider]: true }));
+    try {
+      const r = await adminApi.aggregators.balance(provider);
+      setBalances(prev => ({ ...prev, [provider]: r.balance || null }));
+      const balanceInfo = formatCredits(r.balance);
+      if (balanceInfo) toast.success(`余额 ${balanceInfo.text}`);
+      else toast.info('该 provider 暂不支持余额查询');
+    } catch (e: any) {
+      toast.error(e.message || '刷新失败');
+    } finally {
+      setRefreshing(prev => ({ ...prev, [provider]: false }));
+    }
+  };
+
+  const handleDelete = async (provider: AggregatorProvider) => {
+    if (!confirm(`确定删除 ${provider} 的 Key 配置？`)) return;
+    try {
+      await adminApi.aggregators.delete(provider);
+      toast.success('已删除');
+      setBalances(prev => { const next = { ...prev }; delete next[provider]; return next; });
+      await load();
+    } catch (e: any) {
+      toast.error(e.message || '删除失败');
+    }
+  };
+
+  return (
+    <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 1.5 }}>
+        <Typography sx={{ fontSize: 14, fontWeight: 700, color: theme.text.primary, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <ZapIcon size={16} style={{ color: theme.brand.primary }} />
+          Interface For LLMs
+        </Typography>
+        <Typography sx={{ fontSize: 11.5, color: theme.text.muted, mt: 0.25 }}>
+          统一 LLM 聚合入口 — 单一 API Key 访问多家模型。密钥仅属于当前账号，已加密存储。
+        </Typography>
+      </Box>
+
+      {loading ? (
+        <LoadingDots text="加载中" fontSize={12} />
+      ) : (
+        <Grid container spacing={2}>
+          {configs.map(cfg => {
+            const provider = cfg.provider as AggregatorProvider;
+            const meta = AGGREGATOR_META[provider];
+            const balance = balances[provider];
+            const balanceInfo = formatCredits(balance);
+            const isEditing = editing[provider] || !cfg.configured;
+            const inputVal = inputs[provider] ?? '';
+
+            return (
+              <Grid item xs={12} md={6} key={provider}>
+                <Box sx={{
+                  position: 'relative',
+                  p: 2.25,
+                  bgcolor: cardBg,
+                  border: `1px solid ${cfg.configured ? meta.accent + '30' : cardBorder}`,
+                  borderRadius: 2,
+                  transition: 'border-color 0.2s',
+                }}>
+                  {/* Accent bar */}
+                  <Box sx={{ position: 'absolute', left: 0, top: 12, bottom: 12, width: 3, bgcolor: meta.accent, borderRadius: 2 }} />
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                    <Box>
+                      <Typography sx={{ fontSize: 14, fontWeight: 700, color: theme.text.primary }}>
+                        {cfg.display_name}
+                      </Typography>
+                      <Typography sx={{ fontSize: 11, color: theme.text.muted, mt: 0.25 }}>
+                        {meta.tagline}
+                      </Typography>
+                    </Box>
+
+                    {cfg.configured && (
+                      <Chip
+                        icon={<CheckIcon size={12} />}
+                        label="已配置"
+                        size="small"
+                        sx={{
+                          height: 20, fontSize: 10, fontWeight: 600,
+                          bgcolor: meta.accent + '20',
+                          color: meta.accent,
+                          '& .MuiChip-icon': { color: meta.accent },
+                        }}
+                      />
+                    )}
+                  </Box>
+
+                  {/* Configured read-only view */}
+                  {cfg.configured && !isEditing && (
+                    <>
+                      <Box sx={{
+                        display: 'flex', alignItems: 'center', gap: 1,
+                        py: 1, px: 1.5, mt: 1.5,
+                        bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.025)',
+                        borderRadius: 1,
+                        fontFamily: 'monospace', fontSize: 12,
+                        color: theme.text.secondary,
+                      }}>
+                        <span>{cfg.api_key_masked || '****'}</span>
+                        <Box sx={{ flex: 1 }} />
+                        {cfg.supports_balance && balanceInfo && (
+                          <Typography sx={{ fontSize: 12, fontWeight: 700, color: balanceInfo.color }}>
+                            {balanceInfo.text}
+                          </Typography>
+                        )}
+                      </Box>
+
+                      <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexWrap: 'wrap' }}>
+                        {cfg.supports_balance && (
+                          <Button
+                            size="small"
+                            startIcon={<RefreshIcon size={14} />}
+                            onClick={() => handleRefreshBalance(provider)}
+                            disabled={refreshing[provider]}
+                            sx={{ textTransform: 'none', fontSize: 12, color: theme.text.secondary }}
+                          >
+                            {refreshing[provider] ? '刷新中…' : '刷新余额'}
+                          </Button>
+                        )}
+                        <Button
+                          size="small"
+                          startIcon={<EditIcon size={14} />}
+                          onClick={() => setEditing(prev => ({ ...prev, [provider]: true }))}
+                          sx={{ textTransform: 'none', fontSize: 12, color: theme.text.secondary }}
+                        >
+                          更换 Key
+                        </Button>
+                        <Box sx={{ flex: 1 }} />
+                        <Button
+                          size="small"
+                          startIcon={<DeleteIcon size={14} />}
+                          onClick={() => handleDelete(provider)}
+                          sx={{ textTransform: 'none', fontSize: 12, color: theme.status.error }}
+                        >
+                          删除
+                        </Button>
+                      </Box>
+
+                      {!cfg.supports_balance && (
+                        <Typography sx={{ fontSize: 10.5, color: theme.text.muted, mt: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <AlertIcon size={11} /> 该 provider 暂不支持通过 API 查询余额
+                        </Typography>
+                      )}
+                    </>
+                  )}
+
+                  {/* Edit / Add view */}
+                  {isEditing && (
+                    <>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        type={showKey[provider] ? 'text' : 'password'}
+                        placeholder={`sk-... (${cfg.display_name} API Key)`}
+                        value={inputVal}
+                        onChange={e => setInputs(prev => ({ ...prev, [provider]: e.target.value }))}
+                        sx={{
+                          mt: 1.5,
+                          '& .MuiOutlinedInput-root': {
+                            fontSize: 12.5,
+                            fontFamily: 'monospace',
+                            bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          },
+                        }}
+                        InputProps={{
+                          endAdornment: (
+                            <IconButton
+                              size="small"
+                              onClick={() => setShowKey(prev => ({ ...prev, [provider]: !prev[provider] }))}
+                              sx={{ color: theme.text.muted }}
+                            >
+                              {showKey[provider] ? <VisibilityOffIcon size={14} /> : <VisibilityIcon size={14} />}
+                            </IconButton>
+                          ),
+                        }}
+                      />
+
+                      <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexWrap: 'wrap' }}>
+                        <Button
+                          size="small"
+                          startIcon={<ShieldCheckIcon size={14} />}
+                          onClick={() => handleVerify(provider)}
+                          disabled={!inputVal || verifying[provider] || saving[provider]}
+                          sx={{
+                            textTransform: 'none', fontSize: 12, fontWeight: 600,
+                            color: theme.text.secondary,
+                            border: `1px solid ${cardBorder}`,
+                          }}
+                        >
+                          {verifying[provider] ? '验证中…' : '验证'}
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          startIcon={<SaveIcon size={14} />}
+                          onClick={() => handleSave(provider)}
+                          disabled={!inputVal || saving[provider] || verifying[provider]}
+                          sx={{
+                            textTransform: 'none', fontSize: 12, fontWeight: 600,
+                            bgcolor: meta.accent,
+                            '&:hover': { bgcolor: meta.accent, filter: 'brightness(1.1)' },
+                          }}
+                        >
+                          {saving[provider] ? '保存中…' : '保存'}
+                        </Button>
+                        <Box sx={{ flex: 1 }} />
+                        {cfg.configured && (
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              setEditing(prev => ({ ...prev, [provider]: false }));
+                              setInputs(prev => ({ ...prev, [provider]: '' }));
+                            }}
+                            sx={{ textTransform: 'none', fontSize: 12, color: theme.text.muted }}
+                          >
+                            取消
+                          </Button>
+                        )}
+                      </Box>
+                    </>
+                  )}
+                </Box>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
+    </Box>
+  );
+}
+
 /* ═══════════════ Models Tab ═══════════════ */
 
 function ModelsTab({ theme, isDark, cardBg, cardBorder }: { theme: any; isDark: boolean; cardBg: string; cardBorder: string }) {
@@ -543,6 +884,9 @@ function ModelsTab({ theme, isDark, cardBg, cardBorder }: { theme: any; isDark: 
 
   return (
     <Box>
+      {/* Interface For LLMs — unified aggregator keys (AIHubMix / OpenRouter) */}
+      <InterfaceForLLMs theme={theme} isDark={isDark} cardBg={cardBg} cardBorder={cardBorder} />
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography sx={{ fontSize: 14, fontWeight: 600, color: theme.text.secondary }}>
           LLM Models ({providers.length})

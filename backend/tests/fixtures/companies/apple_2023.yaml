@@ -1,0 +1,108 @@
+# ─────────────────────────────────────────────────────────────────────
+# Apple Inc. (AAPL) — 2023-Q4 快照
+# 用途: 成熟蓝筹代表, 测"对成熟增长放缓但高质量的公司判断"
+# 覆盖: Logic (估值合理性的细腻判断) + Effectiveness (WATCH vs BUY 边界)
+# ─────────────────────────────────────────────────────────────────────
+
+meta:
+  symbol: "AAPL"
+  name: "Apple Inc."
+  exchange: "NASDAQ"
+  vintage: "2023-Q4"
+  category: compounder
+  bucket:
+    region: us
+    market_cap: large
+    industry: "Information Technology / Consumer Electronics"
+    special: [slowing_growth, high_valuation_multiple]
+
+input:
+  financials:
+    revenue:
+      fy: 383285000000
+      ttm: 383285000000
+      growth_5y: 0.08
+    net_income:
+      fy: 96995000000
+      ttm: 96995000000
+    operating_cash_flow: 110543000000
+    free_cash_flow: 99584000000
+    total_assets: 352583000000
+    total_equity: 62146000000
+    total_debt: 111088000000
+    gross_margin: 0.443
+    operating_margin: 0.298
+    roe: 1.56                  # 高 ROE, 由大额回购降低权益所致
+    pe_ratio: 30.2              # 估值偏高
+    pb_ratio: 46.8
+    market_cap: 2920000000000
+  segments:
+    - {name: "iPhone", revenue_pct: 0.522, growth: -0.024}   # iPhone 略有下滑
+    - {name: "Services", revenue_pct: 0.224, growth: 0.09}
+    - {name: "Wearables/Home", revenue_pct: 0.099, growth: -0.034}
+    - {name: "Mac", revenue_pct: 0.079, growth: -0.269}       # Mac 大幅下滑
+    - {name: "iPad", revenue_pct: 0.075, growth: -0.034}
+  peers: ["MSFT", "GOOGL", "AMZN"]
+  tool_mocks:
+    web_search:
+      - query_pattern: "Apple services growth"
+        response: |
+          Apple Services revenue reached $85B in FY23, up 9% YoY.
+          Services gross margin ~71% vs Products 37%. Services now 22% of revenue.
+      - query_pattern: "Apple China revenue"
+        response: |
+          Greater China revenue was $72.6B in FY23, down 2.2% YoY due to
+          competition from Huawei and weaker consumer spending.
+    compare_peers:
+      - metrics: ["gross_margin", "operating_margin", "revenue_growth"]
+        response:
+          AAPL: {gross_margin: 0.443, operating_margin: 0.298, revenue_growth: -0.028}
+          MSFT: {gross_margin: 0.695, operating_margin: 0.420, revenue_growth: 0.07}
+          GOOGL: {gross_margin: 0.564, operating_margin: 0.277, revenue_growth: 0.09}
+
+expected:
+  consistency:
+    run_count: 10
+    tolerate_cv: 0.12
+
+  credibility:
+    allowed_number_sources: [financials_input, tool_result]
+    max_hallucination_rate: 0.02
+
+  logic:
+    must_trigger_red_flags: []
+    forbidden_contradictions:
+      - "moat_width=wide + price_assessment=cheap"          # 大护城河很少便宜
+      - "growth_verdict=compounder + 5 年增速<5%"
+    adversarial_expected_findings:
+      - "iPhone 饱和 + 中国市场压力"
+      - "估值倍数处于历史高位"
+
+  effectiveness:
+    # Apple 2023 末很难 BUY (PE 30x), 但也很难 AVOID (质量极高)
+    # WATCH 是最合理答案, BUY 也可接受 (如果论据足够)
+    expected_action: WATCH
+    acceptable_actions: [WATCH, BUY]
+    min_conviction: 0.50
+    max_conviction: 0.85
+    growth_verdict: compounder
+    moat_width: wide
+
+  key_field_expectations:
+    - path: "moat_assessment.moat_types[*].type"
+      must_contain: [BRAND, SWITCHING]      # 品牌 + 生态锁定
+    - path: "valuation.price_assessment"
+      enum: [fair, expensive]               # 不能说 cheap
+    - path: "fisher_qa.total_score"
+      min: 100
+    - path: "reverse_test.destruction_scenarios"
+      min_length: 2                         # 至少要考虑到 iPhone 饱和 + 中国风险
+
+notes: |
+  Apple 2023 FY 整体营收略下滑 (-2.8%), iPhone 增长停滞, Mac 大幅下滑,
+  但 Services 保持 9% 增长, 毛利率极高。估值 PE 30x 处历史高位。
+  这是典型的 "质量极好 + 价格不便宜" 场景, 测试 agent:
+    1. 能否准确识别品牌 + 切换成本双重护城河
+    2. 估值上是否给出合理警示 (不能标 cheap)
+    3. 风险清单能否包含 iPhone 饱和 + 中国竞争
+    4. 最终 action 不应极端 (BUY 或 AVOID 都是信号偏颇)

@@ -1,0 +1,106 @@
+# ─────────────────────────────────────────────────────────────────────
+# TSMC (2230.TW / TSM) — 2023 快照
+# 用途: Compounder 代表, 测"识别优质公司"的基本能力
+# 覆盖: Consistency + Credibility + Logic + Effectiveness 正向
+# ─────────────────────────────────────────────────────────────────────
+
+meta:
+  symbol: "TSM"
+  name: "Taiwan Semiconductor Manufacturing"
+  exchange: "NYSE"
+  vintage: "2023-Q4"
+  category: compounder
+  bucket:
+    region: us
+    market_cap: large
+    industry: "Information Technology / Semiconductors"
+    special: []
+
+input:
+  financials:
+    revenue:
+      fy: 69298000000          # TODO: 填真实 2023 FY 数据
+      ttm: 69298000000
+      growth_5y: 0.18
+    net_income:
+      fy: 26870000000
+      ttm: 26870000000
+    operating_cash_flow: 48100000000
+    free_cash_flow: 11500000000
+    total_assets: 169500000000
+    total_equity: 120100000000
+    total_debt: 31200000000
+    gross_margin: 0.544
+    operating_margin: 0.425
+    roe: 0.269
+    pe_ratio: 17.5
+    pb_ratio: 5.2
+    market_cap: 470000000000
+  segments:
+    - {name: "HPC", revenue_pct: 0.42, growth: 0.17}
+    - {name: "Smartphone", revenue_pct: 0.38, growth: -0.03}
+    - {name: "IoT", revenue_pct: 0.08, growth: 0.25}
+    - {name: "Automotive", revenue_pct: 0.06, growth: 0.31}
+  peers: ["INTC", "SMIC", "UMC", "GFS"]
+  tool_mocks:
+    web_search:
+      - query_pattern: "TSMC market share"
+        response: |
+          TSMC held ~60% of global foundry market in 2023, with ~90% share in
+          leading-edge (<=5nm) nodes. Source: TrendForce 2023-Q4.
+      - query_pattern: "TSMC customer concentration"
+        response: |
+          Apple ~23% of revenue (2023), AMD ~10%, NVIDIA ~8%.
+    compare_peers:
+      - metrics: ["gross_margin", "roe", "revenue_growth"]
+        response:
+          TSM: {gross_margin: 0.544, roe: 0.269, revenue_growth: 0.18}
+          INTC: {gross_margin: 0.401, roe: 0.058, revenue_growth: -0.14}
+          SMIC: {gross_margin: 0.194, roe: 0.071, revenue_growth: -0.13}
+
+expected:
+  consistency:
+    run_count: 10
+    tolerate_cv: 0.10
+
+  credibility:
+    allowed_number_sources: [financials_input, tool_result]
+    max_hallucination_rate: 0.02
+
+  logic:
+    must_trigger_red_flags: []           # TSMC 没有明显红旗
+    forbidden_contradictions:
+      - "moat_width=wide 但 market_share_trend='eroding'"
+      - "growth_verdict=compounder 但 resilience_score<5"
+    adversarial_expected_findings: []
+
+  effectiveness:
+    expected_action: BUY
+    acceptable_actions: [BUY, WATCH]
+    min_conviction: 0.65
+    max_conviction: 0.95
+    growth_verdict: compounder
+    moat_width: wide
+
+  key_field_expectations:
+    - path: "business_analysis.sustainability_score"
+      min: 8
+    - path: "moat_assessment.moat_types[*].type"
+      must_contain: [SCALE, IP]         # 规模 + 知识产权
+    - path: "moat_assessment.moat_durability_years"
+      min: 10
+    - path: "fisher_qa.total_score"
+      min: 110
+    - path: "management_assessment.integrity_score"
+      min: 8
+    - path: "reverse_test.resilience_score"
+      min: 7
+
+notes: |
+  TSMC 是"compounder"典型 — 全球最强代工厂, 宽护城河 (规模 + 专利 + 资本支出壁垒),
+  管理层长期稳定, 客户高粘性。Agent 若识别不出这是优质公司, 说明基本功不过关。
+  主要测试点:
+    1. 护城河类型是否正确识别到 SCALE + IP (至少这两个)
+    2. Fisher QA 是否给出 ≥110 的高分
+    3. 数字溯源是否全部落地到 financials_input 或 tool_result
+    4. 10 次运行的 action 一致率 ≥ 80%

@@ -368,3 +368,47 @@ class PaginatedExchangeConfigsResponse(PaginatedResponse):
 class PaginatedDataSourceConfigsResponse(PaginatedResponse):
     """分页数据源配置响应"""
     items: list[DataSourceConfigResponse]
+
+
+# ============================================================================
+# Aggregator (Unified LLM Provider) Schemas — AIHubMix, OpenRouter
+# ============================================================================
+
+
+class AggregatorVerifyRequest(BaseModel):
+    """Ad-hoc key verification — used before user clicks 'save' to give quick feedback."""
+    provider: str = Field(..., description="aihubmix | openrouter")
+    api_key: str = Field(..., min_length=1)
+
+
+class AggregatorBalanceInfo(BaseModel):
+    credits: Optional[float] = Field(None, description="Remaining credits (null if unknown)")
+    limit: Optional[float] = Field(None, description="Total credit limit")
+    usage: Optional[float] = Field(None, description="Credits consumed")
+    currency: str = "USD"
+    label: Optional[str] = None
+
+
+class AggregatorVerifyResponse(BaseModel):
+    valid: bool
+    balance: Optional[AggregatorBalanceInfo] = None
+    error: Optional[str] = None
+
+
+class AggregatorSaveRequest(BaseModel):
+    """Save (upsert) an aggregator API key for the current user."""
+    provider: str = Field(..., description="aihubmix | openrouter")
+    api_key: str = Field(..., min_length=1)
+
+
+class AggregatorConfigResponse(BaseModel):
+    """One aggregator entry for the Settings UI."""
+    provider: str
+    display_name: str
+    configured: bool
+    api_key_masked: Optional[str] = None
+    is_active: bool
+    base_url: str
+    supports_balance: bool
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

@@ -49,7 +49,7 @@ Each domain in `backend/uteki/domains/` follows a standard layout:
 - `service.py` — Business logic
 - `repository.py` — Data access layer
 
-**13 domains**: admin, agent, auth, company, dashboard, data, evaluation, index, macro, news, snb, trading, user
+**12 domains**: admin, agent, auth, company, data, evaluation, index, macro, news, notification, snb, user
 
 Larger domains (index, macro, news, snb) split models/services into subdirectories.
 

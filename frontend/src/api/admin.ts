@@ -13,6 +13,9 @@ import type {
   SystemHealth,
   PaginatedResponse,
   MessageResponse,
+  AggregatorProvider,
+  AggregatorConfig,
+  AggregatorVerifyResult,
 } from '../types/admin';
 
 export const adminApi = {
@@ -97,5 +100,23 @@ export const adminApi = {
   system: {
     health: () =>
       get<SystemHealth>('/api/admin/system/health'),
+  },
+
+  // Aggregators (AIHubMix / OpenRouter unified providers)
+  aggregators: {
+    list: () =>
+      get<AggregatorConfig[]>('/api/admin/aggregators'),
+
+    verify: (provider: AggregatorProvider, api_key: string) =>
+      post<AggregatorVerifyResult>('/api/admin/aggregators/verify', { provider, api_key }),
+
+    save: (provider: AggregatorProvider, api_key: string) =>
+      post<AggregatorConfig>('/api/admin/aggregators', { provider, api_key }),
+
+    balance: (provider: AggregatorProvider) =>
+      get<AggregatorVerifyResult>(`/api/admin/aggregators/${provider}/balance`),
+
+    delete: (provider: AggregatorProvider) =>
+      del<MessageResponse>(`/api/admin/aggregators/${provider}`),
   },
 };

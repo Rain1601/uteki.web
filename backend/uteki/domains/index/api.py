@@ -682,12 +682,14 @@ async def get_model_config(
         # ── 1. Load effective model list (same logic as Arena) ──
         models: list[dict] = []
 
-        # Priority 1: Admin LLM Providers
+        # Priority 1: Admin LLM Providers (scoped to current user)
         try:
             from uteki.domains.admin.service import get_llm_provider_service, get_encryption_service
             llm_svc = get_llm_provider_service()
             enc = get_encryption_service()
-            admin_models = await llm_svc.get_active_models_for_runtime(encryption_service=enc)
+            admin_models = await llm_svc.get_active_models_for_runtime(
+                user_id=uid, encryption_service=enc,
+            )
             if admin_models:
                 models = [
                     {

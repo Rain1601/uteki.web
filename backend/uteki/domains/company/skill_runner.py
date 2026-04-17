@@ -654,13 +654,15 @@ class GateExecutor:
     )
 
     async def _repair_json(self, broken_json: str) -> Optional[str]:
-        """Use a fast/cheap model to repair malformed JSON from Gate 7."""
+        """Use a fast/cheap model to repair malformed JSON from Gate 7.
+
+        Reuses the same api_key/base_url already resolved for this pipeline run
+        (which is user-scoped via _resolve_model upstream).
+        """
         try:
             from openai import AsyncOpenAI
-            aihub_key = getattr(settings, "aihubmix_api_key", None)
-            aihub_url = (
-                getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
-            )
+            aihub_key = self.model_config.get("api_key")
+            aihub_url = self.model_config.get("base_url") or "https://aihubmix.com/v1"
             if not aihub_key:
                 return None
 
@@ -986,8 +988,9 @@ class PipelineOrchestrator:
 
         try:
             from openai import AsyncOpenAI
-            aihub_key = getattr(settings, "aihubmix_api_key", None)
-            aihub_url = getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
+            # Reuse the resolved (user-scoped) aggregator key from this run.
+            aihub_key = self.model_config.get("api_key")
+            aihub_url = self.model_config.get("base_url") or "https://aihubmix.com/v1"
 
             if not aihub_key:
                 return None, "text"

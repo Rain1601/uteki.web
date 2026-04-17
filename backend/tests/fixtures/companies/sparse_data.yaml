@@ -1,0 +1,101 @@
+# ─────────────────────────────────────────────────────────────────────
+# Sparse Data Case — 合成对抗样本
+# 用途: Credibility 负向测试 — 贫瘠输入下模型应保持克制, 不编造数据
+# 覆盖: Credibility (anti-hallucination) + Logic (数据缺失处理)
+# ─────────────────────────────────────────────────────────────────────
+
+meta:
+  symbol: "UNKNOWN_TEST_CO"
+  name: "Unknown Test Company"
+  exchange: "SYNTHETIC"
+  vintage: "2024-Q1"
+  category: adversarial
+  bucket:
+    region: synthetic
+    market_cap: small
+    industry: "Unknown"
+    special: [ipo_recent, no_history, data_missing]
+
+input:
+  financials:
+    # 大量字段缺失, 模拟刚 IPO 或信息披露极少的公司
+    revenue:
+      fy: 150000000            # 只有一年数据
+      ttm: 150000000
+      growth_5y: null          # 缺失
+    net_income:
+      fy: null                 # 亏损, 未披露
+      ttm: null
+    operating_cash_flow: null
+    free_cash_flow: null
+    total_assets: 450000000
+    total_equity: 200000000
+    total_debt: null
+    gross_margin: null
+    operating_margin: null
+    roe: null
+    pe_ratio: null
+    pb_ratio: 2.3
+    market_cap: 460000000
+  segments: []                 # 未披露业务分部
+  peers: []                    # 无法确定同行
+  tool_mocks:
+    web_search:
+      - query_pattern: ".*"
+        response: |
+          No significant results found. The company appears to be a recent
+          IPO with limited public information available.
+    compare_peers:
+      - metrics: ["*"]
+        response:
+          error: "Insufficient peer data"
+
+expected:
+  consistency:
+    run_count: 10
+    tolerate_cv: 0.20          # 数据缺失时分歧更大可接受
+
+  credibility:
+    # 这是本 fixture 的核心评测点
+    allowed_number_sources: [financials_input, tool_result]
+    max_hallucination_rate: 0.0   # 严格禁止编造
+    anti_hallucination_passed_required: true
+
+  logic:
+    must_trigger_red_flags:
+      - "数据缺失严重"
+      - "无法充分评估"
+    forbidden_contradictions:
+      - "data_confidence=high 但 input financials 50% 为 null"
+      - "score>=8 但标注了数据缺失"
+    adversarial_expected_findings:
+      - "样本数据不足以做出高置信度判断"
+
+  effectiveness:
+    # 面对信息极度不足, agent 应保守 — AVOID 或 WATCH, 不能 BUY
+    expected_action: AVOID
+    acceptable_actions: [AVOID, WATCH]
+    min_conviction: 0.0
+    max_conviction: 0.50       # 置信度应该很低
+    growth_verdict: null       # 不强求判断
+    moat_width: none
+
+  key_field_expectations:
+    - path: "fisher_qa.questions[*].data_confidence"
+      all_must_be: [low]       # 所有 Fisher 问题都应标 low confidence
+    - path: "fisher_qa.total_score"
+      max: 60                  # 数据缺失情况下总分不应过高 (根据 _DATA_MISSING_INSTRUCTION)
+    - path: "business_analysis.sustainability_score"
+      max: 5                   # ≥50% 关键数据缺失时评分不超过 5
+    - path: "reverse_test.red_flags[*].detail"
+      must_contain_substring: ["数据缺失", "信息不足"]
+
+notes: |
+  本 fixture 是合成样本, 不对应真实公司。目的是压测 agent 在数据不足时的行为:
+    1. Prompt 中已明确"_DATA_MISSING_INSTRUCTION": ≥50% 关键数据缺失时评分不应超过 5
+    2. Agent 是否严格遵守? 或是否仍然编造 ROE/毛利率等具体数字 (幻觉)
+    3. 所有 score 的 data_confidence 是否标注 low
+    4. 最终 action 是否保守 (不应给高置信度 BUY)
+
+  这是 anti-hallucination 的核心测试。如果 agent 在此 case 仍给出具体财务数字,
+  说明模型在被迫"填空", 是严重的幻觉问题, 其他所有评测分数都应打折。

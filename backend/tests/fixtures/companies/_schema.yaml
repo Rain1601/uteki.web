@@ -1,0 +1,86 @@
+# ─────────────────────────────────────────────────────────────────────
+# Company Eval Fixture Schema
+#
+# 每个 fixture 描述一个测试样本:
+#   1. input:    喂给 CompanyAgent 的输入数据 (point-in-time)
+#   2. expected: 人工标注的期望输出 (四维评测依据)
+#   3. meta:     样本分类、vintage、用途
+#
+# 实际数据填充参考各 case 文件。本文件仅为字段说明。
+# ─────────────────────────────────────────────────────────────────────
+
+meta:
+  symbol: string                    # 股票代码
+  name: string                      # 公司名
+  exchange: string                  # 交易所
+  vintage: string                   # 数据快照时间点 "YYYY-Q" or "YYYY-MM-DD"
+  category: enum                    # compounder | trap | adversarial | cyclical | turnaround
+  bucket:                           # 覆盖率维度归类
+    region: enum                    # us | cn_a | cn_hk | jp | eu
+    market_cap: enum                # large | mid | small
+    industry: string                # GICS sector
+    special: list                   # [ipo, loss_making, under_investigation, ...]
+
+input:
+  financials:                       # 点入数据 (point-in-time)
+    revenue: {fy: number, ttm: number, growth_5y: number}
+    net_income: {fy: number, ttm: number}
+    operating_cash_flow: number
+    free_cash_flow: number
+    total_assets: number
+    total_equity: number
+    total_debt: number
+    gross_margin: number            # 0-1
+    operating_margin: number
+    roe: number
+    pe_ratio: number
+    pb_ratio: number
+    market_cap: number
+  segments:                         # 业务分部
+    - {name: string, revenue_pct: number, growth: number}
+  peers: list                       # 同行代码列表
+  tool_mocks:                       # 一致性测试用, mock 工具固定返回
+    web_search:
+      - {query_pattern: string, response: string}
+    compare_peers:
+      - {metrics: list, response: dict}
+
+expected:
+  # ─ 四主维度 ──────────────────────────────────────────────────────
+  consistency:
+    # 一致性不需要 expected (算多次运行的方差)
+    run_count: 10
+    tolerate_cv: 0.10
+
+  credibility:
+    allowed_number_sources: [financials_input, tool_result]
+    max_hallucination_rate: 0.02
+    anti_hallucination_input_variant: sparse_data  # 另一个 fixture 的引用
+
+  logic:
+    must_trigger_red_flags: list              # 必须被识别的红旗关键词
+    forbidden_contradictions: list            # 禁止出现的跨字段矛盾
+    adversarial_expected_findings: list
+
+  effectiveness:
+    expected_action: enum                     # BUY | WATCH | AVOID
+    acceptable_actions: list                  # 允许的 action 集合
+    min_conviction: number                    # 0-1
+    max_conviction: number
+    growth_verdict: enum                      # compounder | cyclical | declining | turnaround
+    moat_width: enum                          # wide | narrow | none
+    # 前瞻性 (仅 historical set 填)
+    forward_return_12m: number                # 实际后续 12 月收益
+    forward_return_36m: number
+
+  # ─ 字段级期望 (用于准确性评测) ────────────────────────────────────
+  key_field_expectations:
+    - path: "business_analysis.sustainability_score"
+      min: 7
+      max: 10
+    - path: "moat_assessment.moat_types[*].type"
+      must_contain: [BRAND, COST]
+    - path: "reverse_test.resilience_score"
+      min: 6
+
+notes: string                                 # 人工批注, 为什么选这个 case

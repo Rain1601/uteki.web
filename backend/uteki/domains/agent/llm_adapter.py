@@ -493,31 +493,20 @@ class LLMAdapterFactory:
         model: str,
         config: Optional[LLMConfig] = None,
     ) -> BaseLLMAdapter:
-        """
-        通过统一 API 入口 (AIHubMix) 创建 adapter。
+        """Sync wrapper kept for legacy callers. Resolves via env only.
 
-        所有模型统一走 OpenAI-compatible 格式，一个 API key 访问所有模型。
-        如果未配置统一入口，自动 fallback 到直连 provider。
-
-        Args:
-            model: 模型名称 (如 "deepseek-chat", "gpt-4.1", "claude-sonnet-4-5")
-            config: LLM 配置
-
-        Returns:
-            OpenAIAdapter (通过统一入口) 或 fallback 到直连 adapter
+        Prefer `create_unified_for_user(user_id, model)` in request-scoped code
+        so the user's stored AIHubMix/OpenRouter key is used.
         """
         from uteki.common.config import settings
 
-        # 优先使用统一入口
         api_key = getattr(settings, "aihubmix_api_key", None)
         base_url = getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
 
         if api_key:
-            # Map legacy/direct model names to AIHubMix-compatible names
             resolved_model = LLMAdapterFactory._resolve_model_name(model)
             return OpenAIAdapter(api_key, resolved_model, config, base_url=base_url)
 
-        # Fallback: 根据模型名推断 provider 并直连
         provider, fallback_key, fallback_url = LLMAdapterFactory._infer_provider(model)
         if fallback_key:
             return LLMAdapterFactory.create_adapter(
@@ -527,7 +516,43 @@ class LLMAdapterFactory:
 
         raise ValueError(
             f"No API key available for model '{model}'. "
-            f"Set AIHUBMIX_API_KEY for unified access, or configure the provider-specific key."
+            f"Configure AIHubMix/OpenRouter in Settings, or set AIHUBMIX_API_KEY env var."
+        )
+
+    @staticmethod
+    async def create_unified_for_user(
+        user_id: Optional[str],
+        model: str,
+        config: Optional[LLMConfig] = None,
+    ) -> BaseLLMAdapter:
+        """Create adapter using the user's stored aggregator key (DB-first, env-fallback).
+
+        Priority:
+          1. User's AIHubMix key (DB, encrypted)
+          2. User's OpenRouter key (DB, encrypted)
+          3. settings.aihubmix_api_key (env var)
+          4. provider-specific env keys (legacy fallback)
+        """
+        from uteki.domains.admin.aggregator_service import resolve_unified_provider
+
+        resolved = await resolve_unified_provider(user_id=user_id)
+        if resolved:
+            _provider, api_key, base_url = resolved
+            # Both AIHubMix and OpenRouter speak the OpenAI protocol on /v1/*
+            resolved_model = LLMAdapterFactory._resolve_model_name(model)
+            return OpenAIAdapter(api_key, resolved_model, config, base_url=base_url)
+
+        # Final fallback: provider-specific env key
+        provider, fallback_key, fallback_url = LLMAdapterFactory._infer_provider(model)
+        if fallback_key:
+            return LLMAdapterFactory.create_adapter(
+                provider=provider, api_key=fallback_key,
+                model=model, config=config, base_url=fallback_url,
+            )
+
+        raise ValueError(
+            f"No LLM key configured for model '{model}'. "
+            f"Open Settings → Interface For LLMs and add an AIHubMix or OpenRouter key."
         )
 
     # Model name mapping: Admin DB / legacy names → AIHubMix-compatible names

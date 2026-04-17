@@ -44,93 +44,100 @@ _FALLBACK_MODELS = [
 ]
 
 
-async def _resolve_model(provider_override: Optional[str], model_override: Optional[str]) -> Optional[dict]:
-    """Resolve model config.
+async def _resolve_model(
+    provider_override: Optional[str],
+    model_override: Optional[str],
+    user_id: str,
+) -> Optional[dict]:
+    """Resolve model config for a specific user.
 
     Priority:
-    1. AIHubMix unified (single key for all models) — Admin DB controls which models are enabled
-    2. Admin DB direct (legacy — each model has its own key)
-    3. .env fallback (legacy direct provider keys)
+    1. User's stored aggregator key (AIHubMix / OpenRouter, DB, encrypted)
+    2. env AIHUBMIX_API_KEY (legacy single-tenant fallback)
+    3. User's provider-specific keys in Admin DB (legacy direct)
+    4. .env fallback (legacy direct provider keys)
     """
-    aihub_key = getattr(settings, "aihubmix_api_key", None)
-    aihub_url = getattr(settings, "aihubmix_base_url", None) or "https://aihubmix.com/v1"
+    from uteki.domains.admin.aggregator_service import resolve_unified_provider
 
-    # 1. AIHubMix + Admin DB as model registry (which models are enabled)
-    if aihub_key:
+    # 1+2. User's aggregator key (DB), falling back to env AIHUBMIX_API_KEY
+    resolved = await resolve_unified_provider(user_id=user_id)
+    if resolved:
+        _agg_provider, unified_key, unified_url = resolved
+
         # If model explicitly specified by caller, use it directly
         if model_override:
-            config = {
+            cfg = {
                 "provider": "openai",
                 "model": model_override,
-                "api_key": aihub_key,
-                "base_url": aihub_url,
+                "api_key": unified_key,
+                "base_url": unified_url,
             }
-            logger.info(f"[company] AIHubMix unified: {config['model']}")
-            return config
+            logger.info(f"[company] unified {_agg_provider}: {cfg['model']}")
+            return cfg
 
-        # Otherwise, pick first enabled model from Admin DB
+        # Otherwise, pick first enabled model from user's admin registry
         try:
             from uteki.domains.admin.service import LLMProviderService
             svc = LLMProviderService()
-            models = await svc.get_active_models_for_runtime()
+            models = await svc.get_active_models_for_runtime(user_id=user_id)
             for m in models:
                 if provider_override and m["provider"] != provider_override:
                     continue
-                config = {
+                cfg = {
                     "provider": "openai",
                     "model": m["model"],
-                    "api_key": aihub_key,
-                    "base_url": aihub_url,
+                    "api_key": unified_key,
+                    "base_url": unified_url,
                 }
-                logger.info(f"[company] AIHubMix + admin registry: {config['model']}")
-                return config
+                logger.info(f"[company] unified {_agg_provider} + admin registry: {cfg['model']}")
+                return cfg
         except Exception as e:
             logger.warning(f"[company] admin model list load failed: {e}")
 
-        # Admin DB unavailable — use default model
-        config = {
+        # Admin registry empty — use default model
+        cfg = {
             "provider": "openai",
             "model": _DEFAULT_MODEL,
-            "api_key": aihub_key,
-            "base_url": aihub_url,
+            "api_key": unified_key,
+            "base_url": unified_url,
         }
-        logger.info(f"[company] AIHubMix default: {config['model']}")
-        return config
+        logger.info(f"[company] unified {_agg_provider} default: {cfg['model']}")
+        return cfg
 
-    # 2. Legacy: Admin DB with direct provider keys
+    # 3. Legacy: Admin DB with direct provider keys (user-scoped)
     try:
         from uteki.domains.admin.service import LLMProviderService
         svc = LLMProviderService()
-        models = await svc.get_active_models_for_runtime()
+        models = await svc.get_active_models_for_runtime(user_id=user_id)
         for m in models:
             if provider_override and m["provider"] != provider_override:
                 continue
-            config = {
+            cfg = {
                 "provider": m["provider"],
                 "model": model_override or m["model"],
                 "api_key": m["api_key"],
                 "base_url": m.get("base_url") or None,
             }
-            logger.info(f"[company] legacy admin direct: {config['provider']}/{config['model']}")
-            return config
+            logger.info(f"[company] legacy admin direct: {cfg['provider']}/{cfg['model']}")
+            return cfg
     except Exception as e:
         logger.warning(f"[company] admin model load failed: {e}")
 
-    # 3. Legacy: .env direct provider keys
+    # 4. Legacy: .env direct provider keys (last resort)
     for m in _FALLBACK_MODELS:
         if provider_override and m["provider"] != provider_override:
             continue
         api_key = getattr(settings, m["api_key_attr"], None)
         if api_key:
             base_url = getattr(settings, m.get("base_url_attr", ""), None) if m.get("base_url_attr") else None
-            config = {
+            cfg = {
                 "provider": m["provider"],
                 "model": model_override or m["model"],
                 "api_key": api_key,
                 "base_url": base_url,
             }
-            logger.info(f"[company] legacy env direct: {config['provider']}/{config['model']}")
-            return config
+            logger.info(f"[company] legacy env direct: {cfg['provider']}/{cfg['model']}")
+            return cfg
 
     return None
 
@@ -232,7 +239,7 @@ async def analyze_company(
     user: dict = Depends(get_current_user),
 ):
     """Run 7-gate company analysis pipeline (synchronous)."""
-    model_config = await _resolve_model(req.provider, req.model)
+    model_config = await _resolve_model(req.provider, req.model, user_id=user["user_id"])
     if not model_config:
         raise HTTPException(
             status_code=503,
@@ -264,7 +271,7 @@ async def analyze_company_stream(
     user: dict = Depends(get_current_user),
 ):
     """Run 7-gate company analysis pipeline with SSE streaming."""
-    model_config = await _resolve_model(req.provider, req.model)
+    model_config = await _resolve_model(req.provider, req.model, user_id=user["user_id"])
     if not model_config:
         raise HTTPException(
             status_code=503,
@@ -626,7 +633,7 @@ async def run_ab_test(
         raise HTTPException(status_code=400, detail=f"Failed to fetch data for {req.symbol}")
 
     # Resolve model
-    model_config = await _resolve_model(None, req.judge_model)
+    model_config = await _resolve_model(None, req.judge_model, user_id=user["user_id"])
     if not model_config:
         raise HTTPException(status_code=503, detail="No model available")
 
@@ -703,8 +710,10 @@ async def compare_models(
     active_prompts = await CompanyPromptRepository.get_active_prompts()
     prompt_overrides = active_prompts if active_prompts else None
 
+    current_user_id = user["user_id"]
+
     async def _run_model(model_name: str):
-        model_config = await _resolve_model(None, model_name)
+        model_config = await _resolve_model(None, model_name, user_id=current_user_id)
         if not model_config:
             await queue.put({"type": "error", "model": model_name, "error": "Model not available"})
             return
@@ -835,7 +844,7 @@ async def retry_gate(
     if not full_report:
         raise HTTPException(status_code=400, detail="No report data to retry against")
 
-    model_config = await _resolve_model(provider, model_name)
+    model_config = await _resolve_model(provider, model_name, user_id=user_id)
     company_data = await fetch_company_data(symbol)
     if not company_data:
         raise HTTPException(status_code=400, detail=f"Cannot fetch data for {symbol}")

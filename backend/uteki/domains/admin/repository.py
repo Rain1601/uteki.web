@@ -67,33 +67,38 @@ class APIKeyRepository:
         return row
 
     @staticmethod
-    async def get_by_id(api_key_id: str) -> Optional[dict]:
+    async def get_by_id(api_key_id: str, user_id: str) -> Optional[dict]:
         return SupabaseRepository(APIKeyRepository.TABLE).select_one(
-            eq={"id": api_key_id}
+            eq={"id": api_key_id, "user_id": user_id}
         )
 
     @staticmethod
     async def get_by_provider(
-        provider: str, environment: str = "production"
+        provider: str, user_id: str, environment: str = "production"
     ) -> Optional[dict]:
         return SupabaseRepository(APIKeyRepository.TABLE).select_one(
-            eq={"provider": provider, "environment": environment, "is_active": True}
+            eq={
+                "provider": provider,
+                "user_id": user_id,
+                "environment": environment,
+                "is_active": True,
+            }
         )
 
     @staticmethod
     async def list_all(
-        skip: int = 0, limit: int = 100
+        user_id: str, skip: int = 0, limit: int = 100
     ) -> Tuple[List[dict], int]:
         result = SupabaseRepository(APIKeyRepository.TABLE).select(
-            "*", count="exact", offset=skip, limit=limit
+            "*", count="exact", eq={"user_id": user_id}, offset=skip, limit=limit
         )
         return result.data, result.count or 0
 
     @staticmethod
-    async def update(api_key_id: str, **kwargs) -> Optional[dict]:
+    async def update(api_key_id: str, user_id: str, **kwargs) -> Optional[dict]:
         kwargs["updated_at"] = _now_iso()
         result = SupabaseRepository(APIKeyRepository.TABLE).update(
-            data=kwargs, eq={"id": api_key_id}
+            data=kwargs, eq={"id": api_key_id, "user_id": user_id}
         )
         if result.data:
             await _backup_rows(APIKeyRepository.TABLE, APIKey, result.data)
@@ -101,9 +106,9 @@ class APIKeyRepository:
         return None
 
     @staticmethod
-    async def delete(api_key_id: str) -> bool:
+    async def delete(api_key_id: str, user_id: str) -> bool:
         result = SupabaseRepository(APIKeyRepository.TABLE).delete(
-            eq={"id": api_key_id}
+            eq={"id": api_key_id, "user_id": user_id}
         )
         return bool(result.data)
 
@@ -263,41 +268,42 @@ class LLMProviderRepository:
         return row
 
     @staticmethod
-    async def get_by_id(provider_id: str) -> Optional[dict]:
+    async def get_by_id(provider_id: str, user_id: str) -> Optional[dict]:
         return SupabaseRepository(LLMProviderRepository.TABLE).select_one(
-            eq={"id": provider_id}
+            eq={"id": provider_id, "user_id": user_id}
         )
 
     @staticmethod
-    async def get_default_provider() -> Optional[dict]:
+    async def get_default_provider(user_id: str) -> Optional[dict]:
         return SupabaseRepository(LLMProviderRepository.TABLE).select_one(
-            eq={"is_default": True, "is_active": True},
+            eq={"is_default": True, "is_active": True, "user_id": user_id},
             order="priority.asc",
         )
 
     @staticmethod
-    async def list_active_providers() -> List[dict]:
+    async def list_active_providers(user_id: str) -> List[dict]:
         return SupabaseRepository(LLMProviderRepository.TABLE).select_data(
-            eq={"is_active": True},
+            eq={"is_active": True, "user_id": user_id},
             order="priority.asc",
         )
 
     @staticmethod
     async def list_all(
-        skip: int = 0, limit: int = 100
+        user_id: str, skip: int = 0, limit: int = 100
     ) -> Tuple[List[dict], int]:
         result = SupabaseRepository(LLMProviderRepository.TABLE).select(
             "*", count="exact",
+            eq={"user_id": user_id},
             order="priority.asc",
             offset=skip, limit=limit,
         )
         return result.data, result.count or 0
 
     @staticmethod
-    async def update(provider_id: str, **kwargs) -> Optional[dict]:
+    async def update(provider_id: str, user_id: str, **kwargs) -> Optional[dict]:
         kwargs["updated_at"] = _now_iso()
         result = SupabaseRepository(LLMProviderRepository.TABLE).update(
-            data=kwargs, eq={"id": provider_id}
+            data=kwargs, eq={"id": provider_id, "user_id": user_id}
         )
         if result.data:
             await _backup_rows(LLMProviderRepository.TABLE, LLMProvider, result.data)
@@ -305,9 +311,9 @@ class LLMProviderRepository:
         return None
 
     @staticmethod
-    async def delete(provider_id: str) -> bool:
+    async def delete(provider_id: str, user_id: str) -> bool:
         result = SupabaseRepository(LLMProviderRepository.TABLE).delete(
-            eq={"id": provider_id}
+            eq={"id": provider_id, "user_id": user_id}
         )
         return bool(result.data)
 
@@ -328,37 +334,37 @@ class ExchangeConfigRepository:
         return row
 
     @staticmethod
-    async def get_by_id(config_id: str) -> Optional[dict]:
+    async def get_by_id(config_id: str, user_id: str) -> Optional[dict]:
         return SupabaseRepository(ExchangeConfigRepository.TABLE).select_one(
-            eq={"id": config_id}
+            eq={"id": config_id, "user_id": user_id}
         )
 
     @staticmethod
-    async def get_by_exchange(exchange: str) -> Optional[dict]:
+    async def get_by_exchange(exchange: str, user_id: str) -> Optional[dict]:
         return SupabaseRepository(ExchangeConfigRepository.TABLE).select_one(
-            eq={"exchange": exchange, "is_active": True}
+            eq={"exchange": exchange, "user_id": user_id, "is_active": True}
         )
 
     @staticmethod
-    async def list_active_exchanges() -> List[dict]:
+    async def list_active_exchanges(user_id: str) -> List[dict]:
         return SupabaseRepository(ExchangeConfigRepository.TABLE).select_data(
-            eq={"is_active": True}
+            eq={"is_active": True, "user_id": user_id}
         )
 
     @staticmethod
     async def list_all(
-        skip: int = 0, limit: int = 100
+        user_id: str, skip: int = 0, limit: int = 100
     ) -> Tuple[List[dict], int]:
         result = SupabaseRepository(ExchangeConfigRepository.TABLE).select(
-            "*", count="exact", offset=skip, limit=limit
+            "*", count="exact", eq={"user_id": user_id}, offset=skip, limit=limit
         )
         return result.data, result.count or 0
 
     @staticmethod
-    async def update(config_id: str, **kwargs) -> Optional[dict]:
+    async def update(config_id: str, user_id: str, **kwargs) -> Optional[dict]:
         kwargs["updated_at"] = _now_iso()
         result = SupabaseRepository(ExchangeConfigRepository.TABLE).update(
-            data=kwargs, eq={"id": config_id}
+            data=kwargs, eq={"id": config_id, "user_id": user_id}
         )
         if result.data:
             await _backup_rows(ExchangeConfigRepository.TABLE, ExchangeConfig, result.data)
@@ -366,9 +372,9 @@ class ExchangeConfigRepository:
         return None
 
     @staticmethod
-    async def delete(config_id: str) -> bool:
+    async def delete(config_id: str, user_id: str) -> bool:
         result = SupabaseRepository(ExchangeConfigRepository.TABLE).delete(
-            eq={"id": config_id}
+            eq={"id": config_id, "user_id": user_id}
         )
         return bool(result.data)
 

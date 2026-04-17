@@ -1,0 +1,111 @@
+# ─────────────────────────────────────────────────────────────────────
+# China Evergrande (3333.HK) — 2020-H1 快照 (违约前)
+# 用途: Trap set — 高杠杆困境房企, 测"能否识别债务风险"
+# 覆盖: Effectiveness (雷股) + Logic (杠杆风险推理)
+# ─────────────────────────────────────────────────────────────────────
+
+meta:
+  symbol: "3333.HK"
+  name: "China Evergrande Group"
+  exchange: "HKEX"
+  vintage: "2020-H1"
+  category: trap
+  bucket:
+    region: cn_hk
+    market_cap: large
+    industry: "Real Estate"
+    special: [high_leverage, policy_exposed]
+
+input:
+  financials:
+    revenue:
+      fy: 507250000000        # TODO: 填 2020 中报实际值 (RMB)
+      ttm: 507250000000
+      growth_5y: 0.28
+    net_income:
+      fy: 8076000000
+      ttm: 8076000000
+    operating_cash_flow: -121300000000   # 巨额负现金流
+    free_cash_flow: -158000000000
+    total_assets: 2355000000000
+    total_equity: 234000000000
+    total_debt: 835000000000              # 债务巨大
+    gross_margin: 0.246
+    operating_margin: 0.117
+    roe: 0.0345
+    pe_ratio: 5.8
+    pb_ratio: 0.73
+    market_cap: 200000000000
+  segments:
+    - {name: "房地产开发", revenue_pct: 0.93, growth: 0.15}
+    - {name: "物业管理", revenue_pct: 0.04, growth: 0.28}
+    - {name: "新能源汽车", revenue_pct: 0.01, growth: null}  # 烧钱业务
+    - {name: "其他", revenue_pct: 0.02, growth: 0.05}
+  peers: ["1109.HK", "1918.HK", "0688.HK"]  # 华润、融创、中海
+  tool_mocks:
+    web_search:
+      - query_pattern: "Evergrande debt"
+        response: |
+          Evergrande's total liabilities reached RMB 1.95 trillion as of
+          mid-2020. PBoC introduced "three red lines" policy in Aug 2020
+          restricting property developer borrowing.
+      - query_pattern: "Evergrande cash flow"
+        response: |
+          Evergrande has consistently posted negative operating cash flow
+          while growing revenue through aggressive land acquisitions
+          financed by short-term debt.
+    compare_peers:
+      - metrics: ["debt_to_equity", "roe", "current_ratio"]
+        response:
+          "3333.HK": {debt_to_equity: 3.57, roe: 0.035, current_ratio: 1.28}
+          "1109.HK": {debt_to_equity: 0.85, roe: 0.15, current_ratio: 1.67}
+          "1918.HK": {debt_to_equity: 1.92, roe: 0.18, current_ratio: 1.42}
+
+expected:
+  consistency:
+    run_count: 10
+    tolerate_cv: 0.15
+
+  credibility:
+    allowed_number_sources: [financials_input, tool_result]
+    max_hallucination_rate: 0.02
+
+  logic:
+    must_trigger_red_flags:
+      - "高杠杆遇利率上行"
+      - "经营CF持续为负"
+      - "债务/股东权益过高"
+      - "依赖短期融资滚动长期资产"
+    forbidden_contradictions:
+      - "韧性评分高 + 债务/权益 > 3"
+      - "护城河宽 + 多元化失败 (新能源车烧钱)"
+    adversarial_expected_findings: []
+
+  effectiveness:
+    expected_action: AVOID
+    acceptable_actions: [AVOID]
+    min_conviction: 0.70
+    max_conviction: 1.0
+    growth_verdict: declining
+    moat_width: none
+    forward_return_12m: -0.90    # 2021 违约, 股价暴跌
+    forward_return_36m: -0.99    # 2024 清盘
+
+  key_field_expectations:
+    - path: "reverse_test.resilience_score"
+      max: 3
+    - path: "reverse_test.destruction_scenarios"
+      min_length: 3              # 至少列出 3 个毁灭场景
+    - path: "valuation.safety_margin"
+      enum: [thin, negative]
+    - path: "management_assessment.capital_allocation_score"
+      max: 4                     # 资本配置失败 (造车烧钱)
+
+notes: |
+  恒大 2021-Q3 境外债务违约, 2024 年港交所清盘。本 fixture 用 2020 中报 (违约前一年),
+  测试 agent 识别高杠杆房企系统性风险的能力:
+    1. 债务/权益 3.57x (同业 0.85-1.92) — 结构性异常
+    2. 经营 CF 持续为负但仍扩张 — 典型庞氏风险信号
+    3. 多元化失败 (新能源车) 烧钱但无收入
+    4. 宏观政策暴露 (三道红线 Aug 2020) — 宏观判断点
+  与 luckin 不同: luckin 是造假, 恒大是真实杠杆; 要求 agent 能识别结构性脆弱。
