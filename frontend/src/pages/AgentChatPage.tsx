@@ -473,18 +473,31 @@ export default function AgentChatPage() {
               fontSize: '0.95rem',
               color: theme.text.primary,
               lineHeight: 1.6,
-              '& fieldset': { border: 'none' },
-              '&:hover fieldset': { border: 'none' },
-              '&.Mui-focused fieldset': { border: 'none' },
+              // Kill every possible source of a visible edge between the
+              // textarea and the toolbar sibling below it.
+              '& fieldset, &:hover fieldset, &.Mui-focused fieldset': {
+                border: 'none',
+              },
+              '& .MuiOutlinedInput-notchedOutline': { border: 'none !important' },
+              boxShadow: 'none',
             },
             '& .MuiInputBase-input': {
               py: 1.5,
               px: 2.5,
               color: theme.text.primary,
+              border: 'none',
+              outline: 'none',
+              boxShadow: 'none',
               '&::placeholder': {
                 color: theme.text.muted,
                 opacity: 0.5,
               },
+            },
+            '& textarea': {
+              resize: 'none',
+              border: 'none',
+              outline: 'none',
+              boxShadow: 'none',
             },
           }}
         />
