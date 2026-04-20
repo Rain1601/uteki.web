@@ -659,9 +659,18 @@ export default function CompanyAgentPage() {
     );
   };
 
-  // ── Chart symbol — watchlist click overrides, detail selection overrides that ──
+  // ── Chart symbol — priority: detail selection > active-group watchlist click >
+  //    first symbol of active group > first analysis.
+  // watchlistSymbol is only honored when it's in the CURRENTLY active group —
+  // otherwise it stays "sticky" across group tab switches and shows a stale
+  // symbol (e.g. SPY from 指数 tab lingering on 公司 tab).
+  const activeGroup = watchlistGroups.find((g) => g.id === activeGroupId);
+  const watchlistSymbolInActive = watchlistSymbol && activeGroup?.symbols.some((s) => s.symbol === watchlistSymbol)
+    ? watchlistSymbol
+    : null;
   const chartSymbol = displayCompanyInfo?.symbol
-    || watchlistSymbol
+    || watchlistSymbolInActive
+    || activeGroup?.symbols[0]?.symbol
     || (filteredAnalyses.length > 0 ? filteredAnalyses[0].symbol : null);
 
   // Fetch price data for line chart mode
