@@ -222,7 +222,7 @@ function SectorBars({ sectors, theme, isDark }: { sectors: SectorETF[]; theme: a
   const maxAbs = Math.max(...sorted.map(s => Math.abs(s.change_pct ?? 0)), 0.01);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: 420 }}>
       {sorted.map(s => {
         const pct = s.change_pct ?? 0;
         const positive = pct >= 0;
@@ -263,8 +263,8 @@ function StyleRow({ comp, theme, isDark }: { comp: StyleComparison; theme: any; 
   const bWins = b > a;
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.75 }}>
-      <Box sx={{ width: 100, textAlign: 'right', flexShrink: 0 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.75, maxWidth: 420 }}>
+      <Box sx={{ minWidth: 95, textAlign: 'right', flexShrink: 0 }}>
         <Typography noWrap sx={{ fontSize: 10, fontWeight: aWins ? 600 : 400, color: aWins ? theme.text.primary : theme.text.muted, lineHeight: 1.3 }}>
           {comp.a.name}
         </Typography>
@@ -276,7 +276,7 @@ function StyleRow({ comp, theme, isDark }: { comp: StyleComparison; theme: any; 
         <Box sx={{ width: `${aRatio}%`, height: '100%', bgcolor: aWins ? `${a >= 0 ? SIG.green.color : SIG.red.color}70` : 'transparent', transition: 'width 0.3s' }} />
         <Box sx={{ width: `${100 - aRatio}%`, height: '100%', bgcolor: bWins ? `${b >= 0 ? SIG.green.color : SIG.red.color}70` : 'transparent', transition: 'width 0.3s' }} />
       </Box>
-      <Box sx={{ width: 100, textAlign: 'left', flexShrink: 0 }}>
+      <Box sx={{ minWidth: 95, textAlign: 'left', flexShrink: 0 }}>
         <Typography noWrap sx={{ fontSize: 10, fontWeight: bWins ? 600 : 400, color: bWins ? theme.text.primary : theme.text.muted, lineHeight: 1.3 }}>
           {comp.b.name}
         </Typography>
@@ -386,7 +386,7 @@ function FlowPanel({ flowData, theme, isDark }: {
   flowData: FlowData | null; theme: any; isDark: boolean;
 }) {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' }, gap: 2 }}>
       {/* Sector Performance */}
       {flowData && flowData.sectors.length > 0 && (
         <Box>
@@ -534,27 +534,34 @@ export default function MarketDashboardPage() {
             </Box>
           ))}
 
-          {/* Heatmap source pills — inline, only when heatmap active */}
+          {/* Heatmap source tabs — inline, only when heatmap active */}
           {activeView === 'heatmap' && (
-            <>
-              <Box sx={{ width: 1, height: 14, bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)', mx: 0.75 }} />
+            <Box sx={{
+              display: 'flex', alignItems: 'center',
+              bgcolor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+              borderRadius: '8px', p: '2px', ml: 1,
+            }}>
               {HEATMAP_SOURCES.map(s => (
                 <Box
                   key={s.key}
                   onClick={() => setHeatmapSource(s.key)}
                   sx={{
-                    px: 1, py: 0.3, borderRadius: '6px', cursor: 'pointer',
-                    bgcolor: heatmapSource === s.key ? (isDark ? 'rgba(96,165,250,0.15)' : 'rgba(59,130,246,0.10)') : 'transparent',
-                    transition: 'all 0.12s',
-                    '&:hover': { bgcolor: isDark ? 'rgba(96,165,250,0.08)' : 'rgba(59,130,246,0.06)' },
+                    px: 1.25, py: 0.35, borderRadius: '6px', cursor: 'pointer',
+                    bgcolor: heatmapSource === s.key ? (isDark ? 'rgba(255,255,255,0.10)' : '#fff') : 'transparent',
+                    boxShadow: heatmapSource === s.key ? (isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.06)') : 'none',
+                    transition: 'all 0.15s',
                   }}
                 >
-                  <Typography sx={{ fontSize: 10, fontWeight: heatmapSource === s.key ? 600 : 400, color: heatmapSource === s.key ? '#60a5fa' : theme.text.muted }}>
+                  <Typography sx={{
+                    fontSize: 11, fontWeight: heatmapSource === s.key ? 600 : 400,
+                    color: heatmapSource === s.key ? theme.text.primary : theme.text.muted,
+                    whiteSpace: 'nowrap',
+                  }}>
                     {s.label}
                   </Typography>
                 </Box>
               ))}
-            </>
+            </Box>
           )}
         </Box>
 
@@ -574,7 +581,7 @@ export default function MarketDashboardPage() {
         '&::-webkit-scrollbar-thumb': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)', borderRadius: 4 },
       }}>
         {activeView === 'charts' && (
-          <>
+          <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
             {/* ── Signal overview cards ── */}
             <Box sx={{ display: 'flex', gap: 1.5, mb: 2.5 }}>
               {sortedCats.map(cat => (
@@ -606,12 +613,20 @@ export default function MarketDashboardPage() {
                 <FlowPanel flowData={flowData} theme={theme} isDark={isDark} />
               </Box>
             )}
-          </>
+          </Box>
         )}
 
         {activeView === 'heatmap' && (
           <Suspense fallback={<LoadingDots text="Loading" fontSize={12} />}>
-            <Box sx={{ height: 'calc(100vh - 140px)' }}>
+            {/* Heatmap 高度随视口自适应:
+                mobile header + bottom nav 占 ~128px, 桌面仅顶部 ~100px。 */}
+            <Box
+              sx={{
+                height: { xs: 'calc(100vh - 128px)', md: 'calc(100vh - 100px)' },
+                mx: { xs: -1.5, md: -2.5 },
+                mt: -2,
+              }}
+            >
               <TradingViewHeatmap theme={theme} isDark={isDark} source={heatmapSource} />
             </Box>
           </Suspense>
