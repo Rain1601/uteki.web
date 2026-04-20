@@ -81,8 +81,12 @@ class TranslationService:
             self.model = None
             logger.warning("翻译服务初始化: 未找到任何 LLM 配置")
 
-    def _get_llm_adapter(self):
-        """获取 LLM adapter（从 DB model_config 读取）"""
+    async def _get_llm_adapter(self):
+        """获取 LLM adapter — 通过 aggregator resolver 拿 key (DB 优先, env 兜底)。
+
+        scheduler 触发时无 user_id, create_unified_for_user(user_id=None) 会走
+        resolve_unified_provider 的 DB 扫描兜底，使用用户在 UI 里保存的最新 key。
+        """
         if self._llm_adapter is None:
             if not self._db_model:
                 raise ValueError(
@@ -90,7 +94,8 @@ class TranslationService:
                 )
 
             config = LLMConfig(temperature=0.3, max_tokens=4096)
-            self._llm_adapter = LLMAdapterFactory.create_unified(
+            self._llm_adapter = await LLMAdapterFactory.create_unified_for_user(
+                user_id=None,
                 model=self.model,
                 config=config,
             )
@@ -138,7 +143,7 @@ class TranslationService:
             return ""
 
         try:
-            adapter = self._get_llm_adapter()
+            adapter = await self._get_llm_adapter()
 
             messages = [
                 {"role": "system", "content": TRANSLATION_ONLY_SYSTEM_PROMPT},
@@ -199,7 +204,7 @@ class TranslationService:
   "impact_confidence": "high/medium/low"
 }}"""
 
-            adapter = self._get_llm_adapter()
+            adapter = await self._get_llm_adapter()
             messages = [
                 {"role": "system", "content": TRANSLATION_AND_LABELING_SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
@@ -338,7 +343,7 @@ class TranslationService:
   "impact_confidence": "high/medium/low"
 }}"""
 
-            adapter = self._get_llm_adapter()
+            adapter = await self._get_llm_adapter()
             messages = [
                 {"role": "system", "content": TRANSLATION_AND_LABELING_SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},

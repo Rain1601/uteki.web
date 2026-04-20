@@ -112,8 +112,8 @@ class NewsAnalysisService:
     def __init__(self):
         self._llm_adapter = None
 
-    def _get_llm_adapter(self):
-        """获取 LLM adapter（从 DB model_config 读取）"""
+    async def _get_llm_adapter(self):
+        """获取 LLM adapter — 通过 aggregator resolver 拿 key (DB 优先, env 兜底)。"""
         if self._llm_adapter is None:
             from uteki.domains.index.services.arena_service import load_models_from_db
 
@@ -126,7 +126,8 @@ class NewsAnalysisService:
             # Prefer deepseek for news analysis (cost-effective + fast)
             m = next((m for m in db_models if m["provider"] == "deepseek"), db_models[0])
 
-            self._llm_adapter = LLMAdapterFactory.create_unified(
+            self._llm_adapter = await LLMAdapterFactory.create_unified_for_user(
+                user_id=None,
                 model=m["model"],
             )
         return self._llm_adapter
@@ -148,7 +149,7 @@ class NewsAnalysisService:
             logger.info(f"开始流式分析新闻: {title[:50]}...")
 
             prompt = build_news_analysis_prompt(title, content, source)
-            adapter = self._get_llm_adapter()
+            adapter = await self._get_llm_adapter()
 
             messages = [
                 {"role": "system", "content": self.SYSTEM_PROMPT_NEWS},
@@ -199,7 +200,7 @@ class NewsAnalysisService:
                 event_title, event_date, event_type,
                 actual_value, forecast_value, previous_value, description
             )
-            adapter = self._get_llm_adapter()
+            adapter = await self._get_llm_adapter()
 
             messages = [
                 {"role": "system", "content": self.SYSTEM_PROMPT_EVENT},
@@ -256,7 +257,7 @@ class NewsAnalysisService:
                 return False
 
             prompt = build_news_analysis_prompt(title, content, article.get("source"))
-            adapter = self._get_llm_adapter()
+            adapter = await self._get_llm_adapter()
 
             messages = [
                 {"role": "system", "content": self.SYSTEM_PROMPT_NEWS},

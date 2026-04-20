@@ -89,15 +89,23 @@ class CacheService:
         self,
         key: str,
         factory: Callable[[], Coroutine[Any, Any, Any]],
-        ttl: int = 3600,
+        ttl: "int | Callable[[Any], int]" = 3600,
     ) -> Any:
-        """Get cached value or compute via *factory*, cache, and return."""
+        """Get cached value or compute via *factory*, cache, and return.
+
+        ``ttl`` can be an int (fixed TTL) or a callable ``(value) -> int``
+        evaluated after the factory runs — useful for short-TTL-on-empty
+        patterns (e.g. avoid caching an empty monthly list for a full day).
+        A TTL of ``0`` or less skips caching.
+        """
         cached = await self.get(key)
         if cached is not None:
             return cached
 
         value = await factory()
-        await self.set(key, value, ttl=ttl)
+        actual_ttl = ttl(value) if callable(ttl) else ttl
+        if actual_ttl and actual_ttl > 0:
+            await self.set(key, value, ttl=actual_ttl)
         return value
 
 

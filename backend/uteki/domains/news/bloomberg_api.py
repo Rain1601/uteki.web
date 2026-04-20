@@ -73,9 +73,11 @@ async def get_monthly_news(
             logger.error(f"获取 Bloomberg 月度新闻失败: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail=str(e))
 
+    # 空结果只 cache 60s — 否则早期空响应会钉住一整天。
     return await cache.get_or_set(
         f"uteki:news:bloomberg:monthly:{_today()}:{year}:{month}:{category}",
-        _fetch, ttl=_TTL,
+        _fetch,
+        ttl=lambda v: _TTL if v and v.get("data") else 60,
     )
 
 

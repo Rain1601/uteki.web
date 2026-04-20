@@ -208,18 +208,26 @@ class OpenAIAdapter(BaseLLMAdapter):
         """OpenAI 聊天接口"""
         openai_messages = self.convert_messages(messages)
 
-        # Reasoning models (o1/o3/o4) use max_completion_tokens, not max_tokens
-        is_reasoning = any(self.model.startswith(p) for p in ("o1", "o3", "o4"))
+        # Reasoning 模型 (o1/o3/o4, gpt-5) 需要 max_completion_tokens
+        uses_max_completion_tokens = any(
+            self.model.startswith(p) for p in ("o1", "o3", "o4", "gpt-5")
+        )
+        # temperature 在这些 reasoning / 新版模型上被 deprecated
+        no_temperature = uses_max_completion_tokens or self.model.startswith("claude-opus-4-")
+        # 内部用于 response_format gate
+        is_reasoning = uses_max_completion_tokens
+
         kwargs = {
             "model": self.model,
             "messages": openai_messages,
             "stream": stream,
         }
-        if is_reasoning:
+        if uses_max_completion_tokens:
             kwargs["max_completion_tokens"] = self.config.max_tokens
         else:
-            kwargs["temperature"] = self.config.temperature
             kwargs["max_tokens"] = self.config.max_tokens
+        if not no_temperature:
+            kwargs["temperature"] = self.config.temperature
 
         if self.config.json_mode and not is_reasoning:
             kwargs["response_format"] = {"type": "json_object"}

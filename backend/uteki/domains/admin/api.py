@@ -447,6 +447,10 @@ async def list_llm_providers(
     user_id = user["user_id"]
     cache = get_cache_service()
 
+    # 首次访问 / 用户删光后, 按 DEFAULT_LLM_CATALOG 自动 seed 一份默认列表。
+    if await llm_svc.ensure_default_providers(user_id):
+        await cache.delete_pattern(f"uteki:admin:llm_providers:{user_id}:")
+
     async def _fetch():
         items, total = await llm_svc.list_providers(user_id, skip, limit)
         return jsonable_encoder(schemas.PaginatedLLMProvidersResponse(

@@ -264,8 +264,60 @@ class AuditLogService:
         return await AuditLogRepository.list_all(skip, limit)
 
 
+# 每位用户首次进入 Admin → Models 时 seed 的默认 catalog。
+# 运行时鉴权走聚合器 (AIHubMix / OpenRouter), 所有 row 共享同一个 api_key_id。
+# model id 直接对应 AIHubMix `/api/v1/models` 返回的 model_id.
+DEFAULT_LLM_CATALOG: list[dict] = [
+    {"provider": "anthropic", "model": "claude-opus-4-7",                "display_name": "Claude Opus 4.7",         "priority": 0},
+    {"provider": "openai",    "model": "gpt-5.4",                        "display_name": "GPT-5.4",                 "priority": 1},
+    {"provider": "deepseek",  "model": "deepseek-v3.2",                  "display_name": "DeepSeek V3.2",           "priority": 2},
+    {"provider": "google",    "model": "gemini-3.1-pro-preview-search",  "display_name": "Gemini 3.1 Pro (Search)", "priority": 3},
+    {"provider": "qwen",      "model": "qwen3.6-plus",                   "display_name": "Qwen 3.6 Plus",           "priority": 4},
+    {"provider": "minimax",   "model": "minimax-m2.7",                   "display_name": "MiniMax M2.7",            "priority": 5},
+]
+
+_AGGREGATOR_PROVIDERS = ("aihubmix", "openrouter")
+
+
 class LLMProviderService:
     """LLM提供商服务 — 所有方法强制按 user_id 隔离。"""
+
+    async def ensure_default_providers(self, user_id: str) -> bool:
+        """首次访问时为该用户 seed DEFAULT_LLM_CATALOG。
+
+        前置: 用户已配置至少一个聚合器 key (AIHubMix / OpenRouter)。
+        7 条 row 都挂在该 api_key 下 — 真正鉴权走 aggregator_service.resolve_unified_provider。
+        返回 True 表示本次发生了 seed。
+        """
+        _, total = await LLMProviderRepository.list_all(user_id, 0, 1)
+        if total > 0:
+            return False
+
+        agg_key_id: Optional[str] = None
+        for agg in _AGGREGATOR_PROVIDERS:
+            row = await APIKeyRepository.get_by_provider(agg, user_id, "production")
+            if row:
+                agg_key_id = row["id"]
+                break
+        if not agg_key_id:
+            # 聚合器未配置, 不 seed; 前端顶部 InterfaceForLLMs 卡会引导用户先配置
+            return False
+
+        for entry in DEFAULT_LLM_CATALOG:
+            await LLMProviderRepository.create({
+                "user_id": user_id,
+                "provider": entry["provider"],
+                "model": entry["model"],
+                "api_key_id": agg_key_id,
+                "display_name": entry["display_name"],
+                "config": {},
+                "is_default": entry["priority"] == 0,
+                "is_active": True,
+                "priority": entry["priority"],
+                "description": None,
+            })
+        logger.info(f"Seeded {len(DEFAULT_LLM_CATALOG)} default llm_providers for user {user_id}")
+        return True
 
     async def create_provider(self, data: schemas.LLMProviderCreate, user_id: str) -> dict:
         provider_data = {

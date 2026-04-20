@@ -20,7 +20,7 @@ from uteki.domains.agent.research import ResearchRequest, DeepResearchOrchestrat
 from uteki.domains.agent.research.search_engine import SearchEngine
 from uteki.domains.agent.llm_adapter import LLMAdapterFactory
 from uteki.common.config import settings
-from uteki.domains.auth.deps import get_current_user_optional
+from uteki.domains.auth.deps import get_current_user, get_current_user_optional
 from fastapi import Depends
 
 router = APIRouter()

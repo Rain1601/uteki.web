@@ -239,19 +239,22 @@ async def resolve_unified_provider(
 ) -> Optional[tuple[AggregatorProvider, str, str]]:
     """Resolve which aggregator key the caller should use at runtime.
 
-    Priority (user-first, env-fallback):
-      1. The user's stored aggregator key (preferred one first, then any).
-      2. settings.aihubmix_api_key from env (legacy single-tenant fallback).
+    Priority:
+      1. The passed user's stored aggregator key (preferred one first, then any).
+      2. Any active aggregator key in DB (dev/single-tenant scheduler fallback —
+         env keys go stale, whereas DB is whatever the user last saved via UI).
+      3. settings.aihubmix_api_key from env (legacy fallback).
 
     Returns (provider, api_key, base_url) or None if nothing configured.
     """
     from uteki.common.config import settings
 
+    enc = EncryptionService()
+    order = ([preferred] if preferred else []) + [
+        p for p in SUPPORTED_AGGREGATORS if p != preferred
+    ]
+
     if user_id:
-        enc = EncryptionService()
-        order = ([preferred] if preferred else []) + [
-            p for p in SUPPORTED_AGGREGATORS if p != preferred
-        ]
         for provider in order:
             if provider is None:
                 continue
@@ -260,8 +263,30 @@ async def resolve_unified_provider(
                 meta = get_aggregator_meta(provider)
                 return provider, api_key, meta["base_url"]
 
-    # Env fallback — useful for background schedulers without a user context,
-    # and for the single-tenant dev setup before a user saves their first key.
+    # Dev/scheduler fallback: scan DB for any active aggregator key.
+    # Used by background jobs (news translation, analysis) that lack a request-
+    # scoped user context. In a multi-tenant deployment, callers should always
+    # pass an explicit user_id; this step just keeps single-user setups working.
+    try:
+        from uteki.common.database import SupabaseRepository
+        for provider in order:
+            if provider is None:
+                continue
+            row = SupabaseRepository("api_keys").select_one(
+                eq={"provider": provider, "is_active": True, "environment": "production"},
+            )
+            if not row:
+                continue
+            try:
+                api_key = enc.decrypt(row["api_key"])
+            except Exception:
+                continue
+            meta = get_aggregator_meta(provider)
+            return provider, api_key, meta["base_url"]
+    except Exception as e:
+        logger.warning(f"DB aggregator key fallback failed: {e}")
+
+    # Final env fallback — useful before any user has saved a key.
     env_key = getattr(settings, "aihubmix_api_key", None)
     if env_key:
         env_url = (
